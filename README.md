@@ -1,4 +1,6 @@
 # miros-rabbitmq
+This package is not ready yet..
+
 Rabbitmq extension to miros
 
 To install:
