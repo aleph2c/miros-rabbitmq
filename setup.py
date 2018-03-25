@@ -21,10 +21,10 @@ setup(
     tests_require=['pytest'],
 
     name='miros-rabbitmq',
-    py_modules=['miros-rabbitmq'],
+    py_modules=['miros_rabbitmq'],
 
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',
+    version='0.0.2',
 
     description='A rabbitmq network support library for miros',
     long_description=long_description,
