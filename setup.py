@@ -25,13 +25,13 @@ setup(
     py_modules=['miros-rabbitmq'],
 
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.2',
+    version='0.0.6',
 
     description='A rabbitmq network support library for miros',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/aleph2c/miros_rabbitmq',
+    url='https://github.com/aleph2c/miros-rabbitmq',
 
     # Author details
     author='Scott Volk',
@@ -63,11 +63,11 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='hsm HSM statechart hierarchical state machine statemachine miros pika rabbitmq netifaces cryptography botnet',
+    keywords='iot hsm HSM statechart hierarchical state machine statemachine miros pika rabbitmq netifaces cryptography botnet',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['docs', 'test', 'experiment', 'prot', 'wsl', 'plan']),
+    packages=find_packages(exclude=['docs', 'test', 'experiment', 'plan']),
 
     install_requires=[
       'pika',
