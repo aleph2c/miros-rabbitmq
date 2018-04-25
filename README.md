@@ -10,3 +10,9 @@ To install:
 To import:
 
     import miros_rabbitmq
+
+To access the NetworkedFactory, or NetworkedActiveObject:
+
+    from miros_rabbitmq.network import NetworkedFactory
+    from miros_rabbitmq.network import NetworkedActiveObject
+

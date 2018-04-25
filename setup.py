@@ -6,6 +6,7 @@ https://github.com/pypa/sampleproject
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
+
 # To use a consistent encoding
 from codecs import open
 from os import path
@@ -21,7 +22,7 @@ setup(
     tests_require=['pytest'],
 
     name='miros-rabbitmq',
-    py_modules=['miros_rabbitmq'],
+    py_modules=['miros-rabbitmq'],
 
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.0.2',
@@ -30,7 +31,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/aleph2c/miros-rabbitmq',
+    url='https://github.com/aleph2c/miros_rabbitmq',
 
     # Author details
     author='Scott Volk',
