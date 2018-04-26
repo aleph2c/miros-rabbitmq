@@ -17,9 +17,10 @@ from threading import Thread
 from miros.event import Event
 from queue import Queue as ThreadQueue
 from cryptography.fernet import Fernet
+from miros.activeobject import Factory
 from threading import Event as ThreadEvent
 from miros.activeobject import ActiveObject
-from miros.activeobject import Factory
+from datetime import datetime as stdlib_datetime
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
         '-35s %(lineno) -5d: %(message)s')
@@ -1773,6 +1774,10 @@ class MirosNets:
       producer.change_encyption_key(encryption_key)
     self.snoop.trace.consumer.change_encyption_key(encryption_key)
 
+class AnsiColors:
+  BrightWhite = '\u001b[37;1m'
+  Reset = '\u001b[0m'
+  
 class MirosNetsInterface():
 
   def on_network_message(self, unused_channel, basic_deliver, properties, event):
@@ -1804,6 +1809,26 @@ class MirosNetsInterface():
     self.register_live_spy_callback(self.nets.broadcast_spy)
     self.nets.enable_snoop_spy()
 
+  def snoop_scribble(self, message, enable_color=None):
+    enable_color = True
+    if not enable_color:
+      named_message = "[{}] [{}] # {}".format(
+          stdlib_datetime.strftime(stdlib_datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
+          self.name,
+          message)
+    else:
+      named_message = "[{}] [{}] # {}{}{}".format(
+          stdlib_datetime.strftime(stdlib_datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
+          self.name,
+          AnsiColors.BrightWhite,
+          message,
+          AnsiColors.Reset)
+    if self.nets.snoop.trace.enabled:
+      self.nets.broadcast_trace(named_message)
+    elif self.nets.snoop.spy.enabled:
+      self.nets.broadcast_spy(named_message)
+    else:
+      self.scribble(named_message)
 class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
   def __init__(self,
                 name,

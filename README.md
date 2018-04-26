@@ -9,7 +9,6 @@ pip3 install miros-rabbitmq
 ```
 
 To import:
-
 ```
 import miros_rabbitmq
 ```
