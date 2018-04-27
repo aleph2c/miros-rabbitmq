@@ -1777,6 +1777,7 @@ class MirosNets:
 class AnsiColors:
   BrightBlack = '\u001b[30;1m'
   BrightWhite = '\u001b[37;1m'
+  Blue        = '\u001b[34m'
   Reset       = '\u001b[0m'
 
 class MirosNetsInterface():
@@ -1817,7 +1818,7 @@ class MirosNetsInterface():
           self.name,
           message)
     else:
-      named_message = "[{}] [{}] # {}{}{}".format(
+      named_message = "[{}] [{}] {}# {}{}".format(
           stdlib_datetime.strftime(stdlib_datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
           self.name,
           AnsiColors.BrightBlack,
@@ -1922,7 +1923,8 @@ class NetworkedFactory(Factory, MirosNetsInterface):
 
   def on_network_trace_message(self, ch, method, properties, body):
     if self.name in body:
-      nbody = body.replace(self.name, "{color}{name}{reset}".format(color=AnsiColors.BrightWhite,
+      nbody = body.replace(self.name,
+          "{color}{name}{reset}".format(color=AnsiColors.Blue,
         name=self.name, reset=AnsiColors.Reset), 1)
     else:
       nbody = body

@@ -25,7 +25,7 @@ setup(
     py_modules=['miros-rabbitmq'],
 
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.12',
+    version='0.0.13',
 
     description='A rabbitmq network support library for miros',
     long_description=long_description,
