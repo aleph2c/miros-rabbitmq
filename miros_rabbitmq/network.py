@@ -1777,8 +1777,8 @@ class MirosNets:
 class AnsiColors:
   BrightBlack = '\u001b[30;1m'
   BrightWhite = '\u001b[37;1m'
-  Reset = '\u001b[0m'
-  
+  Reset       = '\u001b[0m'
+
 class MirosNetsInterface():
 
   def on_network_message(self, unused_channel, basic_deliver, properties, event):
@@ -1829,6 +1829,7 @@ class MirosNetsInterface():
       self.nets.broadcast_spy(named_message)
     else:
       self.scribble(named_message)
+
 class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
   def __init__(self,
                 name,
@@ -1918,6 +1919,15 @@ class NetworkedFactory(Factory, MirosNetsInterface):
     super().start_at(initial_state)
     time.sleep(0.1)
     self.nets.start_threads()
+
+  def on_network_trace_message(self, ch, method, properties, body):
+    if self.name in body:
+      nbody = body.replace(self.name, "{color}{name}{reset}".format(color=AnsiColors.BrightWhite,
+        name=self.name, reset=AnsiColors.Reset), 1)
+    else:
+      nbody = body
+    '''create a on_network_trace_message function received messages in the queue'''
+    print(" [+t] {}".format(nbody.replace('\n', '')))
 
 if __name__ == '__main__':
 
