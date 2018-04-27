@@ -1843,6 +1843,7 @@ class AnsiColors:
   BrightWhite = '\u001b[37;1m'
   Blue        = '\u001b[34m'
   Red         = '\u001b[31m'
+  Purple      = '\u001b[35m'
   Reset       = '\u001b[0m'
 
 class MirosNetsInterface():
@@ -1996,7 +1997,7 @@ class NetworkedFactory(Factory, MirosNetsInterface):
       try:
         other_name = m.group(2)
         nbody = body.replace(other_name,
-            "{color}{name}{reset}".format(color=AnsiColors.Red,
+            "{color}{name}{reset}".format(color=AnsiColors.Purple,
           name=other_name, reset=AnsiColors.Reset), 1)
       except:
         nbody = body
