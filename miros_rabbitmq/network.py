@@ -21,6 +21,70 @@ from miros.activeobject import Factory
 from threading import Event as ThreadEvent
 from miros.activeobject import ActiveObject
 from datetime import datetime as stdlib_datetime
+'''
+This package is a RabbitMq (amqp) networking plugin for the Python statechart
+miros library.
+
+It extends the miros.activeobject.ActiveObject class and the
+miros.activeobject.Factory class to communicate using RabbitMq.  This enables
+any statechart that is accessed or constructed using these classes to
+communicate with other networked statecharts.
+
+To build a NetworkedActiveObject:
+
+  from miros_rabbitmq import NetworkedActiveObject
+  # from cryptography import Fernet
+  # new_encryption_key = Fernet.generate_key()
+  # print(new_encryption_key) # => b'u3u...'
+
+  ao = NetworkedActiveObject(
+        "name_of_statechart",
+        rabbit_user="<rabbitmq_user_name>",
+        rabbit_password="<rabbitmq_password>",
+        tx_routing_key="heya.man",
+        rx_routing_key="#.man",
+        mesh_encryption_key=b'u3u...')
+
+  # ao will have all of the methods of an ActiveObject and:
+  ao.enable_snoop_trace()  # useful
+  ao.enable_snoop_spy()    # too much information for most purposes
+  ao.start_at(<starting_state>)  # this will turn on mesh and snoop networks
+  ao.transmit(Event(signal=signals.example_networked_event, payload="hello world")
+
+  # if another statechart has sent you an event with the tx_routing_key that
+  # matches your rx_routing_key pattern it will be placed into the FIFO queue of
+  # the statechart.
+
+To build a NetworkedFactory:
+
+  from miros_rabbitmq import NetworkedActiveObject
+  # from cryptography import Fernet
+  # new_encryption_key = Fernet.generate_key()
+  # print(new_encryption_key) # => b'u3u...'
+
+  fo = NetworkedFactory(
+        "name_of_statechart",
+        rabbit_user="<rabbitmq_user_name>",
+        rabbit_password="<rabbitmq_password>",
+        tx_routing_key="heya.man",
+        rx_routing_key="#.man",
+        mesh_encryption_key=b'u3u...')
+
+  # build up your statechart using the Factory API.
+  # ..
+  # ..
+  fo.enable_snoop_trace()  # useful
+  fo.enable_snoop_spy()    # too much information for most purposes
+  fo.start_at(<starting_state>)  # this will turn on mesh and snoop networks
+  fo.transmit(Event(signal=signals.example_networked_event, payload="hello world")
+
+  # if another statechart has sent you an event with the tx_routing_key that
+  # matches your rx_routing_key pattern it will be placed into the FIFO queue of
+  # the statechart.
+
+  NetworkedFactory and NetworkedActiveObject can work together across the
+  network.
+'''
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
         '-35s %(lineno) -5d: %(message)s')
