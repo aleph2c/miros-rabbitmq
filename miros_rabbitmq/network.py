@@ -1553,8 +1553,8 @@ class MirosNets:
     else:
       self.mesh.rx_routing_key = rx_routing_key
 
-    self.snoop.spy.routing_key   = tx_routing_key + '.' + MirosNets.SPY_ROUTING_KEY
-    self.snoop.trace.routing_key = tx_routing_key + '.' + MirosNets.TRACE_ROUTING_KEY
+    self.snoop.spy.routing_key   = MirosNets.SPY_ROUTING_KEY
+    self.snoop.trace.routing_key = MirosNets.TRACE_ROUTING_KEY
 
     self.mesh.exchange_name        = MirosNets.MESH_EXCHANGE
     self.snoop.spy.exchange_name   = MirosNets.SPY_EXCHANGE
@@ -1775,6 +1775,7 @@ class MirosNets:
     self.snoop.trace.consumer.change_encyption_key(encryption_key)
 
 class AnsiColors:
+  BrightBlack = '\u001b[30;1m'
   BrightWhite = '\u001b[37;1m'
   Reset = '\u001b[0m'
   
@@ -1809,8 +1810,7 @@ class MirosNetsInterface():
     self.register_live_spy_callback(self.nets.broadcast_spy)
     self.nets.enable_snoop_spy()
 
-  def snoop_scribble(self, message, enable_color=None):
-    enable_color = True
+  def snoop_scribble(self, message, enable_color=True):
     if not enable_color:
       named_message = "[{}] [{}] # {}".format(
           stdlib_datetime.strftime(stdlib_datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
@@ -1820,7 +1820,7 @@ class MirosNetsInterface():
       named_message = "[{}] [{}] # {}{}{}".format(
           stdlib_datetime.strftime(stdlib_datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
           self.name,
-          AnsiColors.BrightWhite,
+          AnsiColors.BrightBlack,
           message,
           AnsiColors.Reset)
     if self.nets.snoop.trace.enabled:
