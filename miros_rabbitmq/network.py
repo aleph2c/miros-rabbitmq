@@ -1842,6 +1842,7 @@ class AnsiColors:
   BrightBlack = '\u001b[30;1m'
   BrightWhite = '\u001b[37;1m'
   Blue        = '\u001b[34m'
+  Red         = '\u001b[31m'
   Reset       = '\u001b[0m'
 
 class MirosNetsInterface():
@@ -1991,7 +1992,14 @@ class NetworkedFactory(Factory, MirosNetsInterface):
           "{color}{name}{reset}".format(color=AnsiColors.Blue,
         name=self.name, reset=AnsiColors.Reset), 1)
     else:
-      nbody = body
+      m = re.search('(\[.+?\] ){2}\[(.+)\]', nbody)
+      try:
+        other_name = m.group(2)
+        nbody = body.replace(other_name,
+            "{color}{name}{reset}".format(color=AnsiColors.Red,
+          name=self.name, reset=AnsiColors.Reset), 1)
+      except:
+        nbody = body
     '''create a on_network_trace_message function received messages in the queue'''
     print(" [+t] {}".format(nbody.replace('\n', '')))
 
