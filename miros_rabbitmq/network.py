@@ -1992,7 +1992,7 @@ class NetworkedFactory(Factory, MirosNetsInterface):
           "{color}{name}{reset}".format(color=AnsiColors.Blue,
         name=self.name, reset=AnsiColors.Reset), 1)
     else:
-      m = re.search('(\[.+?\] ){2}\[(.+)\]', nbody)
+      m = re.search('(\[.+?\] ){2}\[(.+)\]', body)
       try:
         other_name = m.group(2)
         nbody = body.replace(other_name,
