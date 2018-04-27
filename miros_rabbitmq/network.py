@@ -1992,12 +1992,12 @@ class NetworkedFactory(Factory, MirosNetsInterface):
           "{color}{name}{reset}".format(color=AnsiColors.Blue,
         name=self.name, reset=AnsiColors.Reset), 1)
     else:
-      m = re.search('(\[.+?\] ){2}\[(.+)\]', body)
+      m = re.search('(\[.+?\] ){1}\[(.+)\]', body)
       try:
         other_name = m.group(2)
         nbody = body.replace(other_name,
             "{color}{name}{reset}".format(color=AnsiColors.Red,
-          name=self.name, reset=AnsiColors.Reset), 1)
+          name=other_name, reset=AnsiColors.Reset), 1)
       except:
         nbody = body
     '''create a on_network_trace_message function received messages in the queue'''
