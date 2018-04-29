@@ -1,0 +1,31 @@
+img.logo_a {
+  margin-bottom: 20px;
+  margin-left:   -3px;
+}
+
+img.logo_b {
+  margin-bottom: 20px;
+  margin-left:   12px;
+}
+/*pre, code {
+ font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+ font-size: 0.9em;
+}
+*/
+
+pre {
+    background: #eee;
+    padding: 7px 30px;
+    margin: 15px -30px;
+    line-height: 1.3em;
+}
+
+div.body h1 {
+   margin-top: 14px;
+}
+
+div.sphinxsidebarwrapper p.logo {
+  padding: 0;
+  margin: -10px 0 0 0px;
+  text-align: left;
+}
