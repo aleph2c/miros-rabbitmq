@@ -1669,7 +1669,7 @@ class MirosNets:
                     rabbit_password=self._rabbit_password,
                     routing_key='scouting',
                     exchange_name=self.mesh.exchange_name,
-                    encryption_key=b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=')
+                    encryption_key=self.mesh.encryption_key)
 
     self._urls = rabbit_scout.urls
     self.this.url = rabbit_scout.this.url
@@ -2050,4 +2050,4 @@ if __name__ == '__main__':
     if i != 0 and i % (crash_sample_number + 1) is 0:
       mn.start_threads()
       time.sleep(2)
-    
+

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: _static/miros_rabbitmq_lg.svg
+.. image:: _static/miros_rabbitmq.svg
    :align: left
 
 .. toctree::
@@ -14,9 +14,11 @@
    introduction
    installing_infrastructure
    installation
+   quick_start
+   how_it_works
    example
+   recipes
    reflection
-   testing
    architecture
 
 Indices and tables

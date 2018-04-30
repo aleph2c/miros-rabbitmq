@@ -47,10 +47,10 @@ doesn’t work clear your afternoon’s schedule, and work through <a class="ref
 </div>
 <div class="section" id="installing-on-linux">
 <span id="installing-infrastructure-installing-on-linux"></span><h2>Installing On Linux<a class="headerlink" href="#installing-on-linux" title="Permalink to this headline">¶</a></h2>
-<p>For Linux, I automated the installation process of RabbitMQ using a simple Ansible
-script.  If you haven’t heard of Ansible before, it’s a Python library that
+<p>For Linux, I automated the installation process of RabbitMQ using a simple <a class="reference external" href="http://docs.ansible.com/">Ansible</a>
+script.  If you haven’t heard of <a class="reference external" href="http://docs.ansible.com/">Ansible</a> before, it’s a Python library that
 allows you to automatically ssh into machines and run a series of sysadmin
-commands.  So, you can use it to automatically deploy things.  For this to work
+commands.  You can use it to automatically deploy things.  For this to work
 we will need to:</p>
 <blockquote>
 <div><ul class="simple">
@@ -69,10 +69,10 @@ procedure.</p>
 </div>
 <div class="section" id="setting-up-ssh-so-you-don-t-need-a-password">
 <span id="installing-infrastructure-setting-up-ssh-so-you-don-t-need-a-password"></span><h3>Setting up SSH so you Don’t Need a Password<a class="headerlink" href="#setting-up-ssh-so-you-don-t-need-a-password" title="Permalink to this headline">¶</a></h3>
-<p>Ansible needs to be able to automatically ssh into the computer it is trying to
+<p><a class="reference external" href="http://docs.ansible.com/">Ansible</a> needs to be able to automatically ssh into the computer it is trying to
 control.  To do this, you put the public ssh key of the computer running ansible
 into the computer it is deploying software too.</p>
-<p>Check to see if the machine you are going to be running Ansible from has public
+<p>Check to see if the machine you are going to be running <a class="reference external" href="http://docs.ansible.com/">Ansible</a> from has public
 keys:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ls</span> <span class="o">~/.</span><span class="n">ssh</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">pub</span>
 </pre></div>
@@ -89,7 +89,7 @@ commands if you don’t have a public key already):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>ssh $USER@localhost
 </pre></div>
 </div>
-<p>If you can login without a password, great, Ansible can now deploy things to
+<p>If you can login without a password, great, <a class="reference external" href="http://docs.ansible.com/">Ansible</a> can now deploy things to
 this machine, from this machine.</p>
 <p>If you can’t SSH without a password to your localhost, we just have to put this
 machine’s public key into its <em>authorized_keys</em> file. (only run
@@ -123,21 +123,21 @@ authorized_keys file:</p>
 </div>
 <div class="section" id="install-ansible">
 <span id="installing-infrastructure-install-ansible"></span><h3>Install Ansible<a class="headerlink" href="#install-ansible" title="Permalink to this headline">¶</a></h3>
-<p>To install Ansible:</p>
+<p>To install <a class="reference external" href="http://docs.ansible.com/">Ansible</a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ansible</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="tell-ansible-where-to-run-and-with-what-user-name">
 <span id="installing-infrastructure-tell-ansible-where-to-run"></span><h3>Tell Ansible Where to Run and with What User Name<a class="headerlink" href="#tell-ansible-where-to-run-and-with-what-user-name" title="Permalink to this headline">¶</a></h3>
-<p>Ansible needs to know what machines to ssh into and with what user names.  This
+<p><a class="reference external" href="http://docs.ansible.com/">Ansible</a> needs to know what machines to ssh into and with what user names.  This
 information is kept in the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file, it is called an
 inventory.  Basically, you create a named configuration item, and below it place
 the contact information (IP/URL address and username) for each of the machines
 in that group.  Your deployment script references this name to know what
 computers to run against.</p>
 <p>Suppose I have a bunch of raspberry pi computers on my network, I might want to
-name their group <code class="docutils literal notranslate"><span class="pre">pis</span></code> in my Ansible inventory.  They all have the same user
+name their group <code class="docutils literal notranslate"><span class="pre">pis</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same user
 name but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.
 So, on the Linux machine that I will run my deployment scripts from, I would edit
 the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
@@ -154,20 +154,20 @@ the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/ho
 </div>
 <div class="section" id="have-ansible-install-rabbitmq">
 <span id="installing-infrastructure-have-ansible-install-rabbitmq"></span><h3>Have Ansible Install RabbitMQ<a class="headerlink" href="#have-ansible-install-rabbitmq" title="Permalink to this headline">¶</a></h3>
-<p>Now that Ansible knows what user names and addresses to use, we need to tell it to do
-something.  Ansible scripts are just yml files; they are easy to read.  The
-only people I know who don’t like yml files are minecraft administrators.  So,
-here is the yaml file that will install RabbitMq onto all of the computers in my
+<p>Now that <a class="reference external" href="http://docs.ansible.com/">Ansible</a> knows what user names and addresses to use, we need to tell it to do
+something.  <a class="reference external" href="http://docs.ansible.com/">Ansible</a> scripts are just yml files; they are easy to read.  The
+only people I know, who don’t like yml files, are minecraft administrators.  So,
+here is the yml file that will install RabbitMq onto all of the computers in my
 <code class="docutils literal notranslate"><span class="pre">pis</span></code> group, I called it <code class="docutils literal notranslate"><span class="pre">rabbit_install.yml</span></code>:</p>
 <div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>---
 - hosts: pis
   vars:
 
-    rabbit_name: bob
-    rabbit_password: dobbs
+    rabbit_name: peter
+    rabbit_password: rabbit
     rabbit_tags:
       - administrator
-    guest_password: rabbit123
+    guest_password: energizer
 
   tasks:
    - name: Install rabbitmq-server
@@ -227,8 +227,10 @@ here is the yaml file that will install RabbitMq onto all of the computers in my
      ignore_errors: True
 </pre></div>
 </div>
-<p>This file references a couple of jinja2 templates, rabbitmq-env.conf.j2 and
-rabbitmq.config.j2.</p>
+<p>This file references a couple of <a class="reference external" href="http://jinja.pocoo.org/docs/2.10/">jinja2</a> templates, rabbitmq-env.conf.j2 and
+rabbitmq.config.j2.  Normally an <a class="reference external" href="http://docs.ansible.com/">Ansible</a> script would populate the variables in
+a <a class="reference external" href="http://jinja.pocoo.org/docs/2.10/">jinja2</a> template, then write the resulting file to disk, but in this example it
+just writes out the template file without any alteration.</p>
 <p>Here is the <code class="docutils literal notranslate"><span class="pre">rabbit-env.conf.j2</span></code> file:</p>
 <div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq
 NODE_IP_ADDRESS=0.0.0.0

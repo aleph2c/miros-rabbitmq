@@ -22,11 +22,10 @@ doesn't work clear your afternoon's schedule, and work through `this <https://ww
 
 Installing On Linux
 -------------------
-
-For Linux, I automated the installation process of RabbitMQ using a simple Ansible
-script.  If you haven't heard of Ansible before, it's a Python library that
+For Linux, I automated the installation process of RabbitMQ using a simple `Ansible <http://docs.ansible.com/>`_
+script.  If you haven't heard of `Ansible <http://docs.ansible.com/>`_ before, it's a Python library that
 allows you to automatically ssh into machines and run a series of sysadmin
-commands.  So, you can use it to automatically deploy things.  For this to work
+commands.  You can use it to automatically deploy things.  For this to work
 we will need to:
  * :ref:`Setup ssh so it can login without a password <installing_infrastructure-setting-up-ssh-so-you-don't-need-a-password>`
  * :ref:`Install Ansible <installing_infrastructure-install-ansible>`
@@ -44,11 +43,11 @@ we will need to:
 
 Setting up SSH so you Don't Need a Password
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Ansible needs to be able to automatically ssh into the computer it is trying to
+`Ansible <http://docs.ansible.com/>`_ needs to be able to automatically ssh into the computer it is trying to
 control.  To do this, you put the public ssh key of the computer running ansible
 into the computer it is deploying software too.
 
-Check to see if the machine you are going to be running Ansible from has public
+Check to see if the machine you are going to be running `Ansible <http://docs.ansible.com/>`_ from has public
 keys:
 
 .. code-block:: python
@@ -72,7 +71,7 @@ Now, let's see if we can ssh into our own machine without a password.
 
   ssh $USER@localhost
 
-If you can login without a password, great, Ansible can now deploy things to
+If you can login without a password, great, `Ansible <http://docs.ansible.com/>`_ can now deploy things to
 this machine, from this machine.
 
 If you can't SSH without a password to your localhost, we just have to put this
@@ -120,7 +119,7 @@ Repeat this procedure for every machine onto which you would like to deploy Rabb
 
 Install Ansible
 ^^^^^^^^^^^^^^^
-To install Ansible:
+To install `Ansible <http://docs.ansible.com/>`_:
 
 .. code-block:: python
 
@@ -130,7 +129,7 @@ To install Ansible:
 
 Tell Ansible Where to Run and with What User Name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Ansible needs to know what machines to ssh into and with what user names.  This
+`Ansible <http://docs.ansible.com/>`_ needs to know what machines to ssh into and with what user names.  This
 information is kept in the ``/etc/ansible/hosts`` file, it is called an
 inventory.  Basically, you create a named configuration item, and below it place
 the contact information (IP/URL address and username) for each of the machines
@@ -138,7 +137,7 @@ in that group.  Your deployment script references this name to know what
 computers to run against.
 
 Suppose I have a bunch of raspberry pi computers on my network, I might want to
-name their group ``pis`` in my Ansible inventory.  They all have the same user
+name their group ``pis`` in my `Ansible <http://docs.ansible.com/>`_ inventory.  They all have the same user
 name but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.
 So, on the Linux machine that I will run my deployment scripts from, I would edit
 the ``/etc/ansible/hosts`` file like this:
@@ -160,10 +159,10 @@ Then I would change the file to:
 
 Have Ansible Install RabbitMQ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Now that Ansible knows what user names and addresses to use, we need to tell it to do
-something.  Ansible scripts are just yml files; they are easy to read.  The
-only people I know who don't like yml files are minecraft administrators.  So,
-here is the yaml file that will install RabbitMq onto all of the computers in my
+Now that `Ansible <http://docs.ansible.com/>`_ knows what user names and addresses to use, we need to tell it to do
+something.  `Ansible <http://docs.ansible.com/>`_ scripts are just yml files; they are easy to read.  The
+only people I know, who don't like yml files, are minecraft administrators.  So,
+here is the yml file that will install RabbitMq onto all of the computers in my
 ``pis`` group, I called it ``rabbit_install.yml``:
 
 .. code-block:: ansible
@@ -172,11 +171,11 @@ here is the yaml file that will install RabbitMq onto all of the computers in my
   - hosts: pis
     vars:
 
-      rabbit_name: bob
-      rabbit_password: dobbs
+      rabbit_name: peter
+      rabbit_password: rabbit
       rabbit_tags:
         - administrator
-      guest_password: rabbit123
+      guest_password: energizer
 
     tasks:
      - name: Install rabbitmq-server
@@ -235,8 +234,10 @@ here is the yaml file that will install RabbitMq onto all of the computers in my
        shell: sudo service rabbitmq-server restart
        ignore_errors: True
 
-This file references a couple of jinja2 templates, rabbitmq-env.conf.j2 and
-rabbitmq.config.j2.
+This file references a couple of `jinja2 <http://jinja.pocoo.org/docs/2.10/>`_ templates, rabbitmq-env.conf.j2 and
+rabbitmq.config.j2.  Normally an `Ansible <http://docs.ansible.com/>`_ script would populate the variables in
+a `jinja2 <http://jinja.pocoo.org/docs/2.10/>`_ template, then write the resulting file to disk, but in this example it
+just writes out the template file without any alteration.
 
 Here is the ``rabbit-env.conf.j2`` file:
 
