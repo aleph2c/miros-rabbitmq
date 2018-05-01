@@ -1,10 +1,14 @@
 .. _how_it_works-how-the-plugin-works:
 
-How The Plugin Works
-====================
-You don't need to understand this page to use this library.  It has been added
-to round out the documentation and to be a guide for me when I write other
-network plugins for miros.
+How it Works
+============
+.. note:: 
+
+  You don't need to understand this page to use this library.  It has been added
+  to round out the documentation and to be a guide for writing other network
+  plugins for miros.  If a diagram is too small, click on it to see it's pdf.
+  If you don't have a lot of time, your time would be better spent looking at
+  the example.
 
 There are two main classes that you will use with miros to build statecharts,
 the `ActiveObject <https://aleph2c.github.io/miros/scribbleexample.html>`_ and
@@ -83,35 +87,125 @@ not specified it will use pickle version 3.  A MirosNets object can be programme
 custom callback functions that are triggered when messages are received on any
 of the three networks.
 
+.. note::
+
+  It doesn't take long before UML class diagrams turn into a poem written for the
+  poet himself, a work that no one else understands or wants to endure.  My
+  pictures are about to reach this level of conceit; their utility
+  diminishes with the addition of more detail.  If you're going to follow the
+  design I recommend using whatever code navigation tool you have installed.
+  I'll colour the parts of the diagram so you know what the docs are referencing
+  in the picture.
+
+.. image:: _static/miros_rabbitmq_4.svg
+    :target: _static/miros_rabbitmq_4.pdf
+    :align: center
+
 The MirosNets class, uses a RabbitScout object to find other machines on the
 network.  The RabbitScout builds up a LocalAreaNetwork object which finds all of
 the IP addresses on the LAN by pinging the broadcast address, and filling the
 ARP table of the machine it is running on.  It uses this ARP table to find a
 short list of available IP addresses.  The RabbitScout then initiates contact to
-these IP addresses and if a time out doesn't occur, it assumes connections are
-possible with that IP address. It uses the working IP addresses to build up a
-custom AMPQ_URL and assigns it to it's url attribute.
+these IP addresses and if a time out doesn't occur, it assumes AMQP connections
+are possible. It uses the working IP addresses to build up a custom AMPQ_URL and
+assigns it to it's urls attribute.
+
+.. image:: _static/miros_rabbitmq_5.svg
+    :target: _static/miros_rabbitmq_5.pdf
+    :align: center
 
 The MirosNets uses the AMPQ_URL addresses provided by the RabbitScout to build
-it's producers.  There is one producer per network for every working AMPQ_URL
+it's producers.  
+
+.. image:: _static/miros_rabbitmq_network_1.svg
+    :target: _static/miros_rabbitmq_network_1.pdf
+    :align: center
+
+There is one producer per network for every working AMPQ_URL
 provided by the RabbitScout.  To build up a producer MirosNets uses the
 PikaTopicPublisher object which wraps the SimplePikaTopicPublisher with
 encryption and serialization methods.
 
 The SimplePikaTopicPublisher is the thing that actually performs the network
-publishing function of this library.  It is heavily based upon the example
-provided in the pika library documentation.  Before using this example as a base
-for the publishing feature I used the example provided on the RabbitMQ page.
-The code based on these examples would run for about 15 minutes prior to
-failing.  Since re-writing everything based on the much more complicated pika
-working example the connections have been stable.  
+publishing function of this library.  It is heavily based upon the `asynchronous
+pika publisher example
+<http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_publisher_example.html>`_
+provided in the pika library documentation.
 
-The SimplePikaTopicPublisher class is different than the pika example provided
-in their documentation, in that it has a thread and to deliver messages out to
-the network, you post them to a fifo, which wakes up the thread.  The pika
-example was very mysterious about how it was actually suppose to be used.  There
-are a lot of questions about it on stackover flow, more open secrets abound in
-this community.  I also added a PID to it's message transmission callback to
-have it speed up when the queues are full and slow down when they are empty.
+Before using this example as a base for the publishing feature I used the
+example provided on the RabbitMQ page.  The code based on these examples would
+run for about 15 minutes prior to failing.  I gave up trying to troubleshoot the
+issue because of the slow feedback time between failures.  Since re-writing
+everything based on the much more complicated `asynchronous pika publisher
+example
+<http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_publisher_example.html>`_
+the connections have been stable.  
 
+.. note::
 
+  The pika example was very mysterious about how it was actually
+  suppose to be used.  There are a lot of questions about it on stackover flow;
+  more open secrets abound in this community.
+
+The SimplePikaTopicPublisher class is different than the pika asynchronous
+publisher example provided in their documentation, in that it has a thread who's
+sole purpose is to wrap the ``run`` method provided by their example.  The ``run``
+method runs forever, and no code below it in the file will ever have access to
+the CPU.  So, by wrapping the ``run`` method in a thread, it can do its thing
+without destroying the program flow.  This ``run`` method provides an event loop
+in which pika can send out messages to the network using callbacks, the most
+important of which is the ``producer_heart_beat``.  When this ``producer_heart_beat``
+callback is called, it checks a queue to see if anyone in another thread wants to
+send something.  If so, it creates a partial function from the
+``publish_message`` callback using the message provided by the queue.  It then
+schedules the new wrapped ``publish_message`` to be called immediately by the
+pika event loop.  After clearing the queue in this way, it schedules itself with
+the pika event loop so that it will be rerun sometime in the future.  I added
+some code to control this time-out duration.  If there are a lot of messages in
+the queue, the ``producer_heart_beat`` will occur quicker than it did before, if
+there are no items in the queue it will relax its time-out duration to it's
+slowest default tempo.  This tempo-time-control feature was made using a
+PID controller.
+
+.. image:: _static/miros_rabbitmq_network_0.svg
+    :target: _static/miros_rabbitmq_network_0.pdf
+    :align: center
+
+The MiroNets only has one consumer per network.  The consumer's responsiblity is
+to respond to messages coming from the RabbitMQ service, to decrypt,
+de-serialize them then to dispatch them out to whatever needs to know about this
+information.  In the case of the Mesh network, a message is dispatched into the
+statechart's FIFO.  In the case of the snoop trace and snoop spy networks, the
+messages are formatted with colour and output to the terminal.
+
+.. image:: _static/miros_rabbitmq_6.svg
+    :target: _static/miros_rabbitmq_6.pdf
+    :align: center
+
+The PikaTopicConsumer provides the decryption and deserialization for each
+network consumer.  
+
+PikaTopicConsumer is a subclass of SimplePikaTopicConsumer, which is heavily
+based upon on the `asynchronous pika consumer example.
+<http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_consumer_example.html>`_
+
+The PikaTopicConsumer class is different from the `asynchronous pika consumer
+example.
+<http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_consumer_example.html>`_
+in that it wraps the ``run`` method in a thread (as in the producer). The
+``run`` method starts a pika event loop.  A
+``timeout_callback_method`` runs within pika producer's event loop.  It checks to see if
+another thread wants to stop the consumer, if so, it kills the pika event loop,
+if not, it registers itself as a callback sometime in the future.
+
+The ``on_message`` of PikaTopicConsumer class is never called because it is
+overloaded by the PikaTopicConsumer.  The ``on_message`` method of the
+PikaTopicConsumer decrypts and deserializes any message received by RabbitMq.
+It takes the result and passes it onto the
+``message_callback`` that was registerd with the class.  This
+``message_callback`` is provided in it's constructor.  It is the MirosNets class
+which constructs 3 (one per network) of these objects and its ``on_message``
+callback functions are provided by the NetworkedActiveObject and
+NetworkedFactory.  The common ``on_message`` behavior of the
+NetworkedActiveObject and NetworkedFactory are provided by the
+MirosNetsInterface.

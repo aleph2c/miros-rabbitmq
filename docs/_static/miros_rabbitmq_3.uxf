@@ -346,7 +346,7 @@ style=wordwrap</panel_attributes>
       <w>90</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -369,7 +369,7 @@ symbol=substate</panel_attributes>
       <w>430</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>410.0;10.0;410.0;50.0;300.0;50.0;300.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
   </element>
   <element>

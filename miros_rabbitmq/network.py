@@ -1271,7 +1271,7 @@ class LocalAreaNetwork():
 
   def get_ipv4_network(self):
     ip_address = LocalAreaNetwork.get_working_ip_address()
-    netmask    = self.get_netmask_on_this_machine()
+    netmask    = self.netmask_on_this_machine()
     inet4 = ipaddress.ip_network(ip_address + '/' + netmask, strict=False)
     return inet4
 
@@ -1314,7 +1314,7 @@ class LocalAreaNetwork():
         pass
     return list(filter(None, candidates))
 
-  def get_netmask_on_this_machine(self):
+  def netmask_on_this_machine(self):
     interfaces = [interface for interface in netifaces.interfaces()]
     local_netmask = None
     working_address = LocalAreaNetwork.get_working_ip_address()
@@ -1856,10 +1856,6 @@ class MirosNetsInterface():
     else:
       print("rx non-event {}".format(event))
 
-  def on_network_trace_message(self, ch, method, properties, body):
-    '''create a on_network_trace_message function received messages in the queue'''
-    print(" [+t] {}".format(body.replace('\n', '')))
-
   def on_network_spy_message(self, ch, method, properties, body):
     '''create a on_network_spy_message function received messages in the queue'''
     print(" [+s] {}".format(body))
@@ -1896,6 +1892,23 @@ class MirosNetsInterface():
       self.nets.broadcast_spy(named_message)
     else:
       self.scribble(named_message)
+
+  def on_network_trace_message(self, ch, method, properties, body):
+    if self.name in body:
+      nbody = body.replace(self.name,
+          "{color}{name}{reset}".format(color=AnsiColors.Blue,
+        name=self.name, reset=AnsiColors.Reset), 1)
+    else:
+      m = re.search('(\[.+?\] ){1}\[(.+)\]', body)
+      try:
+        other_name = m.group(2)
+        nbody = body.replace(other_name,
+            "{color}{name}{reset}".format(color=AnsiColors.Purple,
+          name=other_name, reset=AnsiColors.Reset), 1)
+      except:
+        nbody = body
+    '''create a on_network_trace_message function received messages in the queue'''
+    print(" [+t] {}".format(nbody.replace('\n', '')))
 
 class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
   def __init__(self,
@@ -1987,22 +2000,6 @@ class NetworkedFactory(Factory, MirosNetsInterface):
     time.sleep(0.1)
     self.nets.start_threads()
 
-  def on_network_trace_message(self, ch, method, properties, body):
-    if self.name in body:
-      nbody = body.replace(self.name,
-          "{color}{name}{reset}".format(color=AnsiColors.Blue,
-        name=self.name, reset=AnsiColors.Reset), 1)
-    else:
-      m = re.search('(\[.+?\] ){1}\[(.+)\]', body)
-      try:
-        other_name = m.group(2)
-        nbody = body.replace(other_name,
-            "{color}{name}{reset}".format(color=AnsiColors.Purple,
-          name=other_name, reset=AnsiColors.Reset), 1)
-      except:
-        nbody = body
-    '''create a on_network_trace_message function received messages in the queue'''
-    print(" [+t] {}".format(nbody.replace('\n', '')))
 
 if __name__ == '__main__':
 

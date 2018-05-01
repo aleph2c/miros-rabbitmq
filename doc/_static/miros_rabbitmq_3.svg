@@ -294,12 +294,12 @@
       /><path fill="none" d="M300.5 50.5 L300.5 30.5" clip-path="url(#clipPath12)"
       /><path fill="none" d="M300.5 30.5 L10.5 30.5" clip-path="url(#clipPath12)"
       /><path fill="none" d="M10.5 30.5 L10.5 10.5" clip-path="url(#clipPath12)"
-      /><path fill="white" d="M404 22.2583 L410.5 11 L417 22.2583 L410.5 33.0167 Z" clip-path="url(#clipPath12)" stroke="none"
+      /><path d="M404 22.2583 L410.5 11 L417 22.2583 L410.5 33.0167 Z" clip-path="url(#clipPath12)" stroke="none"
       /><path fill="none" d="M404 22.2583 L410.5 11 L417 22.2583 L410.5 33.0167 Z" clip-path="url(#clipPath12)"
     /></g
     ><g transform="translate(300,360)"
     ><path fill="none" d="M69.5 10.5 L10.5 10.5" clip-path="url(#clipPath13)"
-      /><path fill="white" d="M58.7417 4 L70 10.5 L58.7417 17 L47.9833 10.5 Z" clip-path="url(#clipPath13)" stroke="none"
+      /><path d="M58.7417 4 L70 10.5 L58.7417 17 L47.9833 10.5 Z" clip-path="url(#clipPath13)" stroke="none"
       /><path fill="none" d="M58.7417 4 L70 10.5 L58.7417 17 L47.9833 10.5 Z" clip-path="url(#clipPath13)"
     /></g
     ><g stroke-dasharray="8,5" stroke-miterlimit="5" transform="translate(340,200)" stroke-linecap="butt"
