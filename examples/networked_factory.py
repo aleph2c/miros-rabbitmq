@@ -1,13 +1,8 @@
 import time
 import uuid
 import random
-import logging
-from mesh import NetworkedFactory
+from miros_rabbitmq.network import NetworkedFactory
 from miros.event import signals, Event, return_status
-
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-        '-35s %(lineno) -5d: %(message)s')
-LOGGER = logging.getLogger(__name__)
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post
@@ -78,6 +73,7 @@ chart.nest(outer, parent=None). \
 if __name__ == '__main__':
   random.seed()
   chart.enable_snoop_trace()
+  chart.enable_snoop_spy()
   chart.start_at(outer)
   time.sleep(60)
 

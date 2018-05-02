@@ -8,12 +8,11 @@ How it Works
   to round out the documentation and to be a guide for writing other network
   plugins for miros.  If a diagram is too small, click on it to see it's pdf.
   If you don't have a lot of time, your time would be better spent looking at
-  the example.
+  the `example <file:///C:/github/miros-rabbitmq/docs/example.html>`_.
 
 There are two main classes that you will use with miros to build statecharts,
-the `ActiveObject <https://aleph2c.github.io/miros/scribbleexample.html>`_ and
-the `Factory
-<https://aleph2c.github.io/miros/towardsthefactoryexample.html#towardsthefactoryexample-using-the-factory-class>`_
+the `ActiveObject <https://aleph2c.github.io/miros/singlechartexample.html>`_ and
+the `Factory <https://aleph2c.github.io/miros/towardsthefactoryexample.html#towardsthefactoryexample-using-the-factory-class>`_
 class.  This plugin extends these two classes as the NetworkedActiveObject and
 the NetworkedFactory class.
 

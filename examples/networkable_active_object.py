@@ -2,14 +2,9 @@
 import time
 import uuid
 import random
-import logging
-from mesh import NetworkedActiveObject
 from miros.hsm import spy_on
 from miros.event import signals, Event, return_status
-
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-        '-35s %(lineno) -5d: %(message)s')
-LOGGER = logging.getLogger(__name__)
+from miros_rabbitmq.network import NetworkedActiveObject
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post
@@ -69,8 +64,6 @@ def inner(chart, e):
     status = inner_other_to_inner(chart, e)
   elif(e.signal == signals.to_inner):
     status = inner_to_inner(chart, e)
-  elif(e.signal == signals.other_to_inner):
-    status = return_status.HANDLED
   elif(e.signal == signals.EXIT_SIGNAL):
     status = inner_exit(chart, e)
   else:
@@ -103,8 +96,12 @@ if __name__ == '__main__':
                               tx_routing_key='heya.man',
                               rx_routing_key='#.man',
                               mesh_encryption_key=b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=')
-  ao.enable_snoop_trace()
-  # ao.enable_snoop_spy()
+  # To log
+  ao.enable_snoop_spy_no_color()
+  # To log
+  ao.enable_snoop_trace_no_color()
+  # python3 networkable_active_object.py 2>&1 | sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | tee log.txt
+  # grep -F [+s] log.txt | grep <name>
   ao.start_at(outer)
   time.sleep(60)
 

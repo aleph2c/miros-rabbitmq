@@ -1846,6 +1846,9 @@ class AnsiColors:
   Purple      = '\u001b[35m'
   Reset       = '\u001b[0m'
 
+  MyColor     = Blue
+  OtherColor  = Purple
+
 class MirosNetsInterface():
 
   def on_network_message(self, unused_channel, basic_deliver, properties, event):
@@ -1855,10 +1858,6 @@ class MirosNetsInterface():
         self.post_fifo(event)
     else:
       print("rx non-event {}".format(event))
-
-  def on_network_spy_message(self, ch, method, properties, body):
-    '''create a on_network_spy_message function received messages in the queue'''
-    print(" [+s] {}".format(body))
 
   def transmit(self, event):
     self.nets.transmit(event)
@@ -1893,22 +1892,61 @@ class MirosNetsInterface():
     else:
       self.scribble(named_message)
 
+  def on_network_spy_message(self, ch, method, properties, body):
+    if self.name in body:
+      nbody = body.replace(self.name,
+          "{color}{name}{reset}".format(color=AnsiColors.MyColor,
+        name=self.name, reset=AnsiColors.Reset), 1)
+    else:
+      m = re.search('(.+? ){1}(.+)', body)
+      try:
+        other_name = m.group(1)
+        nbody = body.replace(other_name,
+            "{color}{name}{reset}".format(color=AnsiColors.OtherColor,
+          name=other_name, reset=AnsiColors.Reset), 1)
+      except:
+        nbody = body
+    '''create a on_network_trace_message function received messages in the queue'''
+    print(" [+s] {}".format(nbody))
+
   def on_network_trace_message(self, ch, method, properties, body):
     if self.name in body:
       nbody = body.replace(self.name,
-          "{color}{name}{reset}".format(color=AnsiColors.Blue,
+          "{color}{name}{reset}".format(color=AnsiColors.MyColor,
         name=self.name, reset=AnsiColors.Reset), 1)
     else:
       m = re.search('(\[.+?\] ){1}\[(.+)\]', body)
       try:
         other_name = m.group(2)
         nbody = body.replace(other_name,
-            "{color}{name}{reset}".format(color=AnsiColors.Purple,
+            "{color}{name}{reset}".format(color=AnsiColors.OtherColor,
           name=other_name, reset=AnsiColors.Reset), 1)
       except:
         nbody = body
     '''create a on_network_trace_message function received messages in the queue'''
     print(" [+t] {}".format(nbody.replace('\n', '')))
+
+  def on_network_spy_message_no_color(self, ch, method, properties, body):
+    print(" [+s] {}".format(body))
+
+  def on_network_trace_message_no_color(self, ch, method, properties, body):
+    print(" [+t] {}".format(body.replace('\n', '')))
+
+  def enable_snoop_spy_no_color(self):
+    self.nets.snoop.spy.on_message_callback = \
+      functools.partial(
+        MirosNets.on_snoop_spy_message_callback,
+        custom_rx_callback=self.on_network_spy_message_no_color)
+    self.nets.build_snoop_networks()
+    self.enable_snoop_spy()
+
+  def enable_snoop_trace_no_color(self):
+    self.nets.snoop.trace.on_message_callback = \
+      functools.partial(
+        MirosNets.on_snoop_trace_message_callback,
+        custom_rx_callback=self.on_network_trace_message_no_color)
+    self.nets.build_snoop_networks()
+    self.enable_snoop_trace()
 
 class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
   def __init__(self,
@@ -1949,6 +1987,7 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
                  on_mesh_rx=on_message_callback,
                  on_trace_rx=on_trace_message_callback,
                  on_spy_rx=on_spy_message_callback)
+
 
   def start_at(self, initial_state):
     super().start_at(initial_state)

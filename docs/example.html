@@ -36,9 +36,182 @@
 <span id="id1"></span><h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<p>In this section I will show how to network some statecharts using the miros-rabbitmq plugin.</p>
 <a class="reference external image-reference" href="_static/test_miros_rabbitmq_2.pdf"><div align="center" class="align-center"><img alt="_images/test_miros_rabbitmq_2.svg" src="_images/test_miros_rabbitmq_2.svg" /></div>
 </a>
-<p><span class="xref std std-ref">Next topic</span>.</p>
+<p>Here we have a diagram that throws all of this example’s ideas at you at once.
+We see:</p>
+<ul class="simple">
+<li>How you can link a NetworkedActiveObject or a NetworkedFactory to a statechart.</li>
+<li>How these networked classes are just generalizations of the miros classes.</li>
+<li>How they have a standard interface, so they can share the same networking API.</li>
+<li>That they both contain a MirosNets object that does the lion’s share of the
+networking for them.</li>
+</ul>
+<p>In this example, I’ll create two different objects which implement the
+statechart in the diagram. One will use the NetworkedActiveObject class, and the
+other will use the NetworkedFactory class.</p>
+<p>The pictured statechart is a simple ergotic design that can work on its own or
+with one or more statecharts just like it.  If there is more than one of these
+statecharts working together, they can run on the same computer in different
+processes or on different computers across a network.</p>
+<p>The statechart can send events to itself and others.  To avoid any confusion
+about where events are coming from we follow a simple coding convention: any
+event that is alien to the statechart will have the word ‘other’ pre-pended
+to it’s signal name.</p>
+<p>Before you begin the example <a class="reference internal" href="installing_infrastructure.html#installing-infrastructure-installing-required-programs"><span class="std std-ref">get your RabbitMQ installation
+working</span></a> , then install
+the miros and the miros-rabbitmq packages using pip.</p>
+<p>The example will be broken down into three parts:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#example-networkedactiveobject"><span class="std std-ref">Building a NetworkedActiveObject</span></a></li>
+<li><a class="reference internal" href="#example-networkedfactory"><span class="std std-ref">Building a NetworkedFactory</span></a></li>
+<li><a class="reference internal" href="#example-different-ways-to-troubleshoot-our-programs"><span class="std std-ref">Different ways to Troubleshoot Our Programs</span></a></li>
+</ul>
+</div>
+<div class="section" id="building-a-networkedactiveobject">
+<span id="example-networkedactiveobject"></span><h1>Building a NetworkedActiveObject<a class="headerlink" href="#building-a-networkedactiveobject" title="Permalink to this headline">¶</a></h1>
+<p>First we import the required libraries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span> <span class="c1"># to generate a unique name</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">miros.hsm</span> <span class="kn">import</span> <span class="n">spy_on</span>
+<span class="kn">from</span> <span class="nn">miros.event</span> <span class="kn">import</span> <span class="n">signals</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">return_status</span>
+<span class="kn">from</span> <span class="nn">miros_rabbitmq.network</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+</pre></div>
+</div>
+<p>Then we construct a function that will generate a unique name for our
+statechart:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+  <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
+</pre></div>
+</div>
+<p>Now we consider the statechart part of our design:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_example_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_example_1.svg" src="_images/miros_rabbitmq_example_1.svg" /></div>
+</a>
+<p>Then we implement the statechart using the flat-method technique required by
+a miros ActiveObject:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span>
+    <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">),</span>
+    <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">period</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="n">deferred</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="hll">  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_to_outer</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">chart</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</span>  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+
+<span class="k">def</span> <span class="nf">outer_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">chart</span><span class="o">.</span><span class="n">trans</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">outer_other_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">chart</span><span class="o">.</span><span class="n">trans</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">inner_entry</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span>
+    <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_outer</span><span class="p">),</span>
+    <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">period</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="n">deferred</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="hll">  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_to_inner</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">chart</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</span>  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+
+<span class="k">def</span> <span class="nf">inner_exit</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">cancel_events</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_outer</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+
+<span class="k">def</span> <span class="nf">inner_other_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+
+<span class="k">def</span> <span class="nf">inner_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+
+<span class="k">def</span> <span class="nf">inner_to_outer</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">chart</span><span class="o">.</span><span class="n">trans</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">inner_other_to_outer</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">chart</span><span class="o">.</span><span class="n">trans</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+
+<span class="nd">@spy_on</span>
+<span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">UNHANDLED</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">ENTRY_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_entry</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">INIT_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">to_outer</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_to_outer</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="hll">  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">other_to_outer</span><span class="p">):</span>
+</span>    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_other_to_outer</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="hll">  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">other_to_inner</span><span class="p">):</span>
+</span>    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_other_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">EXIT_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">inner_exit</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">chart</span><span class="o">.</span><span class="n">temp</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">SUPER</span><span class="p">,</span> <span class="n">outer</span>
+  <span class="k">return</span> <span class="n">status</span>
+
+<span class="nd">@spy_on</span>
+<span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">UNHANDLED</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">ENTRY_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">INIT_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">outer_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="hll">  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">other_to_inner</span><span class="p">):</span>
+</span>    <span class="n">status</span> <span class="o">=</span> <span class="n">outer_other_to_inner</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+  <span class="k">elif</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">signal</span> <span class="o">==</span> <span class="n">signals</span><span class="o">.</span><span class="n">EXIT_SIGNAL</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">chart</span><span class="o">.</span><span class="n">temp</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">SUPER</span><span class="p">,</span> <span class="n">chart</span><span class="o">.</span><span class="n">top</span>
+  <span class="k">return</span> <span class="n">status</span>
+</pre></div>
+</div>
+<p>I have highlighted the <cite>other</cite> event signals in the code listing.  This is to
+demonstrate how the statechart will react to such events when they have been
+received from another statechart, and how to transmit them out to others.</p>
+<p>The <cite>other</cite> event signals received from another statechart are placed in the
+FIFO of the active object by the miros-rabbitmq library.  As for as the event
+processor is concerned, they are no different than any native event; the only
+way that we know they are alien is that we have pre-pended the word ‘other’ to
+them, as a coding convention.</p>
+<p>To send a message out to another statechart, you use the <code class="docutils literal notranslate"><span class="pre">transmit</span></code> api
+provided by the NetworkedActiveObject.  If you tried to transmit something from
+an ActiveObject it would fail, since the miros package does not support this api.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Be careful where you place your transmit calls in your statecharts, since it is
+easy to create an event oscillation between your networked charts.  I tend to
+send out <cite>other</cite> events to the network when a state has been initialized, or
+entered (when it the inner most state).</p>
+</div>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_example_2.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_example_2.svg" src="_images/miros_rabbitmq_example_2.svg" /></div>
+</a>
+<p>Here we see how to link our statechart to a NetworkedActiveObject.  To link a
+statechart to the network, we construct the NetworkedActiveObject with the
+networking credentials we use for our RabbitMQ server and our encryption
+information.  We turn on whatever instrumentation we would like our statechart
+to participate in, then we call the <code class="docutils literal notranslate"><span class="pre">start_at</span></code> method.  The call to this
+<code class="docutils literal notranslate"><span class="pre">start_at</span></code> method causes the NetworkedActiveObject object’s event
+processor to link itself to the statechart we constructed, then it starts up the
+state.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Remember, ActiveObjects and thereby NetworkedActiveObjects are <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#what-a-state-does-and-how-to-structure-it">polyamourous</a>.
+The same statechart structure can by used be many different
+NetworkedActiveObject’s since they hold no state about themselves; they merely
+act as a blueprint.  All of the state information is held within the
+NetworkedActiveObject.</p>
+</div>
+</div>
+<div class="section" id="building-a-networkedfactory">
+<span id="example-networkedfactory"></span><h1>Building a NetworkedFactory<a class="headerlink" href="#building-a-networkedfactory" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="different-ways-to-troubleshoot-our-programs">
+<span id="example-different-ways-to-troubleshoot-our-programs"></span><h1>Different ways to Troubleshoot Our Programs<a class="headerlink" href="#different-ways-to-troubleshoot-our-programs" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -48,7 +221,15 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
   <img class="logo_a" src="_static/miros_rabbitmq_icon_only.svg" width="90" alt="Logo" >
-</a></p><div class="relations">
+</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example</a></li>
+<li><a class="reference internal" href="#building-a-networkedactiveobject">Building a NetworkedActiveObject</a></li>
+<li><a class="reference internal" href="#building-a-networkedfactory">Building a NetworkedFactory</a></li>
+<li><a class="reference internal" href="#different-ways-to-troubleshoot-our-programs">Different ways to Troubleshoot Our Programs</a></li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
