@@ -37,10 +37,10 @@
 <div class="toctree-wrapper compound">
 </div>
 <p>In this section I will show how to network some statecharts using the miros-rabbitmq plugin.</p>
+<p>Here is a diagram that throws all of this example’s ideas at you at once:</p>
 <a class="reference external image-reference" href="_static/test_miros_rabbitmq_2.pdf"><div align="center" class="align-center"><img alt="_images/test_miros_rabbitmq_2.svg" src="_images/test_miros_rabbitmq_2.svg" /></div>
 </a>
-<p>Here we have a diagram that throws all of this example’s ideas at you at once.
-We see:</p>
+<p>We see:</p>
 <ul class="simple">
 <li>How you can link a NetworkedActiveObject or a NetworkedFactory to a statechart.</li>
 <li>How these networked classes are just generalizations of the miros classes.</li>
@@ -68,9 +68,8 @@ the miros and the miros-rabbitmq packages using pip.</p>
 <li><a class="reference internal" href="#example-networkedfactory"><span class="std std-ref">Building a NetworkedFactory</span></a></li>
 <li><a class="reference internal" href="#example-different-ways-to-troubleshoot-our-programs"><span class="std std-ref">Different ways to Troubleshoot Our Programs</span></a></li>
 </ul>
-</div>
 <div class="section" id="building-a-networkedactiveobject">
-<span id="example-networkedactiveobject"></span><h1>Building a NetworkedActiveObject<a class="headerlink" href="#building-a-networkedactiveobject" title="Permalink to this headline">¶</a></h1>
+<span id="example-networkedactiveobject"></span><h2>Building a NetworkedActiveObject<a class="headerlink" href="#building-a-networkedactiveobject" title="Permalink to this headline">¶</a></h2>
 <p>First we import the required libraries:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span> <span class="c1"># to generate a unique name</span>
@@ -179,8 +178,7 @@ processor is concerned, they are no different than any native event; the only
 way that we know they are alien is that we have pre-pended the word ‘other’ to
 them, as a coding convention.</p>
 <p>To send a message out to another statechart, you use the <code class="docutils literal notranslate"><span class="pre">transmit</span></code> api
-provided by the NetworkedActiveObject.  If you tried to transmit something from
-an ActiveObject it would fail, since the miros package does not support this api.</p>
+provided by the NetworkedActiveObject.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Be careful where you place your transmit calls in your statecharts, since it is
@@ -206,12 +204,80 @@ NetworkedActiveObject’s since they hold no state about themselves; they merely
 act as a blueprint.  All of the state information is held within the
 NetworkedActiveObject.</p>
 </div>
+<p>Now that we have a statechart we need to link it to a NetworkedActiveObject.
+But before we do that, we need to build the NetworkedActiveObject using:</p>
+<ul class="simple">
+<li>the networking credentials we have set up our RabbitMQ server</li>
+<li>a tx_routing key</li>
+<li>a rx_routing key</li>
+<li>the encryption keys that will be used by the other programs in our network.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
+  <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>
+  <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
+  <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
+  <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We name our ao using the <code class="docutils literal notranslate"><span class="pre">make_name</span></code> function that we built at the top of the
+example, it pre-pends 5 digits of a UUID to the front of <code class="docutils literal notranslate"><span class="pre">_ao</span></code>.
+The rabbit_user and rabbit_password, networking credentials are specified when you <a class="reference external" href="installing_infrastructure-installing-required-programs">install your RabbitMQ server</a>.  The topic
+tx_routing_key are used by the RabbitMQ exchanges to publish to different
+queues.  A consumer can subscribe to different topics <a class="reference external" href="https://www.rabbitmq.com/tutorials/tutorial-five-python.html">using a simple pattern
+matching technique</a>
+specified with its rx_routing_key.  In our case our program will receive any
+network message from exchanges with the last word of ‘man’ in their topic.</p>
+<p>RabbitMQ supports SSL, but this library doesn’t get involved in that.  If you
+would like to install SSL, you can, and if it is working this library will
+happily sit on top of it and not know that it is transmitting through a secure
+connection.  This library does, however, have its own encryption layer for each
+of its networks.  It uses symmetric encryption, so that the same key can be used to
+encrypt and decrypt an object.</p>
+<p>I am about to talk about some of the miros-rabbitmq package details, but you
+don’t need to know this stuff to make your example work.  So if you want to just
+skip over this information and get back to the example click <a class="reference internal" href="#back-to-the-example"><span class="std std-ref">here</span></a>.</p>
+<p>Let’s look at the networks that are turned on with the miros-rabbitmq library
+(click to open it as a pdf):</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_network_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_network_1.svg" src="_images/miros_rabbitmq_network_1.svg" /></div>
+</a>
+<p>The miros-rabbitmq package constructs the following:</p>
+<ul class="simple">
+<li>mesh network - used to transmit and receive messages between statecharts</li>
+<li>snoop_trace network - to debug your entire network using <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#using-the-trace">trace</a> instrumentation</li>
+<li>snoop_spy network - to debug the entire network using the <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#using-the-spy">spy</a></li>
+</ul>
+<p>When you turn on your NetworkedActiveObject, it will scan your LAN looking for
+other machines that have the same rabbit credentials that you are using, then it
+will create a producer for each of them in each of the networks, so you don’t
+have to worry about feeding it IP addresses, it will find them if they are
+connected in the same TCP/IP network.</p>
+<p>Each of the networks can have their own encryption key, but if you only specify
+the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> in the NetworkedActiveObject constructor it will be
+used by all of the networks.  The snoop_trace and snoop_spy encryption handles
+for the NetworkedActiveObject constructor, are <code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> and
+<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code>.</p>
+<p>To build an encryption key for your distributed system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As an application developer you just need to know what goes in, and what comes
+out of each of the miros-rabbitmq networks.  The mesh network is fed an item
+using it’s <code class="docutils literal notranslate"><span class="pre">transmit</span></code> method.  This information will pop out on every connected
+machine with the same credentials, posted into the fifo of another other
+connected NetworkedActiveObject or NetworkedFactory object as if that local
+machine posted that event to itself as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="c1"># but with e provided from the network</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="building-a-networkedfactory">
-<span id="example-networkedfactory"></span><h1>Building a NetworkedFactory<a class="headerlink" href="#building-a-networkedfactory" title="Permalink to this headline">¶</a></h1>
+<span id="example-networkedfactory"></span><span id="back-to-the-example"></span><h2>Building a NetworkedFactory<a class="headerlink" href="#building-a-networkedfactory" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="different-ways-to-troubleshoot-our-programs">
-<span id="example-different-ways-to-troubleshoot-our-programs"></span><h1>Different ways to Troubleshoot Our Programs<a class="headerlink" href="#different-ways-to-troubleshoot-our-programs" title="Permalink to this headline">¶</a></h1>
+<span id="example-different-ways-to-troubleshoot-our-programs"></span><h2>Different ways to Troubleshoot Our Programs<a class="headerlink" href="#different-ways-to-troubleshoot-our-programs" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -224,10 +290,12 @@ NetworkedActiveObject.</p>
 </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Example</a></li>
+<li><a class="reference internal" href="#">Example</a><ul>
 <li><a class="reference internal" href="#building-a-networkedactiveobject">Building a NetworkedActiveObject</a></li>
 <li><a class="reference internal" href="#building-a-networkedfactory">Building a NetworkedFactory</a></li>
 <li><a class="reference internal" href="#different-ways-to-troubleshoot-our-programs">Different ways to Troubleshoot Our Programs</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>

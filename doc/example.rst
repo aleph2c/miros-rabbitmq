@@ -9,11 +9,12 @@ Example
 
 In this section I will show how to network some statecharts using the miros-rabbitmq plugin.
 
+Here is a diagram that throws all of this example’s ideas at you at once:
+
 .. image:: _static/test_miros_rabbitmq_2.svg
     :target: _static/test_miros_rabbitmq_2.pdf
     :align: center
 
-Here we have a diagram that throws all of this example’s ideas at you at once.
 We see:
 
 * How you can link a NetworkedActiveObject or a NetworkedFactory to a statechart.
@@ -49,7 +50,7 @@ The example will be broken down into three parts:
 .. _example-networkedactiveobject:
 
 Building a NetworkedActiveObject
-================================
+--------------------------------
 First we import the required libraries:
 
 .. code-block:: python
@@ -170,8 +171,7 @@ way that we know they are alien is that we have pre-pended the word 'other' to
 them, as a coding convention.
 
 To send a message out to another statechart, you use the ``transmit`` api
-provided by the NetworkedActiveObject.  If you tried to transmit something from
-an ActiveObject it would fail, since the miros package does not support this api.  
+provided by the NetworkedActiveObject.
 
 .. note::
 
@@ -201,15 +201,104 @@ state.
   act as a blueprint.  All of the state information is held within the
   NetworkedActiveObject.
 
+Now that we have a statechart we need to link it to a NetworkedActiveObject.
+But before we do that, we need to build the NetworkedActiveObject using:
+
+* the networking credentials we have set up our RabbitMQ server
+* a tx_routing key
+* a rx_routing key
+* the encryption keys that will be used by the other programs in our network.
+
+.. code-block:: python
+
+  ao = NetworkedActiveObject('make_name('ao'),
+    rabbit_user='peter',
+    rabbit_password='rabbit',
+    tx_routing_key='heya.man',
+    rx_routing_key='#.man',
+    mesh_encryption_key=b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=')
+
+We name our ao using the ``make_name`` function that we built at the top of the
+example, it pre-pends 5 digits of a UUID to the front of ``_ao``.
+The rabbit_user and rabbit_password, networking credentials are specified when you `install your RabbitMQ server
+<installing_infrastructure-installing-required-programs>`_.  The topic
+tx_routing_key are used by the RabbitMQ exchanges to publish to different
+queues.  A consumer can subscribe to different topics `using a simple pattern
+matching technique <https://www.rabbitmq.com/tutorials/tutorial-five-python.html>`_
+specified with its rx_routing_key.  In our case our program will receive any
+network message from exchanges with the last word of 'man' in their topic.
+
+RabbitMQ supports SSL, but this library doesn't get involved in that.  If you
+would like to install SSL, you can, and if it is working this library will
+happily sit on top of it and not know that it is transmitting through a secure
+connection.  This library does, however, have its own encryption layer for each
+of its networks.  It uses symmetric encryption, so that the same key can be used to
+encrypt and decrypt an object.
+
+I am about to talk about some of the miros-rabbitmq package details, but you
+don't need to know this stuff to make your example work.  So if you want to just
+skip over this information and get back to the example click :ref:`here
+<back_to_the_example>`.
+
+Let's look at the networks that are turned on with the miros-rabbitmq library
+(click to open it as a pdf):
+
+.. image:: _static/miros_rabbitmq_network_1.svg
+    :target: _static/miros_rabbitmq_network_1.pdf
+    :align: center
+
+The miros-rabbitmq package constructs the following:
+
+* mesh network - used to transmit and receive messages between statecharts
+* snoop_trace network - to debug your entire network using `trace
+  <https://aleph2c.github.io/miros/recipes.html#using-the-trace>`_ instrumentation
+* snoop_spy network - to debug the entire network using the `spy
+  <https://aleph2c.github.io/miros/recipes.html#using-the-spy>`_
+
+When you turn on your NetworkedActiveObject, it will scan your LAN looking for
+other machines that have the same rabbit credentials that you are using, then it
+will create a producer for each of them in each of the networks, so you don't
+have to worry about feeding it IP addresses, it will find them if they are
+connected in the same TCP/IP network.
+
+Each of the networks can have their own encryption key, but if you only specify
+the ``mesh_encryption_key`` in the NetworkedActiveObject constructor it will be
+used by all of the networks.  The snoop_trace and snoop_spy encryption handles
+for the NetworkedActiveObject constructor, are ``trace_snoop_encryption_key`` and
+``spy_snoop_encryption_key``.
+
+To build an encryption key for your distributed system:
+
+.. code-block:: python
+
+  from cryptography.fernet import Fernet
+  new_encryption_key = Fernet.generate_key()
+
+As an application developer you just need to know what goes in, and what comes
+out of each of the miros-rabbitmq networks.  The mesh network is fed an item
+using it's ``transmit`` method.  This information will pop out on every connected
+machine with the same credentials, posted into the fifo of another other
+connected NetworkedActiveObject or NetworkedFactory object as if that local
+machine posted that event to itself as:
+
+.. code-block:: python
+
+  ao.post_fifo(e) # but with e provided from the network
+
+
+.. _back_to_the_example:
+
+
+
 .. _example-networkedfactory:
 
 Building a NetworkedFactory
-===========================
+---------------------------
 
 .. _example-different-ways-to-troubleshoot-our-programs:
 
 Different ways to Troubleshoot Our Programs
-===========================================
+-------------------------------------------
 
 
 
