@@ -97,12 +97,13 @@ if __name__ == '__main__':
                               rx_routing_key='#.man',
                               mesh_encryption_key=b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=')
   # To log
-  ao.enable_snoop_spy_no_color()
-  # To log
-  ao.enable_snoop_trace_no_color()
+  #ao.enable_snoop_spy()
+  #ao.enable_snoop_spy_no_color()
+  ao.enable_snoop_trace()
+  #ao.enable_snoop_trace_no_color()
   # python3 networkable_active_object.py 2>&1 | sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | tee log.txt
   # grep -F [+s] log.txt | grep <name>
   ao.start_at(outer)
-  time.sleep(60)
+  time.sleep(20)
 
 

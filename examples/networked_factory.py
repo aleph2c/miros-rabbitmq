@@ -73,7 +73,7 @@ chart.nest(outer, parent=None). \
 if __name__ == '__main__':
   random.seed()
   chart.enable_snoop_trace()
-  chart.enable_snoop_spy()
+  # chart.enable_snoop_spy()
   chart.start_at(outer)
   time.sleep(60)
 
