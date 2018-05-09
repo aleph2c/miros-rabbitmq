@@ -15,6 +15,12 @@ a network on, you enable it `before` calling ``start_at`` in your statechart.
 
 Snoop Trace Network
 -------------------
+
+.. code-block:: python
+
+  chart.enable_snoop_trace() # enable snoop trace network
+  chart.start_at(outer)      # the start the chart
+
 To use this network, call ``enable_snoop_trace`` on your NetworkedActiveObject
 or NetworkedFactory prior to calling the ``start_at`` method of the statechart.
 
@@ -29,7 +35,7 @@ For the snoop network to work all of the enabled-snoop-trace-instances will need
 the same symmetric encryption key, and the snoop_trace network can have a
 different symmetric encryption key from the mesh and the snoop_spy networks.
 You would set this encryption key in the initialization call of the
-NeNetworkedActiveObject or the NetworkedFactory, using the
+NetworkedActiveObject or the NetworkedFactory, using the
 ``trace_snoop_encryption_key`` named attribute.  If you do not explicitly set
 this key, the ``mesh_encryption_key`` will be used to encrypt the snoop trace
 information.
@@ -41,36 +47,176 @@ To create an encryption key which will be accepted by this library, use Fernet:
   from cryptography import Fernet
   Fernet.generate_key() # => b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
 
-The snoop trace stream of snoop trace network, consists of a lot of information
-coming back from each of the contributing nodes in the distributed system.  To
-make it easier to distinguish your locally running instance from the information
-of the other nodes, it's name is colored in blue and the names of the other
-nodes are colored in purple.
+Your snoop trace stream will have a lot of information coming back from each of
+the contributing nodes in the distributed system. The library colours the names
+in the trace stream to help you distinguish where the log data is coming from:
+the local process names are blue, and the names of the logs coming from other
+nodes are purple.
 
-While this coloring is helpful while viewing things in your terminal it can
-become problematic when trying to log.  For this reason, a
-``enable_snoop_trace_no_color`` api is provided in both of the
-NetworkedActiveObject and NetworkedFactory classes.  You would use the
-``enable_snoop_trace_no_color`` call when you want your local instance to print
-uncolored information to the terminal which could be re-directed into a log
-without the ANSI color codes.
+While this colouring is helpful in your terminal, it can become problematic when
+trying to log; the ANSI colour codes look like garbage in your log file. For
+this reason, an enable_snoop_trace_no_color API is provided in both of the
+NetworkedActiveObject and NetworkedFactory classes. You would use the
+``enable_snoop_trace_no_color`` call on the node where you would redirect the
+snoop_trace output to a log file:
+
+.. code-block:: python
+  
+  chart.enable_snoop_trace_no_color()
+  chart.start_at(outer)
+
+Then you could redirect the trace streams into your log file in your call to the
+program:
+
+.. code-block:: python
+
+  > python3 <name_of_distrubed_instance>.py >> distributed_trace.log
 
 Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
-make print statements into the snoop_trace_network.  To write custom information into
-the snoop trace network, you would call the ``snoop_scribble`` method:
+make print statements into the snoop_trace_network. To write custom information
+into the snoop trace network, you would call the ``snoop_scribble`` method:
 
 .. code-block:: python
 
   ao.snoop_scribble("Some message to be seen by all monitoring nodes")
 
-
 .. _reflection-snoop-spy-network:
 
 Snoop Spy Network
 -----------------
+The snoop spy network behaves the same as the snoop trace network.  But it
+outputs a lot more information than the trace; the kind that would be useful
+while debugging a local statechart; but would quickly become overwhelming in a
+distributed system.  For this reason, you will want to log this information to
+file, then examine this file after the fact using filters (grep).
 
-.. _reflection-tracing-locally:
+Like the snoop trace, the snoop spy must be enabled to participate in the snoop
+network:
 
-Tracing Locally
+.. code-block:: python
+
+  chart.enable_snoop_spy_no_color()   # enable the snoop spy network
+  chart.start_at(outer)               # the start the chart
+
+By enabling the snoop spy, a program instance will:
+
+* send it's spy information to every other enabled-snoop-spy-instance in
+  the distributed system.
+* receive the spy information from every other enabled-snoop-spy-instance in
+  the distributed system.
+
+For the snoop network to work all of the enabled-snoop-spy-instances will need
+the same symmetric encryption key, and the snoop_spy network can have a
+different symmetric encryption key from the mesh and the snoop_trace networks.
+You would set this encryption key in the initialization call of the
+NeNetworkedActiveObject or the NetworkedFactory, using the
+``spy_snoop_encryption_key`` named attribute.  If you do not explicitly set
+this key, the ``mesh_encryption_key`` will be used to encrypt the snoop trace
+information.
+
+To create an encryption key which will be accepted by this library, use Fernet:
+
+.. code-block:: python
+
+  from cryptography import Fernet
+  Fernet.generate_key() # => b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+
+If you would like to debug your local statechart while seeing how it behaves
+with the other nodes in your distributed system, you might enabled the snoop spy
+on one machine and the snoop trace on the rest of the machines.  This would
+output the spy log peppered with trace information describing the state changes
+of the other contributing members.  If you were to debug this way you might want
+the colored turned on, so that the name of the spy information of your local
+instance is blue:
+
+On the machine where you will monitor the spy information:
+
+.. code-block:: python
+
+  # On machine where you want to see it's spy information
+  chart.enable_snoop_spy()    # enable the snoop spy network
+  chart.enable_snoop_trace()  # enable the snoop trace network
+  chart.start_at(outer)       # the start the chart
+
+On the other machines (or processes) in your distributed system:
+
+.. code-block:: python
+
+  # On every other machine to provide context for the spy trace
+  chart.enable_snoop_trace()
+  chart.start_at(outer)
+
+The spy information will be invisible to all machines which have not turned it
+on.  Only the first machine will have spy information written to it's terminal.
+
+If you wanted to output all spy information, on all machines, then log it to
+file:
+
+.. code-block:: python
+
+  # On every other machine to provide context for the spy trace
+  chart.enable_snoop_spy()    # everyone outputs and receives the spy
+  chart.enable_snoop_trace()  # (optional)
+  chart.start_at(outer)
+
+Then in the terminal you would redirect this stream to a log file:
+
+.. code-block:: python
+
+  > python3 <name_of_distrubed_instance>.py >> distributed.log
+
+To view the spy information for one instance in the log, say it was called
+``2771f_ao``, you could use grep to first find your spy logs then to find this
+name:
+
+.. code-block:: python
+
+  grep -F [+s] distributed.log | grep 2771f_ao
+
+The result would look like a typical non-networked, spy log of that machine as
+if you were looking at it within it's instance alone.
+
+Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
+make print statements into the snoop_spy_network. To write custom information
+into the snoop spy network, you would call the ``snoop_scribble`` method:
+
+.. code-block:: python
+
+  ao.snoop_scribble("Some message to be seen by all monitoring nodes")
+
+.. _reflection-local-instrumentation:
+
+Local Instrumentation
 ---------------
+In many situations you might want to mix a local trace or spy with their
+networked version.
+
+For instance, you may want to do this if you using the orthogonal component
+pattern.  The orthogonal component will not output it's trace or spy information
+into the managing thread's instrumentation stream; so to see if you will have to
+explicitly write it to the screen.
+
+There is nothing stopping you from turning on your local instrumentation while
+participating with the snoop networks.
+
+.. _reflection-generating-networked-sequence-diagrams:
+
+Generating Networked Sequence Diagrams
+--------------------------------------
+It is often very difficult to document how a distributed system works.  If you
+are managing such a design, you might understand it as you build it out; but
+when looking upon it later, quickly become overwhelmed by the complexity of all
+of its moving parts.  I have found the easiest way to describe such interactions
+is to log their output using the snoop_trace_network then use the sequence tool
+to draw a picture of the small part of the design you are trying to describe.
+
+If you are building distributed systems within an organization, you will quickly
+generate a cultural priesthood.  If you only have a few members of your team
+that understand the system, they will have tremendous scarcity power.  Code
+reviews won't help you, since it would be like reviewing the code of a
+complicated control system without knowing the theory, the plant and the values
+of the scalars.  The review becomes theater.
+
+
+
 

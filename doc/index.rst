@@ -19,6 +19,7 @@
    example
    recipes
    reflection
+   management
    architecture
 
 Indices and tables

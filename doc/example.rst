@@ -52,7 +52,11 @@ The example will be broken down into three parts:
 
 Building a NetworkedActiveObject With Details
 ---------------------------------------------
-First we import the required libraries:
+This example will describe a few network details, and some of the mechanisms
+under the hood.  If you would rather just look at an example without such
+detail, look :ref:`here <example-build-a-networkedactiveobject>`.
+
+To build the NetworkedActiveObject we import the required libraries:
 
 .. code-block:: python
 
@@ -440,6 +444,11 @@ In the following video I feed the trace into the sequence tool:
   <iframe width="560" height="315" src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </center>
 
+You can see that I spent a of of time writing numbers into the diagram.  This is
+because the sequence tool has no way to understand your trace; you understand
+your system better than it does, so you need write in the numbers to describe
+when things happen, or if they happen together.
+
 The result is something like this:
 
 .. code-block:: python
@@ -594,6 +603,7 @@ We write the statechart using the flat method required by the ActiveObject.
 
 We would up a NetworkedActiveObject; providing the required network credentials
 and topic keys.
+
 .. code-block:: python
 
   ao = NetworkedActiveObject('make_name('ao'),
@@ -728,11 +738,4 @@ start the statechart and let it run for 20 seconds:
   chart.enable_snoop_trace()
   chart.start_at(outer)
   time.sleep(20)
-
-.. _example-different-ways-to-troubleshoot-our-programs:
-
-Different ways to Troubleshoot Our Programs
--------------------------------------------
-
-
 

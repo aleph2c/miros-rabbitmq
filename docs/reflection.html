@@ -16,6 +16,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Management" href="management.html" />
     <link rel="prev" title="Recipes" href="recipes.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -41,6 +42,10 @@ topic based networks called the snoop_trace and the snoop_spy network.  To turn
 a network on, you enable it <cite>before</cite> calling <code class="docutils literal notranslate"><span class="pre">start_at</span></code> in your statechart.</p>
 <div class="section" id="snoop-trace-network">
 <span id="reflection-snoop-trace-network"></span><h2>Snoop Trace Network<a class="headerlink" href="#snoop-trace-network" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span> <span class="c1"># enable snoop trace network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>      <span class="c1"># the start the chart</span>
+</pre></div>
+</div>
 <p>To use this network, call <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code> on your NetworkedActiveObject
 or NetworkedFactory prior to calling the <code class="docutils literal notranslate"><span class="pre">start_at</span></code> method of the statechart.</p>
 <p>Enabling the trace does two things, a program instance will:</p>
@@ -54,7 +59,7 @@ the distributed system.</li>
 the same symmetric encryption key, and the snoop_trace network can have a
 different symmetric encryption key from the mesh and the snoop_spy networks.
 You would set this encryption key in the initialization call of the
-NeNetworkedActiveObject or the NetworkedFactory, using the
+NetworkedActiveObject or the NetworkedFactory, using the
 <code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
 this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
 information.</p>
@@ -63,30 +68,140 @@ information.</p>
 <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
 </pre></div>
 </div>
-<p>The snoop trace stream of snoop trace network, consists of a lot of information
-coming back from each of the contributing nodes in the distributed system.  To
-make it easier to distinguish your locally running instance from the information
-of the other nodes, it’s name is colored in blue and the names of the other
-nodes are colored in purple.</p>
-<p>While this coloring is helpful while viewing things in your terminal it can
-become problematic when trying to log.  For this reason, a
-<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> api is provided in both of the
-NetworkedActiveObject and NetworkedFactory classes.  You would use the
-<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> call when you want your local instance to print
-uncolored information to the terminal which could be re-directed into a log
-without the ANSI color codes.</p>
+<p>Your snoop trace stream will have a lot of information coming back from each of
+the contributing nodes in the distributed system. The library colours the names
+in the trace stream to help you distinguish where the log data is coming from:
+the local process names are blue, and the names of the logs coming from other
+nodes are purple.</p>
+<p>While this colouring is helpful in your terminal, it can become problematic when
+trying to log; the ANSI colour codes look like garbage in your log file. For
+this reason, an enable_snoop_trace_no_color API is provided in both of the
+NetworkedActiveObject and NetworkedFactory classes. You would use the
+<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> call on the node where you would redirect the
+snoop_trace output to a log file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then you could redirect the trace streams into your log file in your call to the
+program:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed_trace</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
 <p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
-make print statements into the snoop_trace_network.  To write custom information into
-the snoop trace network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
+make print statements into the snoop_trace_network. To write custom information
+into the snoop trace network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="snoop-spy-network">
 <span id="reflection-snoop-spy-network"></span><h2>Snoop Spy Network<a class="headerlink" href="#snoop-spy-network" title="Permalink to this headline">¶</a></h2>
+<p>The snoop spy network behaves the same as the snoop trace network.  But it
+outputs a lot more information than the trace; the kind that would be useful
+while debugging a local statechart; but would quickly become overwhelming in a
+distributed system.  For this reason, you will want to log this information to
+file, then examine this file after the fact using filters (grep).</p>
+<p>Like the snoop trace, the snoop spy must be enabled to participate in the snoop
+network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>   <span class="c1"># enable the snoop spy network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>               <span class="c1"># the start the chart</span>
+</pre></div>
 </div>
-<div class="section" id="tracing-locally">
-<span id="reflection-tracing-locally"></span><h2>Tracing Locally<a class="headerlink" href="#tracing-locally" title="Permalink to this headline">¶</a></h2>
+<p>By enabling the snoop spy, a program instance will:</p>
+<ul class="simple">
+<li>send it’s spy information to every other enabled-snoop-spy-instance in
+the distributed system.</li>
+<li>receive the spy information from every other enabled-snoop-spy-instance in
+the distributed system.</li>
+</ul>
+<p>For the snoop network to work all of the enabled-snoop-spy-instances will need
+the same symmetric encryption key, and the snoop_spy network can have a
+different symmetric encryption key from the mesh and the snoop_trace networks.
+You would set this encryption key in the initialization call of the
+NeNetworkedActiveObject or the NetworkedFactory, using the
+<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
+this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
+information.</p>
+<p>To create an encryption key which will be accepted by this library, use Fernet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+</pre></div>
+</div>
+<p>If you would like to debug your local statechart while seeing how it behaves
+with the other nodes in your distributed system, you might enabled the snoop spy
+on one machine and the snoop trace on the rest of the machines.  This would
+output the spy log peppered with trace information describing the state changes
+of the other contributing members.  If you were to debug this way you might want
+the colored turned on, so that the name of the spy information of your local
+instance is blue:</p>
+<p>On the machine where you will monitor the spy information:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On machine where you want to see it&#39;s spy information</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># enable the snoop spy network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># enable the snoop trace network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>       <span class="c1"># the start the chart</span>
+</pre></div>
+</div>
+<p>On the other machines (or processes) in your distributed system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The spy information will be invisible to all machines which have not turned it
+on.  Only the first machine will have spy information written to it’s terminal.</p>
+<p>If you wanted to output all spy information, on all machines, then log it to
+file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># everyone outputs and receives the spy</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># (optional)</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then in the terminal you would redirect this stream to a log file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>To view the spy information for one instance in the log, say it was called
+<code class="docutils literal notranslate"><span class="pre">2771f_ao</span></code>, you could use grep to first find your spy logs then to find this
+name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="o">-</span><span class="n">F</span> <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">2771</span><span class="n">f_ao</span>
+</pre></div>
+</div>
+<p>The result would look like a typical non-networked, spy log of that machine as
+if you were looking at it within it’s instance alone.</p>
+<p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
+make print statements into the snoop_spy_network. To write custom information
+into the snoop spy network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-instrumentation">
+<span id="reflection-local-instrumentation"></span><h2>Local Instrumentation<a class="headerlink" href="#local-instrumentation" title="Permalink to this headline">¶</a></h2>
+<p>In many situations you might want to mix a local trace or spy with their
+networked version.</p>
+<p>For instance, you may want to do this if you using the orthogonal component
+pattern.  The orthogonal component will not output it’s trace or spy information
+into the managing thread’s instrumentation stream; so to see if you will have to
+explicitly write it to the screen.</p>
+<p>There is nothing stopping you from turning on your local instrumentation while
+participating with the snoop networks.</p>
+</div>
+<div class="section" id="generating-networked-sequence-diagrams">
+<span id="reflection-generating-networked-sequence-diagrams"></span><h2>Generating Networked Sequence Diagrams<a class="headerlink" href="#generating-networked-sequence-diagrams" title="Permalink to this headline">¶</a></h2>
+<p>It is often very difficult to document how a distributed system works.  If you
+are managing such a design, you might understand it as you build it out; but
+when looking upon it later, quickly become overwhelmed by the complexity of all
+of its moving parts.  I have found the easiest way to describe such interactions
+is to log their output using the snoop_trace_network then use the sequence tool
+to draw a picture of the small part of the design you are trying to describe.</p>
+<p>If you are building distributed systems within an organization, you will quickly
+generate a cultural priesthood.  If you only have a few members of your team
+that understand the system, they will have tremendous scarcity power.  Code
+reviews won’t help you, since it would be like reviewing the code of a
+complicated control system without knowing the theory, the plant and the values
+of the scalars.  The review becomes theater.</p>
 </div>
 </div>
 
@@ -103,7 +218,8 @@ the snoop trace network, you would call the <code class="docutils literal notran
 <li><a class="reference internal" href="#">Reflection</a><ul>
 <li><a class="reference internal" href="#snoop-trace-network">Snoop Trace Network</a></li>
 <li><a class="reference internal" href="#snoop-spy-network">Snoop Spy Network</a></li>
-<li><a class="reference internal" href="#tracing-locally">Tracing Locally</a></li>
+<li><a class="reference internal" href="#local-instrumentation">Local Instrumentation</a></li>
+<li><a class="reference internal" href="#generating-networked-sequence-diagrams">Generating Networked Sequence Diagrams</a></li>
 </ul>
 </li>
 </ul>
@@ -112,6 +228,7 @@ the snoop trace network, you would call the <code class="docutils literal notran
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="recipes.html" title="previous chapter">Recipes</a></li>
+      <li>Next: <a href="management.html" title="next chapter">Management</a></li>
   </ul></li>
 </ul>
 </div>

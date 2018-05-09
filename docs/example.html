@@ -67,11 +67,14 @@ the miros and the miros-rabbitmq packages using pip.</p>
 <li><a class="reference internal" href="#example-networkedactiveobjectwithdetails"><span class="std std-ref">Building a NetworkedActiveObject with Details</span></a></li>
 <li><a class="reference internal" href="#example-build-a-networkedactiveobject"><span class="std std-ref">Building a NetworkedActiveObject</span></a></li>
 <li><a class="reference internal" href="#example-networkedfactory"><span class="std std-ref">Building a NetworkedFactory</span></a></li>
-<li><a class="reference internal" href="#example-different-ways-to-troubleshoot-our-programs"><span class="std std-ref">Different ways to Troubleshoot Our Programs</span></a></li>
+<li><span class="xref std std-ref">Different ways to Troubleshoot Our Programs</span></li>
 </ul>
 <div class="section" id="building-a-networkedactiveobject-with-details">
 <span id="example-networkedactiveobjectwithdetails"></span><h2>Building a NetworkedActiveObject With Details<a class="headerlink" href="#building-a-networkedactiveobject-with-details" title="Permalink to this headline">¶</a></h2>
-<p>First we import the required libraries:</p>
+<p>This example will describe a few network details, and some of the mechanisms
+under the hood.  If you would rather just look at an example without such
+detail, look <a class="reference internal" href="#example-build-a-networkedactiveobject"><span class="std std-ref">here</span></a>.</p>
+<p>To build the NetworkedActiveObject we import the required libraries:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span> <span class="c1"># to generate a unique name</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -385,7 +388,11 @@ program:</p>
 <p>In the following video I feed the trace into the sequence tool:</p>
 <center>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-</center><p>The result is something like this:</p>
+</center><p>You can see that I spent a of of time writing numbers into the diagram.  This is
+because the sequence tool has no way to understand your trace; you understand
+your system better than it does, so you need write in the numbers to describe
+when things happen, or if they happen together.</p>
+<p>The result is something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
       <span class="n">top</span>           <span class="n">outer</span>          <span class="n">inner</span>
        <span class="o">+--</span><span class="n">start_at</span><span class="p">()</span><span class="o">-&gt;|</span>              <span class="o">|</span>
@@ -524,18 +531,15 @@ statechart:</p>
 </pre></div>
 </div>
 <p>We would up a NetworkedActiveObject; providing the required network credentials
-and topic keys.
-.. code-block:: python</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ao = NetworkedActiveObject(‘make_name(‘ao’),</dt>
-<dd>rabbit_user=’peter’,
-rabbit_password=’rabbit’,
-tx_routing_key=’heya.man’,
-rx_routing_key=’#.man’,
-mesh_encryption_key=b’u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=’)</dd>
-</dl>
-</div></blockquote>
+and topic keys.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
+  <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>
+  <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
+  <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
+  <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>We enable the level of instrumentation we want (trace) and start the chart and
 let it run for 20 seconds:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># we want to produce and receive trace information</span>
@@ -644,9 +648,6 @@ start the statechart and let it run for 20 seconds:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="different-ways-to-troubleshoot-our-programs">
-<span id="example-different-ways-to-troubleshoot-our-programs"></span><h2>Different ways to Troubleshoot Our Programs<a class="headerlink" href="#different-ways-to-troubleshoot-our-programs" title="Permalink to this headline">¶</a></h2>
-</div>
 </div>
 
 
@@ -663,7 +664,6 @@ start the statechart and let it run for 20 seconds:</p>
 <li><a class="reference internal" href="#building-a-networkedactiveobject-with-details">Building a NetworkedActiveObject With Details</a></li>
 <li><a class="reference internal" href="#build-a-networkedactiveobject">Build a NetworkedActiveObject</a></li>
 <li><a class="reference internal" href="#building-a-networkedfactory">Building a NetworkedFactory</a></li>
-<li><a class="reference internal" href="#different-ways-to-troubleshoot-our-programs">Different ways to Troubleshoot Our Programs</a></li>
 </ul>
 </li>
 </ul>
