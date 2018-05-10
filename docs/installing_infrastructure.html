@@ -4,12 +4,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>DevOps &#8212; miros-rabbitmq 2.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -24,7 +32,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -74,19 +83,19 @@ control.  To do this, you put the public ssh key of the computer running ansible
 into the computer it is deploying software too.</p>
 <p>Check to see if the machine you are going to be running <a class="reference external" href="http://docs.ansible.com/">Ansible</a> from has public
 keys:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ls</span> <span class="o">~/.</span><span class="n">ssh</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">pub</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ls</span> <span class="o">~/.</span><span class="n">ssh</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">pub</span>
 </pre></div>
 </div>
 <p>If nothing appears, the deployment machine doesn’t have a public key.  To make one do this (only run these
 commands if you don’t have a public key already):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mkdir</span> <span class="o">~/.</span><span class="n">ssh</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mkdir</span> <span class="o">~/.</span><span class="n">ssh</span>
 <span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/.</span><span class="n">ssh</span>
 <span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">ssh</span><span class="o">-</span><span class="n">keygen</span>
 </pre></div>
 </div>
 <p>When you see an option to enter a passphrase, just hit enter.</p>
 <p>Now, let’s see if we can ssh into our own machine without a password.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>ssh $USER@localhost
+<div class="highlight-python"><div class="highlight"><pre><span></span>ssh $USER@localhost
 </pre></div>
 </div>
 <p>If you can login without a password, great, <a class="reference external" href="http://docs.ansible.com/">Ansible</a> can now deploy things to
@@ -94,7 +103,7 @@ this machine, from this machine.</p>
 <p>If you can’t SSH without a password to your localhost, we just have to put this
 machine’s public key into its <em>authorized_keys</em> file. (only run
 this command if you can’t ssh into your own machine without a password):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">cat</span> <span class="s1">&#39;~/.ssh/id_rsa.pub&#39;</span> <span class="o">&gt;&gt;</span> <span class="s1">&#39;~/.ssh/authorized_keys&#39;</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">cat</span> <span class="s1">&#39;~/.ssh/id_rsa.pub&#39;</span> <span class="o">&gt;&gt;</span> <span class="s1">&#39;~/.ssh/authorized_keys&#39;</span>
 </pre></div>
 </div>
 <p>Try to SSH into the machine again. You shouldn’t need a password anymore.</p>
@@ -105,17 +114,17 @@ machine you are trying to set up has the IP address of 192.168.0.169 with a
 username pi.  Change out the user name and IP address with your own for the
 remainder of this example.</p>
 <p>First we test if it already has this machine’s public key:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span>
 </pre></div>
 </div>
 <p>If it asked for a password, it does not have our public key in it’s
 authorized_keys file.  If this is true, let’s put our public key into it’s
 authorized_keys file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cat</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="o">.</span><span class="n">pub</span> <span class="o">|</span> <span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span> <span class="s1">&#39;cat &gt;&gt; .ssh/authorized_keys&#39;</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cat</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="o">.</span><span class="n">pub</span> <span class="o">|</span> <span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span> <span class="s1">&#39;cat &gt;&gt; .ssh/authorized_keys&#39;</span>
 </pre></div>
 </div>
 <p>Now test it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span>
 </pre></div>
 </div>
 <p>The above command shouldn’t ask for a password anymore.</p>
@@ -124,28 +133,28 @@ authorized_keys file:</p>
 <div class="section" id="install-ansible">
 <span id="installing-infrastructure-install-ansible"></span><h3>Install Ansible<a class="headerlink" href="#install-ansible" title="Permalink to this headline">¶</a></h3>
 <p>To install <a class="reference external" href="http://docs.ansible.com/">Ansible</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ansible</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ansible</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="tell-ansible-where-to-run-and-with-what-user-name">
 <span id="installing-infrastructure-tell-ansible-where-to-run"></span><h3>Tell Ansible Where to Run and with What User Name<a class="headerlink" href="#tell-ansible-where-to-run-and-with-what-user-name" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://docs.ansible.com/">Ansible</a> needs to know what machines to ssh into and with what user names.  This
-information is kept in the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file, it is called an
+information is kept in the <code class="docutils literal"><span class="pre">/etc/ansible/hosts</span></code> file, it is called an
 inventory.  Basically, you create a named configuration item, and below it place
 the contact information (IP/URL address and username) for each of the machines
 in that group.  Your deployment script references this name to know what
 computers to run against.</p>
 <p>Suppose I have a bunch of raspberry pi computers on my network, I might want to
-name their group <code class="docutils literal notranslate"><span class="pre">pis</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same user
+name their group <code class="docutils literal"><span class="pre">pis</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same user
 name but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.
 So, on the Linux machine that I will run my deployment scripts from, I would edit
-the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pico</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ansible</span><span class="o">/</span><span class="n">hosts</span>
+the <code class="docutils literal"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pico</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ansible</span><span class="o">/</span><span class="n">hosts</span>
 </pre></div>
 </div>
 <p>Then I would change the file to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">pis</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">pis</span><span class="p">]</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.169</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.170</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.171</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
@@ -158,8 +167,8 @@ the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/ho
 something.  <a class="reference external" href="http://docs.ansible.com/">Ansible</a> scripts are just yml files; they are easy to read.  The
 only people I know, who don’t like yml files, are minecraft administrators.  So,
 here is the yml file that will install RabbitMq onto all of the computers in my
-<code class="docutils literal notranslate"><span class="pre">pis</span></code> group, I called it <code class="docutils literal notranslate"><span class="pre">rabbit_install.yml</span></code>:</p>
-<div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>---
+<code class="docutils literal"><span class="pre">pis</span></code> group, I called it <code class="docutils literal"><span class="pre">rabbit_install.yml</span></code>:</p>
+<div class="highlight-ansible"><div class="highlight"><pre><span></span>---
 - hosts: pis
   vars:
 
@@ -231,13 +240,13 @@ here is the yml file that will install RabbitMq onto all of the computers in my
 rabbitmq.config.j2.  Normally an <a class="reference external" href="http://docs.ansible.com/">Ansible</a> script would populate the variables in
 a <a class="reference external" href="http://jinja.pocoo.org/docs/2.10/">jinja2</a> template, then write the resulting file to disk, but in this example it
 just writes out the template file without any alteration.</p>
-<p>Here is the <code class="docutils literal notranslate"><span class="pre">rabbit-env.conf.j2</span></code> file:</p>
-<div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq
+<p>Here is the <code class="docutils literal"><span class="pre">rabbit-env.conf.j2</span></code> file:</p>
+<div class="highlight-ansible"><div class="highlight"><pre><span></span>RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq
 NODE_IP_ADDRESS=0.0.0.0
 </pre></div>
 </div>
-<p>Here is the <code class="docutils literal notranslate"><span class="pre">rabbitmq.config.j2</span></code> file:</p>
-<div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>[
+<p>Here is the <code class="docutils literal"><span class="pre">rabbitmq.config.j2</span></code> file:</p>
+<div class="highlight-ansible"><div class="highlight"><pre><span></span>[
   {rabbit,
     [
       {loopback_users,[]}
@@ -254,10 +263,10 @@ broken, too many brackets or something.  Not knowing anything about RabbitMQ
 or Erlang, it took me a while to figure out that the problem was with their
 code and not with my setup.</p>
 </div>
-<p>So, copy the above <code class="docutils literal notranslate"><span class="pre">rabbit_install.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">rabbit-env.conf.j2</span></code> and the
-<code class="docutils literal notranslate"><span class="pre">rabbitmq.config.j2</span></code> files into your deployment directory, change the user
+<p>So, copy the above <code class="docutils literal"><span class="pre">rabbit_install.yml</span></code>, <code class="docutils literal"><span class="pre">rabbit-env.conf.j2</span></code> and the
+<code class="docutils literal"><span class="pre">rabbitmq.config.j2</span></code> files into your deployment directory, change the user
 name and passwords to whatever you want them to be and perform a deployment:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="o">-</span><span class="n">K</span> <span class="n">rabbit_install</span><span class="o">.</span><span class="n">yml</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="o">-</span><span class="n">K</span> <span class="n">rabbit_install</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
 <p>The above command will ask you for the root password required to sudo into the
@@ -307,14 +316,12 @@ machines listed in your inventory.  Enter it and hit enter.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>

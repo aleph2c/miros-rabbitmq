@@ -19,7 +19,7 @@
    example
    recipes
    reflection
-   management
+   docs
    architecture
 
 Indices and tables

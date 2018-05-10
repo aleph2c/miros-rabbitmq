@@ -4,12 +4,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>How it Works &#8212; miros-rabbitmq 2.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -24,7 +32,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -69,12 +78,12 @@ snoop_trace, but it shares the spy information (a lot of information) between
 all of your connected computers.  Each network can be configured with it’s own
 encryption key.  The snoop_trace and snoop_spy networks can be enabled and
 disabled independently, but the mesh is always on.</p>
-<p>This plugin’s main methods are the <code class="docutils literal notranslate"><span class="pre">transmit</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">enable_snoop_spy</span></code>.  The NetworkedActiveObject and the NetworkedFactory share
+<p>This plugin’s main methods are the <code class="docutils literal"><span class="pre">transmit</span></code>, <code class="docutils literal"><span class="pre">enable_snoop_trace</span></code>, and
+<code class="docutils literal"><span class="pre">enable_snoop_spy</span></code>.  The NetworkedActiveObject and the NetworkedFactory share
 the same interface.</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_1.svg" src="_images/miros_rabbitmq_1.svg" /></div>
 </a>
-<p>The <code class="docutils literal notranslate"><span class="pre">transmit</span></code> is used to send out an event to the mesh network.  When it is
+<p>The <code class="docutils literal"><span class="pre">transmit</span></code> is used to send out an event to the mesh network.  When it is
 received by another statechart, it’s event is place in it’s FIFO queue for
 processing.   The statechart receiving such an event, has no notion that the
 event came from another machine.  If it has been designed to respond to the
@@ -85,8 +94,8 @@ describes the credentials required to connect to the RabbitMQ server and the
 encryption key(s) for the three different networks.</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_2.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_2.svg" src="_images/miros_rabbitmq_2.svg" /></div>
 </a>
-<p>The snoop_trace and snoop_spy networks will use the <code class="docutils literal notranslate"><span class="pre">mesh_encyption_key</span></code> if a
-<code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> or a <code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code> are not
+<p>The snoop_trace and snoop_spy networks will use the <code class="docutils literal"><span class="pre">mesh_encyption_key</span></code> if a
+<code class="docutils literal"><span class="pre">trace_snoop_encryption_key</span></code> or a <code class="docutils literal"><span class="pre">spy_snoop_encryption_key</span></code> are not
 provided.</p>
 <p>The NetworkedActiveObject and NetworkedFactory have a MirosNets object.</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_3.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_3.svg" src="_images/miros_rabbitmq_3.svg" /></div>
@@ -146,20 +155,20 @@ more open secrets abound in this community.</p>
 </div>
 <p>The SimplePikaTopicPublisher class is different than the pika asynchronous
 publisher example provided in their documentation, in that it has a thread who’s
-sole purpose is to wrap the <code class="docutils literal notranslate"><span class="pre">run</span></code> method provided by their example.  The <code class="docutils literal notranslate"><span class="pre">run</span></code>
+sole purpose is to wrap the <code class="docutils literal"><span class="pre">run</span></code> method provided by their example.  The <code class="docutils literal"><span class="pre">run</span></code>
 method runs forever, and no code below it in the file will ever have access to
-the CPU.  So, by wrapping the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in a thread, it can do its thing
-without destroying the program flow.  This <code class="docutils literal notranslate"><span class="pre">run</span></code> method provides an event loop
+the CPU.  So, by wrapping the <code class="docutils literal"><span class="pre">run</span></code> method in a thread, it can do its thing
+without destroying the program flow.  This <code class="docutils literal"><span class="pre">run</span></code> method provides an event loop
 in which pika can send out messages to the network using callbacks, the most
-important of which is the <code class="docutils literal notranslate"><span class="pre">producer_heart_beat</span></code>.  When this <code class="docutils literal notranslate"><span class="pre">producer_heart_beat</span></code>
+important of which is the <code class="docutils literal"><span class="pre">producer_heart_beat</span></code>.  When this <code class="docutils literal"><span class="pre">producer_heart_beat</span></code>
 callback is called, it checks a queue to see if anyone in another thread wants to
 send something.  If so, it creates a partial function from the
-<code class="docutils literal notranslate"><span class="pre">publish_message</span></code> callback using the message provided by the queue.  It then
-schedules the new wrapped <code class="docutils literal notranslate"><span class="pre">publish_message</span></code> to be called immediately by the
+<code class="docutils literal"><span class="pre">publish_message</span></code> callback using the message provided by the queue.  It then
+schedules the new wrapped <code class="docutils literal"><span class="pre">publish_message</span></code> to be called immediately by the
 pika event loop.  After clearing the queue in this way, it schedules itself with
 the pika event loop so that it will be rerun sometime in the future.  I added
 some code to control this time-out duration.  If there are a lot of messages in
-the queue, the <code class="docutils literal notranslate"><span class="pre">producer_heart_beat</span></code> will occur quicker than it did before, if
+the queue, the <code class="docutils literal"><span class="pre">producer_heart_beat</span></code> will occur quicker than it did before, if
 there are no items in the queue it will relax its time-out duration to it’s
 slowest default tempo.  This tempo-time-control feature was made using a
 PID controller.</p>
@@ -179,20 +188,20 @@ network consumer.</p>
 based upon on the <a class="reference external" href="http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_consumer_example.html">asynchronous pika consumer example.</a></p>
 <p>The PikaTopicConsumer class is different from the <a class="reference external" href="http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_consumer_example.html">asynchronous pika consumer
 example.</a>
-in that it wraps the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in a thread (as in the producer). The
-<code class="docutils literal notranslate"><span class="pre">run</span></code> method starts a pika event loop.  A
-<code class="docutils literal notranslate"><span class="pre">timeout_callback_method</span></code> runs within pika producer’s event loop.  It checks to see if
+in that it wraps the <code class="docutils literal"><span class="pre">run</span></code> method in a thread (as in the producer). The
+<code class="docutils literal"><span class="pre">run</span></code> method starts a pika event loop.  A
+<code class="docutils literal"><span class="pre">timeout_callback_method</span></code> runs within pika producer’s event loop.  It checks to see if
 another thread wants to stop the consumer, if so, it kills the pika event loop,
 if not, it registers itself as a callback sometime in the future.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">on_message</span></code> of PikaTopicConsumer class is never called because it is
-overloaded by the PikaTopicConsumer.  The <code class="docutils literal notranslate"><span class="pre">on_message</span></code> method of the
+<p>The <code class="docutils literal"><span class="pre">on_message</span></code> of PikaTopicConsumer class is never called because it is
+overloaded by the PikaTopicConsumer.  The <code class="docutils literal"><span class="pre">on_message</span></code> method of the
 PikaTopicConsumer decrypts and deserializes any message received by RabbitMq.
 It takes the result and passes it onto the
-<code class="docutils literal notranslate"><span class="pre">message_callback</span></code> that was registerd with the class.  This
-<code class="docutils literal notranslate"><span class="pre">message_callback</span></code> is provided in it’s constructor.  It is the MirosNets class
-which constructs 3 (one per network) of these objects and its <code class="docutils literal notranslate"><span class="pre">on_message</span></code>
+<code class="docutils literal"><span class="pre">message_callback</span></code> that was registerd with the class.  This
+<code class="docutils literal"><span class="pre">message_callback</span></code> is provided in it’s constructor.  It is the MirosNets class
+which constructs 3 (one per network) of these objects and its <code class="docutils literal"><span class="pre">on_message</span></code>
 callback functions are provided by the NetworkedActiveObject and
-NetworkedFactory.  The common <code class="docutils literal notranslate"><span class="pre">on_message</span></code> behavior of the
+NetworkedFactory.  The common <code class="docutils literal"><span class="pre">on_message</span></code> behavior of the
 NetworkedActiveObject and NetworkedFactory are provided by the
 MirosNetsInterface.</p>
 </div>
@@ -222,14 +231,12 @@ MirosNetsInterface.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>

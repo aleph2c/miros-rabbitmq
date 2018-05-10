@@ -1,11 +1,14 @@
-  *Wars teach us not to love our enemies, but to hate our allies*
-
-  -- W. L George
-
 .. _introduction-introduction:
 
 Introduction
 ============
+
+.. epigraph:: 
+
+  *Wars teach us not to love our enemies, but to hate our allies*
+
+  -- W. L George
+
 The miros-rabbitmq plugin lets `miros
 <https://aleph2c.github.io/miros/index.html>`_ statecharts on different machines
 communicate.  By networking statecharts you can build distributed systems, IOT

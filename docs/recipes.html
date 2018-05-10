@@ -4,12 +4,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Recipes &#8212; miros-rabbitmq 2.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -24,7 +32,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -34,6 +43,208 @@
             
   <div class="section" id="recipes">
 <span id="recipes-recipes"></span><h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="networked-statecharts">
+<span id="recipes-networked-statecharts"></span><h2>Networked Statecharts<a class="headerlink" href="#networked-statecharts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="drawing-statecharts">
+<span id="recipes-drawing-statecharts"></span><h3>Drawing Statecharts<a class="headerlink" href="#drawing-statecharts" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.umlet.com/">UMLet</a> is a free tool that can be used to make
+statechart diagrams (see their statemachine panel).  You can run UMLet from
+most operating systems or from your web browser using <a class="reference external" href="http://www.umlet.com/umletino/umletino.html">UMLetino</a>. Here is their training video:</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/3UHZedDtr28" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</center><p>You can adjust their default templates to improve your drawing experience.</p>
+<p>To export an UMLet picture from their native uxf to other formats:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">umlet</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">action</span><span class="o">=</span><span class="n">convert</span> <span class="o">-</span><span class="n">format</span><span class="o">=</span><span class="n">pdf</span> <span class="o">-</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">your_file_name</span><span class="o">&gt;.</span><span class="n">uxf</span>
+<span class="n">umlet</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">action</span><span class="o">=</span><span class="n">convert</span> <span class="o">-</span><span class="n">format</span><span class="o">=</span><span class="n">svg</span> <span class="o">-</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">your_file_name</span><span class="o">&gt;.</span><span class="n">uxf</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="making-a-networkedactiveobject">
+<span id="recipes-making-a-networkedactiveobject"></span><h3>Making a NetworkedActiveObject<a class="headerlink" href="#making-a-networkedactiveobject" title="Permalink to this headline">¶</a></h3>
+<p>If you would like to make <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#what-a-state-does-and-how-to-structure-it">polyamorous statecharts</a>
+using the flat method technique then the NetworkedActiveObject is for you.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To make your <a class="reference internal" href="#recipes-snoop-trace"><span class="std std-ref">instrumentation</span></a> easier to understand, ensure that all the nodes in
+your distributed system have <a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">different names</span></a>.</p>
+<p>The rabbit_user and rabbit_password credentials need to match that of your
+<a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">RabbitMQ server</span></a>.</p>
+<p>To build your own encryption key(s) see
+<a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">this</span></a>.  You can set different encryption
+keys for your instrumentation networks; the snoop trace network and the snoop
+spy network.  If you do not specify these keys, these networks will use the
+mesh_encryption_key.</p>
+<p>If you want to specify different encryption keys for your instrumentation
+networks:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
+        <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">nao</span></code> object will have a <code class="docutils literal"><span class="pre">transmit</span></code> method that can be used to put event’s
+into all of the other subscribed statecharts across the network.  To build your
+statechart using the <code class="docutils literal"><span class="pre">nao</span></code> object, you would follow the rules used by
+an <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#states">ActiveObject</a>.</p>
+</div>
+<div class="section" id="making-a-networkedfactory">
+<span id="recipes-networkedfactory"></span><h3>Making a NetworkedFactory<a class="headerlink" href="#making-a-networkedfactory" title="Permalink to this headline">¶</a></h3>
+<p>If you have a preference to build up statecharts using a Factory, but you want
+your statecharts to work together across a network, then the NetworkedFactory is
+for you:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedFactory</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">NetworkedActiveFactory</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To make your <a class="reference internal" href="#recipes-snoop-trace"><span class="std std-ref">instrumentation</span></a> easier to understand, ensure that all the nodes in
+your distributed system have <a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">different names</span></a>.</p>
+<p>The rabbit_user and rabbit_password credentials need to match that of your
+<a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">RabbitMQ server</span></a>.</p>
+<p>To build your own encryption key(s) see
+<a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">this</span></a>.  You can set different encryption
+keys for your instrumentation networks; the snoop trace network and the snoop
+spy network.  If you do not specify these keys, these networks will use the
+mesh_encryption_key.</p>
+<p>If you want to specify different encryption keys for your instrumentation
+networks:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">NetworkedFactory</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
+        <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">nf</span></code> object will have a <code class="docutils literal"><span class="pre">transmit</span></code> method that can be used to put event’s
+into all of the other subscribed statecharts across the network.  To build your
+statechart using the <code class="docutils literal"><span class="pre">nf</span></code> object, you would follow the rules used by
+a miros <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#creating-a-statechart-from-a-factory">Factory</a>.</p>
+</div>
+<div class="section" id="making-unique-names">
+<span id="recipes-making-unique-names"></span><h3>Making Unique Names<a class="headerlink" href="#making-unique-names" title="Permalink to this headline">¶</a></h3>
+<p>A simple way to make a unique name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+  <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
+
+<span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;bob&#39;</span><span class="p">)</span> <span class="c1"># =&gt; 0ca32_bob</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="transmitting-an-event">
+<span id="recipes-transmitting-an-event"></span><h3>Transmitting an Event<a class="headerlink" href="#transmitting-an-event" title="Permalink to this headline">¶</a></h3>
+<p>To transmit an event to other connected statecharts use the <code class="docutils literal"><span class="pre">transmit</span></code> method.
+This method works the same for a NetworkedActiveObject and a NetworkedFactory:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros.event</span> <span class="kn">import</span> <span class="n">signals</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">return_status</span>
+
+<span class="c1"># where &#39;chart&#39; is a NetworkedFactory or NetworkedActiveObject object</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_name_of_signal</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+</pre></div>
+</div>
+<p>When a networked statechart receives this event, it will be posted into it’s first
+in first out queue.  The statechart will not be able to distinguish that
+it was an event coming back from the network.</p>
+<p>Follow some sort of signal naming-standard so that you know if your events are
+generated locally or from somewhere else on the network.  In this example, the
+signal is pre-pended with the word <code class="docutils literal"><span class="pre">other_</span></code>, for this reason.</p>
+</div>
+<div class="section" id="transmitting-a-payload-in-an-event">
+<span id="recipes-transmitting-a-payload-in-an-event"></span><h3>Transmitting a Payload in an Event<a class="headerlink" href="#transmitting-a-payload-in-an-event" title="Permalink to this headline">¶</a></h3>
+<p>All information that is passed between networked nodes is serialized, encrypted, decrypted
+and de-serialized.  Therefore you can pass an object into your payload that can
+be serialized using the standard pickle algorithm for python 3.  So to pass
+objects between your statecharts, you can just put them into the payload of an
+event.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros.event</span> <span class="kn">import</span> <span class="n">signals</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">return_status</span>
+
+<span class="c1"># where &#39;chart&#39; is a NetworkedFactory or NetworkedActiveObject object</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_with_payload</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="s2">&quot;a string&quot;</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="node-discovery">
+<span id="recipes-node-discovery"></span><h3>Node Discovery<a class="headerlink" href="#node-discovery" title="Permalink to this headline">¶</a></h3>
+<p>This is taken care of by the library.  If your node is on your local area network
+and it’s IP address is in the ARP table or it’s computer will respond to a ping;
+The miros-rabbitmq library should find it.  If two nodes are on the same network
+and share encryption and rabbit credentials they will be able to communicate.</p>
+</div>
+<div class="section" id="making-an-encryption-key">
+<span id="recipes-making-an-encryption-key"></span><h3>Making an Encryption Key<a class="headerlink" href="#making-an-encryption-key" title="Permalink to this headline">¶</a></h3>
+<p>The miro-rabbitmq library uses Fernet symmetric encryption.  The same keys need
+to be used by all nodes.</p>
+<p>To make a new key:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+ <span class="k">print</span><span class="p">(</span><span class="n">new_encryption_key</span><span class="p">)</span> <span class="c1"># =&gt; b&#39;u3u...&#39; # =&gt; copy this</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="snoop-trace">
+<span id="recipes-snoop-trace"></span><h3>Snoop Trace<a class="headerlink" href="#snoop-trace" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="drawing-sequence-diagrams">
+<span id="recipes-drawing-sequence-diagrams"></span><h3>Drawing Sequence Diagrams<a class="headerlink" href="#drawing-sequence-diagrams" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="snoop-spy">
+<span id="recipes-snoop-spy"></span><h3>Snoop Spy<a class="headerlink" href="#snoop-spy" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="logging-snoop-trace">
+<span id="recipes-logging-snoop-trace"></span><h3>Logging Snoop Trace<a class="headerlink" href="#logging-snoop-trace" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="logging-the-snoop-spy">
+<span id="recipes-logging-the-snoop-spy"></span><h3>Logging the Snoop Spy<a class="headerlink" href="#logging-the-snoop-spy" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="devops">
+<span id="recipes-devops"></span><h2>Devops<a class="headerlink" href="#devops" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setting-up-ssh">
+<span id="recipes-setting-up-ssh"></span><h3>Setting up SSH<a class="headerlink" href="#setting-up-ssh" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="installing-ansible">
+<span id="recipes-installing-ansible"></span><h3>Installing Ansible<a class="headerlink" href="#installing-ansible" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="installing-rabbitmq-using-ansible">
+<span id="recipes-installing-rabbitmq-using-ansible"></span><h3>Installing RabbitMQ using Ansible<a class="headerlink" href="#installing-rabbitmq-using-ansible" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 </div>
 
 
@@ -43,7 +254,36 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
   <img class="logo_a" src="_static/miros_rabbitmq_icon_only.svg" width="90" alt="Logo" >
-</a></p><div class="relations">
+</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Recipes</a><ul>
+<li><a class="reference internal" href="#networked-statecharts">Networked Statecharts</a><ul>
+<li><a class="reference internal" href="#drawing-statecharts">Drawing Statecharts</a></li>
+<li><a class="reference internal" href="#making-a-networkedactiveobject">Making a NetworkedActiveObject</a></li>
+<li><a class="reference internal" href="#making-a-networkedfactory">Making a NetworkedFactory</a></li>
+<li><a class="reference internal" href="#making-unique-names">Making Unique Names</a></li>
+<li><a class="reference internal" href="#transmitting-an-event">Transmitting an Event</a></li>
+<li><a class="reference internal" href="#transmitting-a-payload-in-an-event">Transmitting a Payload in an Event</a></li>
+<li><a class="reference internal" href="#node-discovery">Node Discovery</a></li>
+<li><a class="reference internal" href="#making-an-encryption-key">Making an Encryption Key</a></li>
+<li><a class="reference internal" href="#snoop-trace">Snoop Trace</a></li>
+<li><a class="reference internal" href="#drawing-sequence-diagrams">Drawing Sequence Diagrams</a></li>
+<li><a class="reference internal" href="#snoop-spy">Snoop Spy</a></li>
+<li><a class="reference internal" href="#logging-snoop-trace">Logging Snoop Trace</a></li>
+<li><a class="reference internal" href="#logging-the-snoop-spy">Logging the Snoop Spy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#devops">Devops</a><ul>
+<li><a class="reference internal" href="#setting-up-ssh">Setting up SSH</a></li>
+<li><a class="reference internal" href="#installing-ansible">Installing Ansible</a></li>
+<li><a class="reference internal" href="#installing-rabbitmq-using-ansible">Installing RabbitMQ using Ansible</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
@@ -61,14 +301,12 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>

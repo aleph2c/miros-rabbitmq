@@ -4,19 +4,27 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Reflection &#8212; miros-rabbitmq 2.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Management" href="management.html" />
+    <link rel="next" title="Documenting" href="docs.html" />
     <link rel="prev" title="Recipes" href="recipes.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -24,7 +32,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -39,15 +48,15 @@
 <p>If you build a complex distributed system using a statechart you will need some
 way to debug it.  The miros-rabbitmq library provides two different encrypted
 topic based networks called the snoop_trace and the snoop_spy network.  To turn
-a network on, you enable it <cite>before</cite> calling <code class="docutils literal notranslate"><span class="pre">start_at</span></code> in your statechart.</p>
+a network on, you enable it <cite>before</cite> calling <code class="docutils literal"><span class="pre">start_at</span></code> in your statechart.</p>
 <div class="section" id="snoop-trace-network">
 <span id="reflection-snoop-trace-network"></span><h2>Snoop Trace Network<a class="headerlink" href="#snoop-trace-network" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span> <span class="c1"># enable snoop trace network</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span> <span class="c1"># enable snoop trace network</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>      <span class="c1"># the start the chart</span>
 </pre></div>
 </div>
-<p>To use this network, call <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code> on your NetworkedActiveObject
-or NetworkedFactory prior to calling the <code class="docutils literal notranslate"><span class="pre">start_at</span></code> method of the statechart.</p>
+<p>To use this network, call <code class="docutils literal"><span class="pre">enable_snoop_trace</span></code> on your NetworkedActiveObject
+or NetworkedFactory prior to calling the <code class="docutils literal"><span class="pre">start_at</span></code> method of the statechart.</p>
 <p>Enabling the trace does two things, a program instance will:</p>
 <ul class="simple">
 <li>send it’s trace information to every other enabled-snoop-trace-instance in
@@ -60,11 +69,11 @@ the same symmetric encryption key, and the snoop_trace network can have a
 different symmetric encryption key from the mesh and the snoop_spy networks.
 You would set this encryption key in the initialization call of the
 NetworkedActiveObject or the NetworkedFactory, using the
-<code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
-this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
+<code class="docutils literal"><span class="pre">trace_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
+this key, the <code class="docutils literal"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
 information.</p>
 <p>To create an encryption key which will be accepted by this library, use Fernet:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
 <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
 </pre></div>
 </div>
@@ -77,21 +86,21 @@ nodes are purple.</p>
 trying to log; the ANSI colour codes look like garbage in your log file. For
 this reason, an enable_snoop_trace_no_color API is provided in both of the
 NetworkedActiveObject and NetworkedFactory classes. You would use the
-<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> call on the node where you would redirect the
+<code class="docutils literal"><span class="pre">enable_snoop_trace_no_color</span></code> call on the node where you would redirect the
 snoop_trace output to a log file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then you could redirect the trace streams into your log file in your call to the
 program:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed_trace</span><span class="o">.</span><span class="n">log</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed_trace</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
 <p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
 make print statements into the snoop_trace_network. To write custom information
-into the snoop trace network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
+into the snoop trace network, you would call the <code class="docutils literal"><span class="pre">snoop_scribble</span></code> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -104,7 +113,7 @@ distributed system.  For this reason, you will want to log this information to
 file, then examine this file after the fact using filters (grep).</p>
 <p>Like the snoop trace, the snoop spy must be enabled to participate in the snoop
 network:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>   <span class="c1"># enable the snoop spy network</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>   <span class="c1"># enable the snoop spy network</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>               <span class="c1"># the start the chart</span>
 </pre></div>
 </div>
@@ -120,11 +129,11 @@ the same symmetric encryption key, and the snoop_spy network can have a
 different symmetric encryption key from the mesh and the snoop_trace networks.
 You would set this encryption key in the initialization call of the
 NeNetworkedActiveObject or the NetworkedFactory, using the
-<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
-this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
+<code class="docutils literal"><span class="pre">spy_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
+this key, the <code class="docutils literal"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
 information.</p>
 <p>To create an encryption key which will be accepted by this library, use Fernet:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
 <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
 </pre></div>
 </div>
@@ -136,14 +145,14 @@ of the other contributing members.  If you were to debug this way you might want
 the colored turned on, so that the name of the spy information of your local
 instance is blue:</p>
 <p>On the machine where you will monitor the spy information:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On machine where you want to see it&#39;s spy information</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># On machine where you want to see it&#39;s spy information</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># enable the snoop spy network</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># enable the snoop trace network</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>       <span class="c1"># the start the chart</span>
 </pre></div>
 </div>
 <p>On the other machines (or processes) in your distributed system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
 </pre></div>
@@ -152,28 +161,28 @@ instance is blue:</p>
 on.  Only the first machine will have spy information written to it’s terminal.</p>
 <p>If you wanted to output all spy information, on all machines, then log it to
 file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># everyone outputs and receives the spy</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># (optional)</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then in the terminal you would redirect this stream to a log file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
 <p>To view the spy information for one instance in the log, say it was called
-<code class="docutils literal notranslate"><span class="pre">2771f_ao</span></code>, you could use grep to first find your spy logs then to find this
+<code class="docutils literal"><span class="pre">2771f_ao</span></code>, you could use grep to first find your spy logs then to find this
 name:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="o">-</span><span class="n">F</span> <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">2771</span><span class="n">f_ao</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="o">-</span><span class="n">F</span> <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">2771</span><span class="n">f_ao</span>
 </pre></div>
 </div>
 <p>The result would look like a typical non-networked, spy log of that machine as
 if you were looking at it within it’s instance alone.</p>
 <p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
 make print statements into the snoop_spy_network. To write custom information
-into the snoop spy network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
+into the snoop spy network, you would call the <code class="docutils literal"><span class="pre">snoop_scribble</span></code> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -228,7 +237,7 @@ of the scalars.  The review becomes theater.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="recipes.html" title="previous chapter">Recipes</a></li>
-      <li>Next: <a href="management.html" title="next chapter">Management</a></li>
+      <li>Next: <a href="docs.html" title="next chapter">Documenting</a></li>
   </ul></li>
 </ul>
 </div>
@@ -241,14 +250,12 @@ of the scalars.  The review becomes theater.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>

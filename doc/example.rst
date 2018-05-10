@@ -46,7 +46,6 @@ The example will be broken down into three parts:
 * :ref:`Building a NetworkedActiveObject with Details<example-networkedactiveobjectwithdetails>`
 * :ref:`Building a NetworkedActiveObject<example-build-a-networkedactiveobject>`
 * :ref:`Building a NetworkedFactory<example-networkedfactory>`
-* :ref:`Different ways to Troubleshoot Our Programs<example-different-ways-to-troubleshoot-our-programs>`
 
 .. _example-networkedactiveobjectwithdetails:
 
