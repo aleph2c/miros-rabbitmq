@@ -201,21 +201,6 @@ participating with the snoop networks.
 
 .. _reflection-generating-networked-sequence-diagrams:
 
-Generating Networked Sequence Diagrams
---------------------------------------
-It is often very difficult to document how a distributed system works.  If you
-are managing such a design, you might understand it as you build it out; but
-when looking upon it later, quickly become overwhelmed by the complexity of all
-of its moving parts.  I have found the easiest way to describe such interactions
-is to log their output using the snoop_trace_network then use the sequence tool
-to draw a picture of the small part of the design you are trying to describe.
-
-If you are building distributed systems within an organization, you will quickly
-generate a cultural priesthood.  If you only have a few members of your team
-that understand the system, they will have tremendous scarcity power.  Code
-reviews won't help you, since it would be like reviewing the code of a
-complicated control system without knowing the theory, the plant and the values
-of the scalars.  The review becomes theater.
 
 
 

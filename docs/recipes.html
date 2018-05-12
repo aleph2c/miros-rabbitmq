@@ -213,28 +213,146 @@ to be used by all nodes.</p>
 <p>To make a new key:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
 <span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
- <span class="k">print</span><span class="p">(</span><span class="n">new_encryption_key</span><span class="p">)</span> <span class="c1"># =&gt; b&#39;u3u...&#39; # =&gt; copy this</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">new_encryption_key</span><span class="p">)</span> <span class="c1"># =&gt; b&#39;u3u...&#39; # =&gt; copy this</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="snoop-trace">
 <span id="recipes-snoop-trace"></span><h3>Snoop Trace<a class="headerlink" href="#snoop-trace" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Trace instrumentation is useful for seeing what events caused what state
+transitions. They provide you with information about how your design is reacting
+to its incoming events.</p>
+<p>The snoop trace is an extension of this idea.  It is a network which connects
+all of the live trace streams of all of the statecharts that are working
+together.  You can see the live trace instrumentation of all of the contributing
+nodes, by opting into this snoop trace network.  To do this, you call
+<code class="docutils literal"><span class="pre">enable_snoop_trace</span></code> prior to starting your statechart (see the code listing
+above).</p>
+<p>It doesn’t take long before this information is hard to see. For this reason, I
+coloured the node names. The name of your local machine’s statechart will be
+blue, and any other name will be purple in your snoop trace output. You can see
+this colouring in the following video:</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MI8Sym3rCO0?start=36" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</center><p>In the video, I have logged into two different computers that are running the
+same statechart program as part of a distributed system.  You can see that the
+blue names are different in each terminal window, because we are viewing the
+system from two different computers who’s statecharts have their own local name.</p>
+<p>To print something into the snoop trace use the <a class="reference internal" href="#recipes-snoop-scribble"><span class="std std-ref">snoop_scribble</span></a>.</p>
+<p>If you want to <span class="xref std std-ref">log your snoop trace</span> enable
+your trace without the ANSI color codes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use the results of your snoop trace to <a class="reference internal" href="#recipes-drawing-sequence-diagrams"><span class="std std-ref">generate network sequence
+diagrams</span></a> for you.</p>
+<p>The trace output hides a lot of the details about how your event processor is
+searching your statechart to determine how to react to an event.  For this
+reason, some statechart dynamics will be invisible to the trace stream; like a
+<a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-ultimate-hook">hook</a>.
+If you want to see everything that your statechart is doing, or if you want to
+see everything that your entire network is doing turn on the <a class="reference internal" href="#recipes-snoop-spy"><span class="std std-ref">snoop_spy</span></a>.</p>
+</div>
+<div class="section" id="snoop-scribble">
+<span id="recipes-snoop-scribble"></span><h3>Snoop Scribble<a class="headerlink" href="#snoop-scribble" title="Permalink to this headline">¶</a></h3>
+<p>Use the snoop scribble to output custom strings into the snoop trace and snoop
+spy networks.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;broadcast to all monitoring snoop programs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The snoop_scribble output is coloured a dark grey so it can be distinguished
+from the other parts of the network instrumentation.</p>
+<p>If you want to turn off this colouring:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;broadcast to all monitoring snoop programs&quot;</span><span class="p">,</span>
+                   <span class="n">enable_color</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="drawing-sequence-diagrams">
 <span id="recipes-drawing-sequence-diagrams"></span><h3>Drawing Sequence Diagrams<a class="headerlink" href="#drawing-sequence-diagrams" title="Permalink to this headline">¶</a></h3>
-</div>
+<p>The text output of a snoop trace can be used to generate sequence diagrams using
+the <a class="reference external" href="https://github.com/aleph2c/sequence">sequence tool</a>:</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</center></div>
 <div class="section" id="snoop-spy">
 <span id="recipes-snoop-spy"></span><h3>Snoop Spy<a class="headerlink" href="#snoop-spy" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="logging-snoop-trace">
-<span id="recipes-logging-snoop-trace"></span><h3>Logging Snoop Trace<a class="headerlink" href="#logging-snoop-trace" title="Permalink to this headline">¶</a></h3>
+<p>The spy instrumentation shows you <em>all of the work done</em> by an event processor.
+This really isn’t that useful since you will be drown in information.  If you
+are having issues with your statechart, you should debug it as a singular
+instance before you connect it to a distributed system.  But, if your problem
+demands that you see everything that is going on at once, the snoop spy network
+provides this capability.</p>
+<p>Instead of viewing everything, you could turn on the spy instrumentation on one
+machine and have it routed to another machine.  The snoop spy network has an opt
+in model, to snoop on others, you need to let them snoop on you.  So to route
+another machine’s snoop information onto your machine, you will need to release
+your information into the snoop spy network.  This may clutter your log stream
+with unwanted information.  If this is a concern, you can create a grep filter
+using the name of the other node that you are trying to monitor.</p>
+<p>It is easy to lose track of the context of what is going on while viewing a
+snoop spy, for this reason you might want to enable the snoop spy and snoop
+trace at the same time.  You can use the snoop trace output to delimit the
+deluge of spy information within the context of state transitions.</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/U_F5icOP87w?start=8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</center><p>The name of the local nodes in the distributed system will appear blue and
+the names of other nodes will appear purple.</p>
+</div>
+<div class="section" id="logging-the-snoop-trace">
+<span id="recipes-logging-the-snoop-trace"></span><h3>Logging The Snoop Trace<a class="headerlink" href="#logging-the-snoop-trace" title="Permalink to this headline">¶</a></h3>
+<p>To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python3 networkable_active_object.py 2&gt;&amp;1 | \
+   sed -r &#39;s/&#39;$(echo -e &quot;\033&quot;)&#39;\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g&#39; | \
+   tee log.txt grep -F [+s] log.txt | grep &lt;name&gt;
+</pre></div>
+</div>
+<p>Or, just don’t turn on color when you enable the snoop trace in your code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then write your trace information to the log.txt without the complexity:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">networkable_active_object</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="logging-the-snoop-spy">
 <span id="recipes-logging-the-snoop-spy"></span><h3>Logging the Snoop Spy<a class="headerlink" href="#logging-the-snoop-spy" title="Permalink to this headline">¶</a></h3>
+<p>To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python3 networkable_active_object.py 2&gt;&amp;1 | \
+   sed -r &#39;s/&#39;$(echo -e &quot;\033&quot;)&#39;\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g&#39; | \
+   tee log.txt grep -F [+s] log.txt | grep &lt;name&gt;
+</pre></div>
+</div>
+<p>Or, just don’t turn on color when you enable the snoop trace in your code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then write your spy information to the log.txt without the complexity:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">networkable_active_object</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="devops">
-<span id="recipes-devops"></span><h2>Devops<a class="headerlink" href="#devops" title="Permalink to this headline">¶</a></h2>
+<span id="recipes-devops"></span><span id="id1"></span><h2>Devops<a class="headerlink" href="#devops" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="setting-up-ssh">
 <span id="recipes-setting-up-ssh"></span><h3>Setting up SSH<a class="headerlink" href="#setting-up-ssh" title="Permalink to this headline">¶</a></h3>
 </div>
@@ -268,9 +386,10 @@ to be used by all nodes.</p>
 <li><a class="reference internal" href="#node-discovery">Node Discovery</a></li>
 <li><a class="reference internal" href="#making-an-encryption-key">Making an Encryption Key</a></li>
 <li><a class="reference internal" href="#snoop-trace">Snoop Trace</a></li>
+<li><a class="reference internal" href="#snoop-scribble">Snoop Scribble</a></li>
 <li><a class="reference internal" href="#drawing-sequence-diagrams">Drawing Sequence Diagrams</a></li>
 <li><a class="reference internal" href="#snoop-spy">Snoop Spy</a></li>
-<li><a class="reference internal" href="#logging-snoop-trace">Logging Snoop Trace</a></li>
+<li><a class="reference internal" href="#logging-the-snoop-trace">Logging The Snoop Trace</a></li>
 <li><a class="reference internal" href="#logging-the-snoop-spy">Logging the Snoop Spy</a></li>
 </ul>
 </li>

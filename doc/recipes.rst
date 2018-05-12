@@ -230,32 +230,198 @@ To make a new key:
 
    from cryptography import Fernet
    new_encryption_key = Fernet.generate_key()
-    print(new_encryption_key) # => b'u3u...' # => copy this
+
+   print(new_encryption_key) # => b'u3u...' # => copy this
 
 .. _recipes-snoop-trace:
 
 Snoop Trace
 ^^^^^^^^^^^
 
+.. code-block:: python
+
+  # nsc could be a NetworkedActiveObject or a NetworkedFactory 
+  nsc.enable_snoop_trace()
+  nsc.start_at(<state_you_want_to_start_at>)
+
+Trace instrumentation is useful for seeing what events caused what state
+transitions. They provide you with information about how your design is reacting
+to its incoming events.
+
+The snoop trace is an extension of this idea.  It is a network which connects
+all of the live trace streams of all of the statecharts that are working
+together.  You can see the live trace instrumentation of all of the contributing
+nodes, by opting into this snoop trace network.  To do this, you call
+``enable_snoop_trace`` prior to starting your statechart (see the code listing
+above).
+
+It doesn't take long before this information is hard to see. For this reason, I
+coloured the node names. The name of your local machine’s statechart will be
+blue, and any other name will be purple in your snoop trace output. You can see
+this colouring in the following video:
+
+.. raw:: html
+
+  <center>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/MI8Sym3rCO0?start=36" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </center>
+
+In the video, I have logged into two different computers that are running the
+same statechart program as part of a distributed system.  You can see that the
+blue names are different in each terminal window, because we are viewing the
+system from two different computers who's statecharts have their own local name.
+
+To print something into the snoop trace use the :ref:`snoop_scribble <recipes-snoop-scribble>`.  
+
+If you want to :ref:`log your snoop trace <recipes-logging-the-snoop-spy>` enable
+your trace without the ANSI color codes:
+
+.. code-block:: python
+
+  # nsc could be a NetworkedActiveObject or a NetworkedFactory 
+  nsc.enable_snoop_trace_no_color()
+  nsc.start_at(<state_you_want_to_start_at>)
+
+You can use the results of your snoop trace to :ref:`generate network sequence
+diagrams <recipes-drawing-sequence-diagrams>` for you.
+
+The trace output hides a lot of the details about how your event processor is
+searching your statechart to determine how to react to an event.  For this
+reason, some statechart dynamics will be invisible to the trace stream; like a
+`hook <https://aleph2c.github.io/miros/patterns.html#patterns-ultimate-hook>`_.
+If you want to see everything that your statechart is doing, or if you want to
+see everything that your entire network is doing turn on the :ref:`snoop_spy <recipes-snoop-spy>`.
+
+.. _recipes-snoop-scribble:
+
+Snoop Scribble
+^^^^^^^^^^^^^^
+Use the snoop scribble to output custom strings into the snoop trace and snoop
+spy networks.
+
+.. code-block:: python
+
+  ao.snoop_scribble("broadcast to all monitoring snoop programs")
+
+The snoop_scribble output is coloured a dark grey so it can be distinguished
+from the other parts of the network instrumentation.
+
+If you want to turn off this colouring:
+
+.. code-block:: python
+
+  ao.snoop_scribble("broadcast to all monitoring snoop programs",
+                     enable_color=False)
+
 .. _recipes-drawing-sequence-diagrams:
 
 Drawing Sequence Diagrams
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+The text output of a snoop trace can be used to generate sequence diagrams using
+the `sequence tool <https://github.com/aleph2c/sequence>`_:
+
+.. raw:: html
+
+  <center>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </center>
+
 
 .. _recipes-snoop-spy:
 
 Snoop Spy
 ^^^^^^^^^
+.. code-block:: python
 
-.. _recipes-logging-snoop-trace:
+  # nsc could be a NetworkedActiveObject or a NetworkedFactory 
+  nsc.enable_snoop_spy()
+  nsc.start_at(<state_you_want_to_start_at>)
 
-Logging Snoop Trace
+The spy instrumentation shows you *all of the work done* by an event processor.
+This really isn't that useful since you will be drown in information.  If you
+are having issues with your statechart, you should debug it as a singular
+instance before you connect it to a distributed system.  But, if your problem
+demands that you see everything that is going on at once, the snoop spy network
+provides this capability.
+
+Instead of viewing everything, you could turn on the spy instrumentation on one
+machine and have it routed to another machine.  The snoop spy network has an opt
+in model, to snoop on others, you need to let them snoop on you.  So to route
+another machine's snoop information onto your machine, you will need to release
+your information into the snoop spy network.  This may clutter your log stream
+with unwanted information.  If this is a concern, you can create a grep filter
+using the name of the other node that you are trying to monitor.
+
+It is easy to lose track of the context of what is going on while viewing a
+snoop spy, for this reason you might want to enable the snoop spy and snoop
+trace at the same time.  You can use the snoop trace output to delimit the
+deluge of spy information within the context of state transitions.
+
+.. raw:: html
+
+  <center>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/U_F5icOP87w?start=8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </center>
+
+The name of the local nodes in the distributed system will appear blue and
+the names of other nodes will appear purple.
+
+.. _recipes-logging-the-snoop-trace:
+
+Logging The Snoop Trace
 ^^^^^^^^^^^^^^^^^^^
 
+To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):
+
+.. code-block:: python
+
+  python3 networkable_active_object.py 2>&1 | \
+     sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | \
+     tee log.txt grep -F [+s] log.txt | grep <name>
+
+Or, just don't turn on color when you enable the snoop trace in your code:
+
+.. code-block:: python
+
+  nsc.enable_snoop_trace_no_color()
+  nsc.start_at(<state_you_want_to_start_at>)
+
+Then write your trace information to the log.txt without the complexity:
+
+.. code-block:: python
+
+  python3 networkable_active_object.py >> log.txt
+ 
 .. _recipes-logging-the-snoop-spy:
 
 Logging the Snoop Spy
 ^^^^^^^^^^^^^^^^^^^^^
+
+To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):
+
+.. code-block:: python
+
+  python3 networkable_active_object.py 2>&1 | \
+     sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | \
+     tee log.txt grep -F [+s] log.txt | grep <name>
+
+Or, just don't turn on color when you enable the snoop trace in your code:
+
+.. code-block:: python
+
+  nsc.enable_snoop_spy_no_color()
+  nsc.start_at(<state_you_want_to_start_at>)
+
+Then write your spy information to the log.txt without the complexity:
+
+.. code-block:: python
+
+  python3 networkable_active_object.py >> log.txt
+ 
+.. _recipes-logging-the-snoop-spy:
+
 
 .. _recipes-devops:
 
