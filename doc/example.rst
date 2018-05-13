@@ -69,9 +69,9 @@ To build the NetworkedActiveObject we import the required libraries:
   import time
   import uuid # to generate a unique name
   import random
-  from miros.hsm import spy_on
-  from miros.event import signals, Event, return_status
-  from miros_rabbitmq.network import NetworkedActiveObject
+  from miros import spy_on
+  from miros import signals, Event, return_status
+  from miros_rabbitmq import NetworkedActiveObject
 
 Then we construct a function that will generate a unique name for our
 statechart:
@@ -513,9 +513,9 @@ We import the required items:
   import time
   import uuid # to generate a unique name
   import random
-  from miros.hsm import spy_on
-  from miros.event import signals, Event, return_status
-  from miros_rabbitmq.network import NetworkedActiveObject
+  from miros import spy_on
+  from miros import signals, Event, return_status
+  from miros_rabbitmq import NetworkedActiveObject
 
 Then we construct a function that will generate a unique name for our
 statechart:
