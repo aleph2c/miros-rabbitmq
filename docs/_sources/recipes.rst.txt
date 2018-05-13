@@ -426,6 +426,7 @@ Then write your spy information to the log.txt without the command-line complexi
 
   python3 networkable_active_object.py >> log.txt
 
+
 .. _recipes-changing-your-rabbitmq-credentials:
 
 Changing your RabbitMQ credentials
