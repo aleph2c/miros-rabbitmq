@@ -425,8 +425,19 @@ Then write your spy information to the log.txt without the command-line complexi
 .. code-block:: python
 
   python3 networkable_active_object.py >> log.txt
- 
-.. _recipes-logging-the-snoop-spy:
+
+.. _recipes-changing-your-rabbitmq-credentials:
+
+Changing your RabbitMQ credentials
+----------------------------------
+If you are installing RabbitMQ using the :ref:`ansible script in the DevOps section
+<installing_infrastructure-have-ansible-install-rabbitmq>`, set the
+``rabbit_name`` to the username you want, and the ``rabbit_password`` to
+whatever you want your password to be.  Update your code to use your new
+credentials.
+
+You can also change your user name and password with the :ref:`RabbitMQ
+management GUI<reflection-rabbitmq-management>`.
 
 :ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
 

@@ -16,8 +16,13 @@ Reflection
 
 If you build a complex distributed system using a statechart you will need some
 way to debug it.  The miros-rabbitmq library provides two different encrypted
-topic based networks called the snoop_trace and the snoop_spy network.  To turn
-a network on, you enable it `before` calling ``start_at`` in your statechart.
+topic based networks called the
+:ref:`snoop_trace<reflection-snoop-trace-network>` and the
+:ref:`snoop_spy<reflection-snoop-spy-network>` network.  To turn a network on,
+you enable it `before` calling ``start_at`` in your statechart.
+
+RabbitMQ has :ref:`management plugin<reflection-rabbitmq-management>` which can
+be viewed to understand it's infrastruture.
 
 .. _reflection-snoop-trace-network:
 
@@ -207,8 +212,24 @@ explicitly write it to the screen.
 There is nothing stopping you from turning on your local instrumentation while
 participating with the snoop networks.
 
-.. _reflection-generating-networked-sequence-diagrams:
+.. _reflection-rabbitmq-management:
 
-.. table::
+RabbitMQ Management
+-------------------
+To see what your RabbitMQ server is doing, you can run it's management web app
+by typing `<IP Address>:15672 <http://localhost:15672/#/>`_ into your browser.
+Then log into it using the rabbit_name and rabbit_password you used in your
+installation process.  If you installed your rabbitMQ server using the
+:ref:`ansible script in the DevOps section
+<installing_infrastructure-have-ansible-install-rabbitmq>`, the expected
+Username is **peter** and the Password is **rabbit**.
+
+Once you have logged in, you should see this page:
+
+.. image:: _static/RabbitMQ.PNG
+    :align: center
+
+From this portal you can change your user name and password (then make sure to
+update the credentials in your miros-rabbitmq calls).
 
 :ref:`prev <recipes-recipes>`, :ref:`top <top>`, :ref:`next <management-describing-your-system>`

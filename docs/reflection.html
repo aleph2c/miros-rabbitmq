@@ -52,8 +52,12 @@ them.</em></p>
 </div></blockquote>
 <p>If you build a complex distributed system using a statechart you will need some
 way to debug it.  The miros-rabbitmq library provides two different encrypted
-topic based networks called the snoop_trace and the snoop_spy network.  To turn
-a network on, you enable it <cite>before</cite> calling <code class="docutils literal"><span class="pre">start_at</span></code> in your statechart.</p>
+topic based networks called the
+<a class="reference internal" href="#reflection-snoop-trace-network"><span class="std std-ref">snoop_trace</span></a> and the
+<a class="reference internal" href="#reflection-snoop-spy-network"><span class="std std-ref">snoop_spy</span></a> network.  To turn a network on,
+you enable it <cite>before</cite> calling <code class="docutils literal"><span class="pre">start_at</span></code> in your statechart.</p>
+<p>RabbitMQ has <a class="reference internal" href="#reflection-rabbitmq-management"><span class="std std-ref">management plugin</span></a> which can
+be viewed to understand it’s infrastruture.</p>
 <div class="section" id="snoop-trace-network">
 <span id="reflection-snoop-trace-network"></span><h2>Snoop Trace Network<a class="headerlink" href="#snoop-trace-network" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span> <span class="c1"># enable snoop trace network</span>
@@ -201,6 +205,19 @@ into the managing thread’s instrumentation stream; so to see if you will have 
 explicitly write it to the screen.</p>
 <p>There is nothing stopping you from turning on your local instrumentation while
 participating with the snoop networks.</p>
+</div>
+<div class="section" id="rabbitmq-management">
+<span id="reflection-rabbitmq-management"></span><h2>RabbitMQ Management<a class="headerlink" href="#rabbitmq-management" title="Permalink to this headline">¶</a></h2>
+<p>To see what your RabbitMQ server is doing, you can run it’s management web app
+by typing <a class="reference external" href="http://localhost:15672/#/">&lt;IP Address&gt;:15672</a> into your browser.
+Then log into it using the rabbit_name and rabbit_password you used in your
+installation process.  If you installed your rabbitMQ server using the
+<a class="reference internal" href="installing_infrastructure.html#installing-infrastructure-have-ansible-install-rabbitmq"><span class="std std-ref">ansible script in the DevOps section</span></a>, the expected
+Username is <strong>peter</strong> and the Password is <strong>rabbit</strong>.</p>
+<p>Once you have logged in, you should see this page:</p>
+<img alt="_images/RabbitMQ.PNG" class="align-center" src="_images/RabbitMQ.PNG" />
+<p>From this portal you can change your user name and password (then make sure to
+update the credentials in your miros-rabbitmq calls).</p>
 <p><a class="reference internal" href="recipes.html#recipes-recipes"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="docs.html#management-describing-your-system"><span class="std std-ref">next</span></a></p>
 </div>
 </div>
@@ -219,6 +236,7 @@ participating with the snoop networks.</p>
 <li><a class="reference internal" href="#snoop-trace-network">Snoop Trace Network</a></li>
 <li><a class="reference internal" href="#snoop-spy-network">Snoop Spy Network</a></li>
 <li><a class="reference internal" href="#local-instrumentation">Local Instrumentation</a></li>
+<li><a class="reference internal" href="#rabbitmq-management">RabbitMQ Management</a></li>
 </ul>
 </li>
 </ul>
