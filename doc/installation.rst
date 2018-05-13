@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _installation-installation:
+
 Installation
 ============
 
@@ -18,4 +20,4 @@ To install miros-rabbitmq::
 
 miros-rabbitmq has been tested on Python 3.5 with pika 0.11.2.
 
-:ref:`Next topic<introduction-introduction>`.
+:ref:`prev <installing_infrastructure-installing-required-programs>`, :ref:`top <top>`, :ref:`next<quick_start-quick-start>`

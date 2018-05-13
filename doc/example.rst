@@ -7,15 +7,15 @@ Example
    :maxdepth: 1
    :caption: Single Chart Examples:
 
-In this section I will show how to network some statecharts using the miros-rabbitmq plugin.
-
-Here is a diagram that throws all of this example’s ideas at you at once:
+In this section I will show how to network some statecharts using the
+miros-rabbitmq plugin.  Here is a diagram that throws all of this example’s
+ideas at you at once:
 
 .. image:: _static/test_miros_rabbitmq_2.svg
     :target: _static/test_miros_rabbitmq_2.pdf
     :align: center
 
-We see:
+The diagram above illustrates:
 
 * How you can link a NetworkedActiveObject or a NetworkedFactory to a statechart.
 * How these networked classes are just generalizations of the miros classes. 
@@ -43,13 +43,13 @@ the miros and the miros-rabbitmq packages using pip.
 
 The example will be broken down into three parts:
 
-* :ref:`Building a NetworkedActiveObject with Details<example-networkedactiveobjectwithdetails>`
-* :ref:`Building a NetworkedActiveObject<example-build-a-networkedactiveobject>`
-* :ref:`Building a NetworkedFactory<example-networkedfactory>`
+* :ref:`Build a NetworkedActiveObject with Details<example-networkedactiveobjectwithdetails>`
+* :ref:`Build a NetworkedActiveObject<example-build-a-networkedactiveobject>`
+* :ref:`Build a NetworkedFactory<example-networkedfactory>`
 
 .. _example-networkedactiveobjectwithdetails:
 
-Building a NetworkedActiveObject With Details
+Build a NetworkedActiveObject with Details
 ---------------------------------------------
 This example will describe a few network details, and some of the mechanisms
 under the hood.  If you would rather just look at an example without such
@@ -738,3 +738,4 @@ start the statechart and let it run for 20 seconds:
   chart.start_at(outer)
   time.sleep(20)
 
+:ref:`prev <how_it_works-how-the-plugin-works>`, :ref:`top <top>`, :ref:`next <recipes-recipes>`

@@ -1,4 +1,4 @@
-.. _how_it_works-how-the-plugin-works:
+.. _how_it_works-how-the-plugin-works: 
 
 How it Works
 ============
@@ -8,7 +8,7 @@ How it Works
   to round out the documentation and to be a guide for writing other network
   plugins for miros.  If a diagram is too small, click on it to see it's pdf.
   If you don't have a lot of time, your time would be better spent looking at
-  the `example <file:///C:/github/miros-rabbitmq/docs/example.html>`_.
+  the :ref:`next example <example>`.
 
 There are two main classes that you will use with miros to build statecharts,
 the `ActiveObject <https://aleph2c.github.io/miros/singlechartexample.html>`_ and
@@ -208,3 +208,5 @@ callback functions are provided by the NetworkedActiveObject and
 NetworkedFactory.  The common ``on_message`` behavior of the
 NetworkedActiveObject and NetworkedFactory are provided by the
 MirosNetsInterface.
+
+:ref:`prev <quick_start-quick-start>`, :ref:`top <top>`, :ref:`next <example>`

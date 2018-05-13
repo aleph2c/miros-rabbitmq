@@ -3,12 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _top:
+
 .. image:: _static/miros_rabbitmq.svg
    :align: left
 
+.. _index-contents:
+
+Contents
+^^^^^^^^
+
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
    :titlesonly:
 
    introduction
@@ -20,10 +26,9 @@
    recipes
    reflection
    docs
-   architecture
 
-Indices and tables
-------------------
+Indices
+^^^^^^^
 
 * :ref:`genindex`
 * :ref:`modindex`

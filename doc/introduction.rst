@@ -33,4 +33,6 @@ required infrastructure on both :ref:`Linux
    :maxdepth: 2
    :caption: Contents:
 
+.. raw:: html
 
+  <span class="inactive-link">prev</span>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="installing_infrastructure.html#installing-infrastructure-installing-required-programs"><span class="std std-ref">next</span></a>

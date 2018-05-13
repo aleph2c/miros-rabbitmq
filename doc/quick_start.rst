@@ -1,4 +1,4 @@
-.. _quick_start-quick-start:
+.. _quick_start-quick-start: 
 
 Quick Start
 ===========
@@ -70,3 +70,5 @@ To turn on the live trace for a network:
 
 To turn on the live spy you would just use the ``enable_snoop_spy()`` method
 instead.
+
+:ref:`prev<installation-installation>`, :ref:`top <top>`, :ref:`next<how_it_works-how-the-plugin-works>`

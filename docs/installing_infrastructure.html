@@ -49,13 +49,13 @@ Development Operations, or DevOps.</p>
 <p>I found the installation documentation on the RabbitMQ website to be mostly
 illegible to me as a new user, so I wrote this guide to save you the pain which
 I went through.</p>
-<div class="section" id="installing-on-windows">
-<span id="installing-infrastructure-installing-on-windows"></span><h2>Installing On Windows<a class="headerlink" href="#installing-on-windows" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rabbitmq-on-windows">
+<span id="installing-infrastructure-installing-on-windows"></span><h2>RabbitMQ On Windows<a class="headerlink" href="#rabbitmq-on-windows" title="Permalink to this headline">¶</a></h2>
 <p>If you are installing RabbitMQ on (&gt;= Windows 7), try following this <a class="reference external" href="https://www.youtube.com/watch?v=gKzKUmtOwR4">video</a> and if that
 doesn’t work clear your afternoon’s schedule, and work through <a class="reference external" href="https://www.rabbitmq.com/install-windows.html">this</a>.  Pay special attention to the section titled <a class="reference external" href="https://www.rabbitmq.com/install-windows-manual.html#erlang-cookie">Synchronise Erlang Cookies</a>.</p>
 </div>
-<div class="section" id="installing-on-linux">
-<span id="installing-infrastructure-installing-on-linux"></span><h2>Installing On Linux<a class="headerlink" href="#installing-on-linux" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rabbitmq-on-linux">
+<span id="installing-infrastructure-installing-on-linux"></span><h2>RabbitMQ On Linux<a class="headerlink" href="#rabbitmq-on-linux" title="Permalink to this headline">¶</a></h2>
 <p>For Linux, I automated the installation process of RabbitMQ using a simple <a class="reference external" href="http://docs.ansible.com/">Ansible</a>
 script.  If you haven’t heard of <a class="reference external" href="http://docs.ansible.com/">Ansible</a> before, it’s a Python library that
 allows you to automatically ssh into machines and run a series of sysadmin
@@ -272,6 +272,7 @@ name and passwords to whatever you want them to be and perform a deployment:</p>
 <p>The above command will ask you for the root password required to sudo into the
 machines listed in your inventory.  Enter it and hit enter.</p>
 <p><em>bon chance mon ami.</em></p>
+<p><a class="reference internal" href="introduction.html#introduction-introduction"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="installation.html#installation-installation"><span class="std std-ref">next</span></a></p>
 </div>
 </div>
 </div>
@@ -287,8 +288,8 @@ machines listed in your inventory.  Enter it and hit enter.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">DevOps</a><ul>
-<li><a class="reference internal" href="#installing-on-windows">Installing On Windows</a></li>
-<li><a class="reference internal" href="#installing-on-linux">Installing On Linux</a><ul>
+<li><a class="reference internal" href="#rabbitmq-on-windows">RabbitMQ On Windows</a></li>
+<li><a class="reference internal" href="#rabbitmq-on-linux">RabbitMQ On Linux</a><ul>
 <li><a class="reference internal" href="#setting-up-ssh-so-you-don-t-need-a-password">Setting up SSH so you Don’t Need a Password</a></li>
 <li><a class="reference internal" href="#install-ansible">Install Ansible</a></li>
 <li><a class="reference internal" href="#tell-ansible-where-to-run-and-with-what-user-name">Tell Ansible Where to Run and with What User Name</a></li>

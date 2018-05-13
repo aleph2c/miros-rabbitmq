@@ -187,7 +187,7 @@ into the snoop spy network, you would call the ``snoop_scribble`` method:
 .. _reflection-local-instrumentation:
 
 Local Instrumentation
----------------
+---------------------
 In many situations you might want to mix a local trace or spy with their
 networked version.
 
@@ -201,7 +201,6 @@ participating with the snoop networks.
 
 .. _reflection-generating-networked-sequence-diagrams:
 
+.. table::
 
-
-
-
+:ref:`prev <recipes-recipes>`, :ref:`top <top>`, :ref:`next <management-describing-your-system>`

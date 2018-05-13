@@ -380,14 +380,14 @@ this (cargo-culted from stack overflow):
      sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | \
      tee log.txt grep -F [+s] log.txt | grep <name>
 
-Or, just don't turn on color when you enable the snoop trace in your code:
+Or, turn the colour off when you enable the snoop trace in your code:
 
 .. code-block:: python
 
   nsc.enable_snoop_trace_no_color()
   nsc.start_at(<state_you_want_to_start_at>)
 
-Then write your trace information to the log.txt without the complexity:
+Then write your trace information to the log.txt without the command-line complexity:
 
 .. code-block:: python
 
@@ -407,14 +407,14 @@ this (cargo-culted from stack overflow):
      sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | \
      tee log.txt grep -F [+s] log.txt | grep <name>
 
-Or, just don't turn on color when you enable the snoop trace in your code:
+Or, turn the colour off when you enable the snoop spy in your code:
 
 .. code-block:: python
 
   nsc.enable_snoop_spy_no_color()
   nsc.start_at(<state_you_want_to_start_at>)
 
-Then write your spy information to the log.txt without the complexity:
+Then write your spy information to the log.txt without the command-line complexity:
 
 .. code-block:: python
 
@@ -422,24 +422,5 @@ Then write your spy information to the log.txt without the complexity:
  
 .. _recipes-logging-the-snoop-spy:
 
-
-.. _recipes-devops:
-
-Devops
-------
-
-.. _recipes-setting-up-ssh:
-
-Setting up SSH
-^^^^^^^^^^^^^^
-
-.. _recipes-installing-ansible:
-
-Installing Ansible
-^^^^^^^^^^^^^^^^^^
-
-.. _recipes-installing-rabbitmq-using-ansible:
-
-Installing RabbitMQ using Ansible
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
 

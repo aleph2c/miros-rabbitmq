@@ -12,7 +12,7 @@ I went through.
 
 .. _installing_infrastructure-installing-on-windows:
 
-Installing On Windows
+RabbitMQ On Windows
 ---------------------
 
 If you are installing RabbitMQ on (>= Windows 7), try following this `video <https://www.youtube.com/watch?v=gKzKUmtOwR4>`_ and if that
@@ -20,13 +20,14 @@ doesn't work clear your afternoon's schedule, and work through `this <https://ww
 
 .. _installing_infrastructure-installing-on-linux:
 
-Installing On Linux
+RabbitMQ On Linux
 -------------------
 For Linux, I automated the installation process of RabbitMQ using a simple `Ansible <http://docs.ansible.com/>`_
 script.  If you haven't heard of `Ansible <http://docs.ansible.com/>`_ before, it's a Python library that
 allows you to automatically ssh into machines and run a series of sysadmin
 commands.  You can use it to automatically deploy things.  For this to work
 we will need to:
+
  * :ref:`Setup ssh so it can login without a password <installing_infrastructure-setting-up-ssh-so-you-don't-need-a-password>`
  * :ref:`Install Ansible <installing_infrastructure-install-ansible>`
  * :ref:`Tell Ansible where it should run <installing_infrastructure-tell-ansible-where-to-run>`
@@ -278,4 +279,6 @@ The above command will ask you for the root password required to sudo into the
 machines listed in your inventory.  Enter it and hit enter.
 
 *bon chance mon ami.*
+
+:ref:`prev <introduction-introduction>`, :ref:`top <top>`, :ref:`next <installation-installation>`
 

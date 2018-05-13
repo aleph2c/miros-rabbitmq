@@ -105,7 +105,9 @@ class SimplePikaTopicConsumer():
   If the channel is closed, it will indicate a problem with one of the
   commands that were issued and that should surface in the output as well.
 
-  Example:
+  **Example**:
+
+  .. code-block:: python
 
     pc = PikaTopicConsumer(
       amqp_url='amqp://bob:dobbs@localhost:5672/%2F',
@@ -114,6 +116,7 @@ class SimplePikaTopicConsumer():
       queue_name='g_queue',
     )
     pc.start_thread()
+
   """
   EXCHANGE_TYPE = 'topic'
   KILL_THREAD_CALLBACK_TEMPO = 1.0  # how long it will take the thread to quit
@@ -453,7 +456,6 @@ class SimplePikaTopicConsumer():
     exception stops the IOLoop which needs to be running for pika to
     communicate with RabbitMQ. All of the commands issued prior to starting
     the IOLoop will be buffered but not processed.
-
     """
     LOGGER.info('Stopping')
     self._closing = True
@@ -511,23 +513,31 @@ class SimplePikaTopicConsumer():
     self._connection.add_timeout(deadline=0.01, callback_method=timeout_callback)
 
 class PikaTopicConsumer(SimplePikaTopicConsumer):
-  """This is subclass of SimplePikaTopicConsumer which extends its capabilities.
-  It can de-serialize and decrypt received messages and issues those messages to
-  client callback methods.  While constructing it, you provide it with a
-  symmetric encrytion key, and options functions for decrypting and
-  deserializing.
+  """This is a subclass of SimplePikaTopicConsumer which extends its
+  capabilities.  It can de-serialize and decrypt received messages and issues
+  those messages to client callback methods.  While constructing a 
+  PikaTopicConsumer, you provide it with a symmetric encrytion key, and options
+  functions for decrypting and deserializing.
 
-  It has a start_thread and stop_thread method to control the thread in which
-  the rabbit consumer is running.  Without this thread, you would loss program
-  control after the 'run' call.  The encryption key can be changed while the
+  It has a ``start_thread`` and ``stop_thread`` method to control the thread in which
+  the rabbit consumer is running.  Without this thread, you would lose program
+  control after the ``run`` call.  The encryption key can be changed while the
   service is running.
 
-  Example:
+
+  **Example**:
+
+  .. code-block:: python
 
     # make a callback that will get your messages
-    def on_message_callback(unused_channel, basic_deliver, properties, body):
+    def on_message_callback(unused_channel,
+                            basic_deliver,
+                            properties,
+                            body):
+
       LOGGER.info('Received message # %s from %s: %s',
-            basic_deliver.delivery_tag, properties.app_id, body)
+                   basic_deliver.delivery_tag,
+                   properties.app_id, body)
 
     consumer = PikaTopicConsumer(
       amqp_url='amqp://bob:dobbs@localhost:5672/%2F',
@@ -584,13 +594,18 @@ class PikaTopicConsumer(SimplePikaTopicConsumer):
   def change_encyption_key(self, encryption_key):
     """Change the encryption_key:
 
-    Example:
+    **Example**:
+
+    .. code-block:: python
+
       # Fernet.generate_key() <= to make a new key
       consumer.change_encyption_key(
         b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
       )
 
-    Note: the new key must match the key used by the producer
+    .. note::
+
+      The consumer key must match the key used by the producer
     """
     self.stop_thread()
     self._decryption_function = \
@@ -728,7 +743,10 @@ class SimplePikaTopicPublisher():
   may be closed, which usually are tied to permission related issues or socket
   timeouts.)
 
-  Example:
+  **Example**:
+
+  .. code-block:: python
+
     # set a callback mechanism to sample the task's input queue every 1.5 seconds
     # name the exchange in the RabbitMq server at the url to 'g_pika_producer_exchange'
     # name the RabbitMq queue on the server at the url to 'g_queue'
@@ -760,7 +778,8 @@ class SimplePikaTopicPublisher():
     # to reconnect and start the thread
     publisher.start_thread()
 
-  Notes:
+  .. note::
+
     It uses delivery confirmations and illustrates one way to keep track of
     messages that have been sent and if they've been confirmed by RabbitMQ.
     This confirmation mechanism will not work if message tempo exceeds the
@@ -1036,7 +1055,10 @@ class SimplePikaTopicPublisher():
     This list will be used to check for delivery confirmations in the
     on_delivery_confirmations method.
 
-    Example:
+    **Example**:
+
+    .. code-block:: python
+
       # get the message from somewhere
       message = self._thread_queue.get()
 
@@ -1151,8 +1173,11 @@ class PikaTopicPublisher(SimplePikaTopicPublisher):
   symmetric encryption key, and optional functions for encrypting and
   serializing messages.
 
-  Example:
-    publisher = \
+  **Example**:
+
+  .. code-block:: python
+
+    publisher = \\
       PikaTopicPublisher(
         amqp_url='amqp://bob:dobbs@192.168.1.69:5672/%2F?connection_attempts=3&heartbeat_interval=3600',
         routing_key='pub_thread.text',
@@ -1236,18 +1261,31 @@ class Attribute():
 class LocalAreaNetwork():
   '''Provides the ip_addresses of the local area network (LAN)
 
-  Example:
+  **Example**:
+
+  .. code-block:: python
+
     lan = LocalAreaNetwork()
 
-    print(lan.addresses)  # => \
-      ['192.168.1.66', '192.168.1.69', '192.168.1.70', '192.168.1.71', '192.168.1.75', '192.168.1.254']
+    print(lan.addresses)  # => \\
+      ['192.168.1.66'
+       '192.168.1.69',
+       '192.168.1.70',
+       '192.168.1.71',
+       '192.168.1.75',
+       '192.168.1.254']
 
     print(lan.this.address)  # => '192.168.1.75'
 
-    print(lan.other.addresses)  # => \
-      ['192.168.1.66', '192.168.1.69', '192.168.1.70', '192.168.1.71', '192.168.1.254']
+    print(lan.other.addresses)  # => \\
+      ['192.168.1.66',
+      '192.168.1.69',
+      '192.168.1.70',
+      '192.168.1.71',
+      '192.168.1.254']
 
-    print(LocalAreaNetwork.get_working_ip_address())  # => '192.168.1.75'
+    print(LocalAreaNetwork.get_working_ip_address())  # => \\
+      '192.168.1.75'
 
   '''
   def __init__(self):
@@ -1364,8 +1402,11 @@ class RabbitHelper():
                heartbeat_interval=None):
     '''Make a RabbitMq url.
 
-      Example:
-        amqp_url = \
+      **Example**:
+
+      .. code-block:: python
+
+        amqp_url = \\
           RabbitHelper.make_amqp_url(
               ip_address=192.168.1.1,
               rabbit_user='bob',
@@ -1373,7 +1414,7 @@ class RabbitHelper():
               connection_attempts='3',
               heartbeat_interval='3600')
 
-        print(amqp_url)  # => \
+        print(amqp_url)  # =>
           'amqp://bob:dobbs@192.168.1.1:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
 
     '''
@@ -1398,7 +1439,10 @@ class RabbitScout():
   '''Scouts a list of ip_addresses or your LAN ip_addresses for RabbitMq servers running clients
   with the correction encryption_key and routing_key.
 
-  Example:
+  **Example**:
+
+  .. code-block:: python
+
     rs = RabbitScout(
           rabbit_user='bob',
           rabbit_password='dobbs',
@@ -1410,17 +1454,18 @@ class RabbitScout():
     print(rs.this.address)   # => '192.168.1.75'
     print(rs.other.addresss) # => ['192.168.1.69']
 
-    print(rs.urls) # => \
+    print(rs.urls) # =>
       [amqp://bob:dobbs@192.168.1.69:5672/%2F?connection_attempts=3&heartbeat_interval=3600',
       'amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600']
 
-    print(rs.this.url) # => \
+    print(rs.this.url) # =>
       'amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
 
-    print(rs.other.urls) # => \
+    print(rs.other.urls) # =>
       [amqp://bob:dobbs@192.168.1.69:5672/%2F?connection_attempts=3&heartbeat_interval=3600']
 
-  Notes:
+  .. note::
+
     The RabbitScout determines is an address has a rabbitmq server with a client
     using the correct encryption_key and routing_key by starting a
     PikaTopicPublisher thread using URL which will will not try to reconnect if
