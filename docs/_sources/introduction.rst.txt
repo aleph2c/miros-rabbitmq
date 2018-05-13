@@ -5,7 +5,7 @@ Introduction
 
 .. epigraph:: 
 
-  *Wars teach us not to love our enemies, but to hate our allies*
+  *Wars teach us not to love our enemies, but to hate our allies.*
 
   -- W. L George
 

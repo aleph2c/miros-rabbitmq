@@ -57,7 +57,8 @@ pre {
 
 blockquote.epigraph {
   font-size: 1.3em;
-  color: rgb(130,130,130);
+  /*color: rgb(130,130,130);*/
+  color: #866e8b;
   margin: 25px 0;
 }
 

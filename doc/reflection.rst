@@ -6,6 +6,14 @@
 
 Reflection
 ==========
+
+.. epigraph::
+
+  *We cannot solve our problems with the same thinking we used when we created
+  them.*
+
+  -- Albert Einstein
+
 If you build a complex distributed system using a statechart you will need some
 way to debug it.  The miros-rabbitmq library provides two different encrypted
 topic based networks called the snoop_trace and the snoop_spy network.  To turn

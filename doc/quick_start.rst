@@ -2,6 +2,13 @@
 
 Quick Start
 ===========
+
+.. epigraph::
+
+  *Failure is the seed of success* 
+
+  -- Kaoru Iskikawa
+
 ``miros-rabbitmq`` uses a ping-broadcast to your local area network (LAN) to
 fill your ARP table with the IP addresses of all of your locally connected
 devices.  Then it tries to connect to the addresses in the ARP table using

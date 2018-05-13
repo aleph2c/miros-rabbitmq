@@ -2,6 +2,13 @@
 
 Documenting
 ===========
+
+.. epigraph::
+
+  *Now is the time to understand more, so we fear less.*
+
+  -- Marie Curie
+
 Statechart based distributed systems do not stay put.  The smallest change in
 the code could wipe out pages and pages of carefully written documentation.  It
 might not be worth your time to write everything down.

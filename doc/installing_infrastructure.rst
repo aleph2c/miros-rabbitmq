@@ -2,6 +2,14 @@
 
 DevOps
 ======
+
+.. epigraph:: 
+
+  *Information is not knowledge.*
+
+  -- W. Edwards Deming
+
+
 For us to run statecharts on different machines will require a few system
 administration steps.  When such a process is automated, it is often called
 Development Operations, or DevOps.

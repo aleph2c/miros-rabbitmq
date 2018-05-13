@@ -2,6 +2,14 @@
 
 How it Works
 ============
+
+.. epigraph::
+
+  *The most contrarian thing of all is not to oppose the crowd but to think for
+  yourself.*
+
+  -- Peter Thiel
+
 .. note:: 
 
   You don't need to understand this page to use this library.  It has been added

@@ -3,6 +3,12 @@
 Recipes
 =======
 
+.. epigraph::
+
+  *MacArthur! I can't even get McDonald's!*
+
+  -- Julian Simon
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

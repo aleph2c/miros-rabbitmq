@@ -3,6 +3,13 @@
 Example
 ========
 
+.. epigraph::
+
+  *You can analyse the past, but you need to design the future.  That is the
+  difference between suffering the future and enjoying it.*
+
+  -- Edward de Bono
+
 .. toctree::
    :maxdepth: 1
    :caption: Single Chart Examples:
