@@ -98,5 +98,5 @@ dynamics.
 .. raw:: html
 
   <a class="reference internal" href="reflection.html#reflection"><span class="std std-ref">prev</span></a>,
-  <a class="reference internal" href="index.htm#top><span class"std std-ref">top</span></a>,
+  <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>,
   <span class="inactive-link">next</span>
