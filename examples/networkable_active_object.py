@@ -2,9 +2,9 @@
 import time
 import uuid
 import random
-from miros.hsm import spy_on
-from miros.event import signals, Event, return_status
-from miros_rabbitmq.network import NetworkedActiveObject
+from miros import spy_on
+from miros import signals, Event, return_status
+from miros_rabbitmq import NetworkedActiveObject
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post

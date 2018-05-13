@@ -1,8 +1,8 @@
 import time
 import uuid
 import random
-from miros_rabbitmq.network import NetworkedFactory
-from miros.event import signals, Event, return_status
+from miros import signals, Event, return_status
+from miros_rabbitmq import NetworkedFactory
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post
