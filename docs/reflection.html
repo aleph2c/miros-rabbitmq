@@ -218,7 +218,82 @@ Username is <strong>peter</strong> and the Password is <strong>rabbit</strong>.<
 <img alt="_images/RabbitMQ.PNG" class="align-center" src="_images/RabbitMQ.PNG" />
 <p>From this portal you can change your user name and password (then make sure to
 update the credentials in your miros-rabbitmq calls).</p>
+</div>
+<div class="section" id="reflecting-upon-the-network-information">
+<span id="reflection-network-information"></span><h2>Reflecting upon the Network Information<a class="headerlink" href="#reflecting-upon-the-network-information" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="accessing-all-ip-address-seen-on-the-lan">
+<span id="reflection-accessing-all-ip-address-seen-on-the-lan"></span><h3>Accessing all IP address seen on the LAN<a class="headerlink" href="#accessing-all-ip-address-seen-on-the-lan" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">other</span><span class="o">.</span><span class="n">addresses</span><span class="p">)</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;192.168.1.66&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.69&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.70&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.71&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.254&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="this-ip-address">
+<span id="reflection-this-ip-address"></span><h3>This IP address<a class="headerlink" href="#this-ip-address" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">this</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="c1"># =&gt; 192.168.1.75</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viewing-other-node-amqp-urls">
+<span id="reflection-viewing-other-node-amqp-urls"></span><h3>Viewing Other Node AMQP URLs<a class="headerlink" href="#viewing-other-node-amqp-urls" title="Permalink to this headline">¶</a></h3>
+<p>To view the AMQP URLS used by the mesh, snoop_trace and snoop_spy networks:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">other_urls</span><span class="p">())</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;amqp://bob:dobbs@192.168.1.69:5672/</span><span class="si">%2F</span><span class="s1">?connection_attempts=3&amp;heartbeat_interval=3600&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viewing-this-node-s-amqp-url">
+<span id="reflection-thisnodeampqpurl"></span><h3>Viewing this Node’s AMQP URL<a class="headerlink" href="#viewing-this-node-s-amqp-url" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">this_url</span><span class="p">())</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;amqp://bob:dobbs@192.168.1.75:5672/</span><span class="si">%2F</span><span class="s1">?connection_attempts=3&amp;heartbeat_interval=3600&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 <p><a class="reference internal" href="recipes.html#recipes-recipes"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="docs.html#management-describing-your-system"><span class="std std-ref">next</span></a></p>
+</div>
 </div>
 </div>
 
@@ -237,6 +312,13 @@ update the credentials in your miros-rabbitmq calls).</p>
 <li><a class="reference internal" href="#snoop-spy-network">Snoop Spy Network</a></li>
 <li><a class="reference internal" href="#local-instrumentation">Local Instrumentation</a></li>
 <li><a class="reference internal" href="#rabbitmq-management">RabbitMQ Management</a></li>
+<li><a class="reference internal" href="#reflecting-upon-the-network-information">Reflecting upon the Network Information</a><ul>
+<li><a class="reference internal" href="#accessing-all-ip-address-seen-on-the-lan">Accessing all IP address seen on the LAN</a></li>
+<li><a class="reference internal" href="#this-ip-address">This IP address</a></li>
+<li><a class="reference internal" href="#viewing-other-node-amqp-urls">Viewing Other Node AMQP URLs</a></li>
+<li><a class="reference internal" href="#viewing-this-node-s-amqp-url">Viewing this Node’s AMQP URL</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

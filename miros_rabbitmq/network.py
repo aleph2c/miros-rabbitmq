@@ -818,7 +818,7 @@ class SimplePikaTopicPublisher():
     self._stopping = False
     self.connect_error = False
 
-    self._amqp_url = amqp_url
+    self.amqp_url = amqp_url
     self._task_run_event = ThreadEvent()
     self._publish_tempo_sec = publish_tempo_sec
     self._thread_queue = ThreadQueue(maxsize=500)
@@ -830,7 +830,7 @@ class SimplePikaTopicPublisher():
     # will set the exchange, queue and routing_keys names for the RabbitMq
     # server running on amqp_url
     self._rabbit_exchange_name = exchange_name
-    self._rabbit_routing_key = routing_key
+    self._routing_key = routing_key
 
   def connect(self):
     '''This method connects to RabbitMQ, returning the connection handle.
@@ -842,8 +842,8 @@ class SimplePikaTopicPublisher():
     :rtype: pika.SelectConnection
 
     '''
-    LOGGER.info('Connecting to %s', self._amqp_url)
-    return pika.SelectConnection(pika.URLParameters(self._amqp_url),
+    LOGGER.info('Connecting to %s', self.amqp_url)
+    return pika.SelectConnection(pika.URLParameters(self.amqp_url),
                    self.on_connection_open,
                    stop_ioloop_on_close=False)
 
@@ -1074,7 +1074,7 @@ class SimplePikaTopicPublisher():
                       content_type='application/json',
                       headers={u'version': self.PRODUCER_VERSION})
 
-    self._channel.basic_publish(self._rabbit_exchange_name, self._rabbit_routing_key,
+    self._channel.basic_publish(self._rabbit_exchange_name, self._routing_key,
                   message,
                   properties)
 
@@ -1487,7 +1487,7 @@ class RabbitScout():
   PORT                   = 5672
 
   SCOUT_TEMPO_SEC        = 0.01
-  SCOUT_TIMEOUT_SEC      = 0.4
+  SCOUT_TIMEOUT_SEC      = 0.5
 
   def __init__(self,
                rabbit_user,
@@ -1716,6 +1716,7 @@ class MirosNets:
                     exchange_name=self.mesh.exchange_name,
                     encryption_key=self.mesh.encryption_key)
 
+    self.scout = rabbit_scout
     self._urls = rabbit_scout.urls
     self.this.url = rabbit_scout.this.url
     self.build_mesh_network()
@@ -1993,7 +1994,33 @@ class MirosNetsInterface():
     self.nets.build_snoop_networks()
     self.enable_snoop_trace()
 
+  def this_url(self):
+    '''Get this ampq URL'''
+    return self.nets.scout.this.url
+
+  def other_urls(self):
+    '''Get IP addresses which have a RabbitMQ server running on them'''
+    return self.nets.scout.other.urls
+
+
 class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
+  '''
+    **Example**:
+
+    .. code-block:: python
+
+      print(oa.lan.other.addresses) => \\
+        ['192.168.1.66',
+        '192.168.1.69',
+        '192.168.1.70',
+        '192.168.1.71',
+        '192.168.1.254']
+
+      print(oa.lan.this.address)  # => '192.168.1.75'
+
+      print(oa.lan.get_working_ip_address()) # => \\
+        '192.168.1.75'
+  '''
   def __init__(self,
                 name,
                 rabbit_user,
@@ -2004,6 +2031,7 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
                 spy_snoop_encryption_key=None,
                 trace_snoop_encryption_key=None):
     super().__init__(name)
+    self.lan = LocalAreaNetwork()
 
     on_message_callback = functools.partial(self.on_network_message)
     on_trace_message_callback = functools.partial(self.on_network_trace_message)
@@ -2040,6 +2068,23 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
     self.nets.start_threads()
 
 class NetworkedFactory(Factory, MirosNetsInterface):
+  '''
+    **Example**:
+
+    .. code-block:: python
+
+      print(af.lan.other.addresses) => \\
+        ['192.168.1.66',
+        '192.168.1.69',
+        '192.168.1.70',
+        '192.168.1.71',
+        '192.168.1.254']
+
+      print(af.lan.this.address)  # => '192.168.1.75'
+
+      print(af.lan.get_working_ip_address()) # => \\
+        '192.168.1.75'
+  '''
   def __init__(self,
                 name,
                 rabbit_user,

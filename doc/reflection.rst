@@ -232,4 +232,93 @@ Once you have logged in, you should see this page:
 From this portal you can change your user name and password (then make sure to
 update the credentials in your miros-rabbitmq calls).
 
+
+.. _reflection-network-information:
+
+Reflecting upon the Network Information
+---------------------------------------
+
+.. _reflection-accessing-all-ip-address-seen-on-the-lan:
+
+Accessing all IP address seen on the LAN
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+  from miros_rabbitmq import NetworkedActiveObject
+
+  nao = NetworkedActiveObject(
+          "name_of_statechart",
+          rabbit_user="<rabbitmq_user_name>",
+          rabbit_password="<rabbitmq_password>",
+          tx_routing_key="heya.man",
+          rx_routing_key="#.man",
+          mesh_encryption_key=b'u3u...')
+
+  print(nao.lan.other.addresses) # => \\
+    ['192.168.1.66',
+    '192.168.1.69',
+    '192.168.1.70',
+    '192.168.1.71',
+    '192.168.1.254']
+
+.. _reflection-this-ip-address:
+
+This IP address
+^^^^^^^^^^^^^^^
+.. code-block:: python
+
+  from miros_rabbitmq import NetworkedActiveObject
+
+  nao = NetworkedActiveObject(
+          "name_of_statechart",
+          rabbit_user="<rabbitmq_user_name>",
+          rabbit_password="<rabbitmq_password>",
+          tx_routing_key="heya.man",
+          rx_routing_key="#.man",
+          mesh_encryption_key=b'u3u...')
+
+  print(nao.lan.this.address) # => 192.168.1.75
+
+.. _reflection-viewing-other-node-amqp-urls:
+
+Viewing Other Node AMQP URLs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To view the AMQP URLS used by the mesh, snoop_trace and snoop_spy networks:
+
+.. code-block:: python
+
+  from miros_rabbitmq import NetworkedActiveObject
+
+  nao = NetworkedActiveObject(
+          "name_of_statechart",
+          rabbit_user="<rabbitmq_user_name>",
+          rabbit_password="<rabbitmq_password>",
+          tx_routing_key="heya.man",
+          rx_routing_key="#.man",
+          mesh_encryption_key=b'u3u...')
+
+  print(nao.other_urls()) # => \\
+    ['amqp://bob:dobbs@192.168.1.69:5672/%2F?connection_attempts=3&heartbeat_interval=3600']
+
+.. _reflection-thisnodeampqpurl:
+
+Viewing this Node's AMQP URL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+  from miros_rabbitmq import NetworkedActiveObject
+
+  nao = NetworkedActiveObject(
+          "name_of_statechart",
+          rabbit_user="<rabbitmq_user_name>",
+          rabbit_password="<rabbitmq_password>",
+          tx_routing_key="heya.man",
+          rx_routing_key="#.man",
+          mesh_encryption_key=b'u3u...')
+
+  print(nao.this_url()) # => \\
+    ['amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600']
+
 :ref:`prev <recipes-recipes>`, :ref:`top <top>`, :ref:`next <management-describing-your-system>`

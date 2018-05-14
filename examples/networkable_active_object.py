@@ -31,6 +31,8 @@ def inner_entry(chart, e):
     period=random.randint(2, 7),
     deferred=True)
   chart.transmit(Event(signal=signals.other_to_inner, payload=chart.name))
+  chart.snoop_scribble(chart.this_url())
+
   return return_status.HANDLED
 
 def inner_exit(chart, e):

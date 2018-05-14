@@ -326,9 +326,21 @@
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="miros_rabbitmq.network.MirosNetsInterface.other_urls">
+<code class="descname">other_urls</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.other_urls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get IP addresses which have a RabbitMQ server running on them</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="miros_rabbitmq.network.MirosNetsInterface.snoop_scribble">
 <code class="descname">snoop_scribble</code><span class="sig-paren">(</span><em>message</em>, <em>enable_color=True</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.snoop_scribble" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.MirosNetsInterface.this_url">
+<code class="descname">this_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.this_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get this ampq URL</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="miros_rabbitmq.network.MirosNetsInterface.transmit">
@@ -341,6 +353,20 @@
 <dt id="miros_rabbitmq.network.NetworkedActiveObject">
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">NetworkedActiveObject</code><span class="sig-paren">(</span><em>name</em>, <em>rabbit_user</em>, <em>rabbit_password</em>, <em>mesh_encryption_key</em>, <em>tx_routing_key=None</em>, <em>rx_routing_key=None</em>, <em>spy_snoop_encryption_key=None</em>, <em>trace_snoop_encryption_key=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.NetworkedActiveObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">miros.activeobject.ActiveObject</span></code>, <a class="reference internal" href="#miros_rabbitmq.network.MirosNetsInterface" title="miros_rabbitmq.network.MirosNetsInterface"><code class="xref py py-class docutils literal"><span class="pre">miros_rabbitmq.network.MirosNetsInterface</span></code></a></p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">oa</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">other</span><span class="o">.</span><span class="n">addresses</span><span class="p">)</span> <span class="o">=&gt;</span> \
+  <span class="p">[</span><span class="s1">&#39;192.168.1.66&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.69&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.70&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.71&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.254&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">oa</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">this</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>  <span class="c1"># =&gt; &#39;192.168.1.75&#39;</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">oa</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">get_working_ip_address</span><span class="p">())</span> <span class="c1"># =&gt; \</span>
+  <span class="s1">&#39;192.168.1.75&#39;</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="miros_rabbitmq.network.NetworkedActiveObject.start_at">
 <code class="descname">start_at</code><span class="sig-paren">(</span><em>initial_state</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.NetworkedActiveObject.start_at" title="Permalink to this definition">¶</a></dt>
@@ -352,6 +378,20 @@
 <dt id="miros_rabbitmq.network.NetworkedFactory">
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">NetworkedFactory</code><span class="sig-paren">(</span><em>name</em>, <em>rabbit_user</em>, <em>rabbit_password</em>, <em>mesh_encryption_key</em>, <em>tx_routing_key=None</em>, <em>rx_routing_key=None</em>, <em>spy_snoop_encryption_key=None</em>, <em>trace_snoop_encryption_key=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.NetworkedFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">miros.activeobject.Factory</span></code>, <a class="reference internal" href="#miros_rabbitmq.network.MirosNetsInterface" title="miros_rabbitmq.network.MirosNetsInterface"><code class="xref py py-class docutils literal"><span class="pre">miros_rabbitmq.network.MirosNetsInterface</span></code></a></p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">af</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">other</span><span class="o">.</span><span class="n">addresses</span><span class="p">)</span> <span class="o">=&gt;</span> \
+  <span class="p">[</span><span class="s1">&#39;192.168.1.66&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.69&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.70&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.71&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.254&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">af</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">this</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>  <span class="c1"># =&gt; &#39;192.168.1.75&#39;</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">af</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">get_working_ip_address</span><span class="p">())</span> <span class="c1"># =&gt; \</span>
+  <span class="s1">&#39;192.168.1.75&#39;</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="miros_rabbitmq.network.NetworkedFactory.start_at">
 <code class="descname">start_at</code><span class="sig-paren">(</span><em>initial_state</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.NetworkedFactory.start_at" title="Permalink to this definition">¶</a></dt>
@@ -631,7 +671,7 @@ the LAN.</p>
 
 <dl class="attribute">
 <dt id="miros_rabbitmq.network.RabbitScout.SCOUT_TIMEOUT_SEC">
-<code class="descname">SCOUT_TIMEOUT_SEC</code><em class="property"> = 0.4</em><a class="headerlink" href="#miros_rabbitmq.network.RabbitScout.SCOUT_TIMEOUT_SEC" title="Permalink to this definition">¶</a></dt>
+<code class="descname">SCOUT_TIMEOUT_SEC</code><em class="property"> = 0.5</em><a class="headerlink" href="#miros_rabbitmq.network.RabbitScout.SCOUT_TIMEOUT_SEC" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
