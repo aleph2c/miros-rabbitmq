@@ -442,8 +442,8 @@ management GUI<reflection-rabbitmq-management>`.
 
 .. _recipes-encryption-keys-in-your-environment:
 
-Encryption Keys In Your Environment
------------------------------------
+Managing your Encryption Keys
+-----------------------------
 To keep your :ref:`encryption keys <recipes-making-an-encryption-key>` out of
 your source code, you can put them into environment variables and then load them
 into your program.  
@@ -457,7 +457,7 @@ transfer them between the machines in your distributed system.
 The `python-dotenv <https://github.com/theskumar/python-dotenv>`_ package
 converts the contents of a ``.env`` file into environment variables.  We will
 use it in this recipe.  If you have installed ``miros-rabbitmq``, you will have this
-package installed on your system, as a dependency.
+package installed on your system already.
 
 In the same directory as your project create a ``setup.py`` file and add the
 following:
@@ -468,34 +468,45 @@ following:
   from dotenv import load_dotenv
   from pathlib import Path
 
+  # write .env items to the environment
   env_path = Path('.') / '.env'
   load_dotenv(dotenv_path=str(env_path))
 
+  # get encryption keys from the environment
   MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
   SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
   SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
 
 This program will be able to read your :ref:`encryption keys
 <recipes-making-an-encryption-key>` from either your shell
-environment or from a ``.env`` file.
+environment or from a ``.env`` file.  
 
-To begin with, I will make an empty ``.env`` file, add the keys to the shell
-environment and demonstrate that our program will run.  Then I will remove the
-keys from the environment and show the program will crash for lack of
-keys. Then I will put the keys into the ``.env`` file and the program will run
-again.  You have options.
-
-Let's create an empty ``.env`` file in the same directory as your
-``setup.py`` file:
+For the ``setup.py`` program to work there needs to be a ``.env`` file, so let's
+make an empty one:
 
 .. code-block:: python
 
+  # in shell
   $ touch .env
+
+Now we have options.  We can put our keys into our environment using shell
+commands, or we can put them into the ``.env`` file.
+
+Let's explore these options:
+
+  * I will add the encryption keys to the shell's environment
+  * Get the program working
+  * Remove the encryption keys from the shell's environment
+  * Show that the program crashes
+  * Add the encryption keys to the ``.env`` file
+  * Show that the program works
+  * Talk about how to transfer the ``.env`` file securely.
 
 To create an environment variable we use the ``export`` command from your shell.
 
 .. code-block:: python
 
+  # in shell
   $ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
@@ -505,6 +516,7 @@ our ``setup`` file:
 
 .. code-block:: python
 
+  # in miros-rabbitmq file
   from setup import MESH_ENCRYPTION_KEY
   from setup import SNOOP_TRACE_ENCRYPTION_KEY
   from setup import SNOOP_SPY_ENCRYPTION_KEY
@@ -515,6 +527,7 @@ directly into our code base.
 
 .. code-block:: python
 
+  # in miros-rabbitmq file
   ao = NetworkedActiveObject(
     make_name('ao'),
     rabbit_user='bob',
@@ -528,51 +541,62 @@ directly into our code base.
 If we set up our environment variables the same on all of our machines, our
 distributed system will work.
 
-Now, let's move our encryption keys into the ``.env`` file, but make sure we
-never include this ``.env`` file in our code's revision system.
-
-.. note::
-
-  Add ``.env`` to your ``.gitignore`` file so you don't accidentally add it in
-  the future.  If you have added it, remove it from your git repository and
-  change your encryption keys.
-
 Before we add our encryption keys to our ``.env`` file, lets first confirm that
 we can break our program by removing them from our shell environment.  In your
 shell type:
 
 .. code-block:: python
 
-  unset MESH_ENCRYPTION_KEY
-  unset SNOOP_TRACE_ENCRYPTION_KEY
-  unset TRACE_TRACE_ENCRYPTION_KEY
+  # in shell
+  $ unset MESH_ENCRYPTION_KEY
+  $ unset SNOOP_TRACE_ENCRYPTION_KEY
+  $ unset TRACE_TRACE_ENCRYPTION_KEY
 
-Then we re-run the program to make sure it crashes for lack of encryption keys.
-By confirming that our program has crashed, we can trust that the information
-from our ``.env`` file will be used rather than the information we had
-previously placed in our environmental variables (we won't fool ourselves).
+Then if we re-run the program we will see that it crashes for lack of
+encryption keys.  By confirming that our program has crashed, we can trust that
+the information that we will put into our ``.env`` file will be used rather than
+the information we had previously placed in our environmental variables (we
+won't fool ourselves into thinking are ``.env`` file is working if it isn't).
 
-To get the program working again, we can place our encryption keys into our ``.env``
-file like this:
+  
+Let's move our encryption keys into the ``.env`` file.
 
 .. code-block:: python
-  
+
+  # in .env file  
   MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 
+.. warning::
+
+  Don't put the ``.env`` file into your code revision system.  If you do, you
+  might as well leave the encryption keys in your source code.
+
+  Add ``.env`` to your ``.gitignore`` file so you don't accidentally add it in
+  the future.  
+  
+  If you have added ``.env`` to git, remove it: ``git rm --cached .env``, then
+  change your :ref:`encryption keys <recipes-making-an-encryption-key>`.  
+
+.. note::
+
+  There *is* a ``.env`` file in the examples directory of this code base.  It was
+  included so you can see how to do things.
+
 Now we re-run our program and confirm that it works.
 
-This ``.env`` file can be shared between machines, but transfer it using scp,
-or using a flash key or in other ways that you can keep your secrets.  Don't use
-email.
+This ``.env`` file can be shared between machines, but transfer it using scp, or
+using a flash key or in other ways that you can keep your secrets, secret.
+Don't use email.
 
 Here is a reminder about how to use scp:
 
 .. code-block:: bash
 
+  # shell
   # scp <source> <destination>
-  scp /path/to/.env <username>@ip/path/to/destination/.env
+  $ scp /path/to/.env <username>@ip/path/to/destination/.env
 
 :ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
 
