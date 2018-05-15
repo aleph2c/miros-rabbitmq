@@ -1630,7 +1630,8 @@ class MirosNets:
                 on_spy_rx=None,
                 on_trace_rx=None,
                 spy_snoop_encryption_key=None,
-                trace_snoop_encryption_key=None):
+                trace_snoop_encryption_key=None,
+                addresses=None):
 
     self.name = miros_object.name
 
@@ -1714,7 +1715,8 @@ class MirosNets:
                     rabbit_password=self._rabbit_password,
                     routing_key='scouting',
                     exchange_name=self.mesh.exchange_name,
-                    encryption_key=self.mesh.encryption_key)
+                    encryption_key=self.mesh.encryption_key,
+                    addresses=addresses)
 
     self.scout = rabbit_scout
     self._urls = rabbit_scout.urls

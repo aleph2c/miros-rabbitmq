@@ -440,5 +440,140 @@ credentials.
 You can also change your user name and password with the :ref:`RabbitMQ
 management GUI<reflection-rabbitmq-management>`.
 
+.. _recipes-encryption-keys-in-your-environment:
+
+Encryption Keys In Your Environment
+-----------------------------------
+To keep your :ref:`encryption keys <recipes-making-an-encryption-key>` out of
+your source code, you can put them into environment variables and then load them
+into your program.  
+
+A slight extension of this idea is to put your keys into a ``.env`` file, then
+load its contents into environment variables, then load these variables into
+your program.  By placing your :ref:`encryption keys
+<recipes-making-an-encryption-key>` into a ``.env`` file, it makes it easier to
+transfer them between the machines in your distributed system.
+
+The `python-dotenv <https://github.com/theskumar/python-dotenv>`_ package
+converts the contents of a ``.env`` file into environment variables.  We will
+use it in this recipe.  If you have installed ``miros-rabbitmq``, you will have this
+package installed on your system, as a dependency.
+
+In the same directory as your project create a ``setup.py`` file and add the
+following:
+
+.. code-block:: python
+
+  import os
+  from dotenv import load_dotenv
+  from pathlib import Path
+
+  env_path = Path('.') / '.env'
+  load_dotenv(dotenv_path=str(env_path))
+
+  MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
+  SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
+  SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
+
+This program will be able to read your :ref:`encryption keys
+<recipes-making-an-encryption-key>` from either your shell
+environment or from a ``.env`` file.
+
+To begin with, I will make an empty ``.env`` file, add the keys to the shell
+environment and demonstrate that our program will run.  Then I will remove the
+keys from the environment and show the program will crash for lack of
+keys. Then I will put the keys into the ``.env`` file and the program will run
+again.  You have options.
+
+Let's create an empty ``.env`` file in the same directory as your
+``setup.py`` file:
+
+.. code-block:: python
+
+  $ touch .env
+
+To create an environment variable we use the ``export`` command from your shell.
+
+.. code-block:: python
+
+  $ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+
+In our main program, we can access these encryption keys by importing them from
+our ``setup`` file:
+
+.. code-block:: python
+
+  from setup import MESH_ENCRYPTION_KEY
+  from setup import SNOOP_TRACE_ENCRYPTION_KEY
+  from setup import SNOOP_SPY_ENCRYPTION_KEY
+  
+Now, when we construct a ``NetworkedActiveObject`` or a ``NetworkedFactory``
+object we can use our environment variables rather than writing our secret encryption keys
+directly into our code base.
+
+.. code-block:: python
+
+  ao = NetworkedActiveObject(
+    make_name('ao'),
+    rabbit_user='bob',
+    rabbit_password='dobbs',
+    tx_routing_key='heya.man',
+    rx_routing_key='#.man',
+    mesh_encryption_key=MESH_ENCRYPTION_KEY,
+    spy_snoop_encryption_key=SNOOP_SPY_ENCRYPTION_KEY,
+    trace_snoop_encryption_key=SNOOP_TRACE_ENCRYPTION_KEY)
+
+If we set up our environment variables the same on all of our machines, our
+distributed system will work.
+
+Now, let's move our encryption keys into the ``.env`` file, but make sure we
+never include this ``.env`` file in our code's revision system.
+
+.. note::
+
+  Add ``.env`` to your ``.gitignore`` file so you don't accidentally add it in
+  the future.  If you have added it, remove it from your git repository and
+  change your encryption keys.
+
+Before we add our encryption keys to our ``.env`` file, lets first confirm that
+we can break our program by removing them from our shell environment.  In your
+shell type:
+
+.. code-block:: python
+
+  unset MESH_ENCRYPTION_KEY
+  unset SNOOP_TRACE_ENCRYPTION_KEY
+  unset TRACE_TRACE_ENCRYPTION_KEY
+
+Then we re-run the program to make sure it crashes for lack of encryption keys.
+By confirming that our program has crashed, we can trust that the information
+from our ``.env`` file will be used rather than the information we had
+previously placed in our environmental variables (we won't fool ourselves).
+
+To get the program working again, we can place our encryption keys into our ``.env``
+file like this:
+
+.. code-block:: python
+  
+  MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+
+Now we re-run our program and confirm that it works.
+
+This ``.env`` file can be shared between machines, but transfer it using scp,
+or using a flash key or in other ways that you can keep your secrets.  Don't use
+email.
+
+Here is a reminder about how to use scp:
+
+.. code-block:: bash
+
+  # scp <source> <destination>
+  scp /path/to/.env <username>@ip/path/to/destination/.env
+
 :ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
+
 

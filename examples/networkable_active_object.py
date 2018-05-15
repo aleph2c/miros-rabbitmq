@@ -5,6 +5,7 @@ import random
 from miros import spy_on
 from miros import signals, Event, return_status
 from miros_rabbitmq import NetworkedActiveObject
+from setup import MESH_ENCRYPTION_KEY, SNOOP_TRACE_ENCRYPTION_KEY, SNOOP_SPY_ENCRYPTION_KEY
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post
@@ -97,7 +98,7 @@ if __name__ == '__main__':
                               rabbit_password='dobbs',
                               tx_routing_key='heya.man',
                               rx_routing_key='#.man',
-                              mesh_encryption_key=b'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=')
+                              mesh_encryption_key=MESH_ENCRYPTION_KEY)
   # To log
   #ao.enable_snoop_spy()
   #ao.enable_snoop_spy_no_color()

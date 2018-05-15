@@ -363,6 +363,111 @@ whatever you want your password to be.  Update your code to use your new
 credentials.</p>
 <p>You can also change your user name and password with the <a class="reference internal" href="reflection.html#reflection-rabbitmq-management"><span class="std std-ref">RabbitMQ
 management GUI</span></a>.</p>
+</div>
+<div class="section" id="encryption-keys-in-your-environment">
+<span id="recipes-encryption-keys-in-your-environment"></span><h2>Encryption Keys In Your Environment<a class="headerlink" href="#encryption-keys-in-your-environment" title="Permalink to this headline">¶</a></h2>
+<p>To keep your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> out of
+your source code, you can put them into environment variables and then load them
+into your program.</p>
+<p>A slight extension of this idea is to put your keys into a <code class="docutils literal"><span class="pre">.env</span></code> file, then
+load its contents into environment variables, then load these variables into
+your program.  By placing your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> into a <code class="docutils literal"><span class="pre">.env</span></code> file, it makes it easier to
+transfer them between the machines in your distributed system.</p>
+<p>The <a class="reference external" href="https://github.com/theskumar/python-dotenv">python-dotenv</a> package
+converts the contents of a <code class="docutils literal"><span class="pre">.env</span></code> file into environment variables.  We will
+use it in this recipe.  If you have installed <code class="docutils literal"><span class="pre">miros-rabbitmq</span></code>, you will have this
+package installed on your system, as a dependency.</p>
+<p>In the same directory as your project create a <code class="docutils literal"><span class="pre">setup.py</span></code> file and add the
+following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
+<span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">env_path</span><span class="p">))</span>
+
+<span class="n">MESH_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MESH_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_TRACE_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> from either your shell
+environment or from a <code class="docutils literal"><span class="pre">.env</span></code> file.</p>
+<p>To begin with, I will make an empty <code class="docutils literal"><span class="pre">.env</span></code> file, add the keys to the shell
+environment and demonstrate that our program will run.  Then I will remove the
+keys from the environment and show the program will crash for lack of
+keys. Then I will put the keys into the <code class="docutils literal"><span class="pre">.env</span></code> file and the program will run
+again.  You have options.</p>
+<p>Let’s create an empty <code class="docutils literal"><span class="pre">.env</span></code> file in the same directory as your
+<code class="docutils literal"><span class="pre">setup.py</span></code> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ touch .env
+</pre></div>
+</div>
+<p>To create an environment variable we use the <code class="docutils literal"><span class="pre">export</span></code> command from your shell.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+</pre></div>
+</div>
+<p>In our main program, we can access these encryption keys by importing them from
+our <code class="docutils literal"><span class="pre">setup</span></code> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">MESH_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span>
+</pre></div>
+</div>
+<p>Now, when we construct a <code class="docutils literal"><span class="pre">NetworkedActiveObject</span></code> or a <code class="docutils literal"><span class="pre">NetworkedFactory</span></code>
+object we can use our environment variables rather than writing our secret encryption keys
+directly into our code base.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+  <span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;ao&#39;</span><span class="p">),</span>
+  <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;bob&#39;</span><span class="p">,</span>
+  <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;dobbs&#39;</span><span class="p">,</span>
+  <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
+  <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="n">MESH_ENCRYPTION_KEY</span><span class="p">,</span>
+  <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="p">,</span>
+  <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we set up our environment variables the same on all of our machines, our
+distributed system will work.</p>
+<p>Now, let’s move our encryption keys into the <code class="docutils literal"><span class="pre">.env</span></code> file, but make sure we
+never include this <code class="docutils literal"><span class="pre">.env</span></code> file in our code’s revision system.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Add <code class="docutils literal"><span class="pre">.env</span></code> to your <code class="docutils literal"><span class="pre">.gitignore</span></code> file so you don’t accidentally add it in
+the future.  If you have added it, remove it from your git repository and
+change your encryption keys.</p>
+</div>
+<p>Before we add our encryption keys to our <code class="docutils literal"><span class="pre">.env</span></code> file, lets first confirm that
+we can break our program by removing them from our shell environment.  In your
+shell type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">unset</span> <span class="n">MESH_ENCRYPTION_KEY</span>
+<span class="n">unset</span> <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span>
+<span class="n">unset</span> <span class="n">TRACE_TRACE_ENCRYPTION_KEY</span>
+</pre></div>
+</div>
+<p>Then we re-run the program to make sure it crashes for lack of encryption keys.
+By confirming that our program has crashed, we can trust that the information
+from our <code class="docutils literal"><span class="pre">.env</span></code> file will be used rather than the information we had
+previously placed in our environmental variables (we won’t fool ourselves).</p>
+<p>To get the program working again, we can place our encryption keys into our <code class="docutils literal"><span class="pre">.env</span></code>
+file like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>Now we re-run our program and confirm that it works.</p>
+<p>This <code class="docutils literal"><span class="pre">.env</span></code> file can be shared between machines, but transfer it using scp,
+or using a flash key or in other ways that you can keep your secrets.  Don’t use
+email.</p>
+<p>Here is a reminder about how to use scp:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># scp &lt;source&gt; &lt;destination&gt;</span>
+scp /path/to/.env &lt;username&gt;@ip/path/to/destination/.env
+</pre></div>
+</div>
 <p><a class="reference internal" href="example.html#example"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="reflection.html#reflection"><span class="std std-ref">next</span></a></p>
 </div>
 </div>
@@ -396,6 +501,7 @@ management GUI</span></a>.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#changing-your-rabbitmq-credentials">Changing your RabbitMQ credentials</a></li>
+<li><a class="reference internal" href="#encryption-keys-in-your-environment">Encryption Keys In Your Environment</a></li>
 </ul>
 </li>
 </ul>
