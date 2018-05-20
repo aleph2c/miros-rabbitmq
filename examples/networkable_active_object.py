@@ -5,7 +5,7 @@ import random
 from miros import spy_on
 from miros import signals, Event, return_status
 from miros_rabbitmq import NetworkedActiveObject
-from setup import MESH_ENCRYPTION_KEY, SNOOP_TRACE_ENCRYPTION_KEY, SNOOP_SPY_ENCRYPTION_KEY
+from setup import MESH_ENCRYPTION_KEY, SNOOP_TRACE_ENCRYPTION_KEY, SNOOP_SPY_ENCRYPTION_KEY, RABBIT_USER, RABBIT_PASSWORD
 
 def make_name(post):
   return str(uuid.uuid4())[0:5] + '_' + post
@@ -94,19 +94,18 @@ def outer(chart, e):
 if __name__ == '__main__':
   random.seed()
   ao = NetworkedActiveObject(make_name('ao'),
-                              rabbit_user='bob',
-                              rabbit_password='dobbs',
+                              rabbit_user=RABBIT_USER,
+                              rabbit_password=RABBIT_PASSWORD,
                               tx_routing_key='heya.man',
                               rx_routing_key='#.man',
                               mesh_encryption_key=MESH_ENCRYPTION_KEY)
   # To log
-  #ao.enable_snoop_spy()
-  #ao.enable_snoop_spy_no_color()
+  # ao.enable_snoop_spy()
+  # ao.enable_snoop_spy_no_color()
   ao.enable_snoop_trace()
-  #ao.enable_snoop_trace_no_color()
+  # ao.enable_snoop_trace_no_color()
   # python3 networkable_active_object.py 2>&1 | sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | tee log.txt
   # grep -F [+s] log.txt | grep <name>
   ao.start_at(outer)
   time.sleep(20)
-
 

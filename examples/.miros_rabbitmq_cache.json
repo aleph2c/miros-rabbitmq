@@ -1,0 +1,25 @@
+{
+  "nodes": {
+    "private": {
+      "addresses": [
+        "192.168.1.74"
+      ],
+      "amqp_urls": []
+    },
+    "public": {
+      "dead": {
+        "addresses": [
+          "192.168.1.74"
+        ],
+        "amqp_urls": []
+      },
+      "live": {
+        "addresses": [
+          "192.168.1.74"
+        ],
+        "amqp_urls": []
+      }
+    }
+  },
+  "time_out_in_minutes": 30
+}
