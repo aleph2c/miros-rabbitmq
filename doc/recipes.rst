@@ -486,7 +486,6 @@ make an empty one:
 
 .. code-block:: python
 
-  # in shell
   $ touch .env
 
 Now we have options.  We can put our keys into our environment using shell
@@ -506,13 +505,12 @@ To create an environment variable we use the ``export`` command from your shell.
 
 .. code-block:: python
 
-  # in shell
   $ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 
 In our main program, we can access these encryption keys by importing them from
-our ``setup`` file:
+our ``setup.py`` file:
 
 .. code-block:: python
 
@@ -530,8 +528,8 @@ directly into our code base.
   # in miros-rabbitmq file
   ao = NetworkedActiveObject(
     make_name('ao'),
-    rabbit_user='bob',
-    rabbit_password='dobbs',
+    rabbit_user='peter',
+    rabbit_password='rabbit',
     tx_routing_key='heya.man',
     rx_routing_key='#.man',
     mesh_encryption_key=MESH_ENCRYPTION_KEY,
@@ -547,7 +545,6 @@ shell type:
 
 .. code-block:: python
 
-  # in shell
   $ unset MESH_ENCRYPTION_KEY
   $ unset SNOOP_TRACE_ENCRYPTION_KEY
   $ unset TRACE_TRACE_ENCRYPTION_KEY
@@ -557,7 +554,6 @@ encryption keys.  By confirming that our program has crashed, we can trust that
 the information that we will put into our ``.env`` file will be used rather than
 the information we had previously placed in our environmental variables (we
 won't fool ourselves into thinking are ``.env`` file is working if it isn't).
-
   
 Let's move our encryption keys into the ``.env`` file.
 
@@ -594,7 +590,6 @@ Here is a reminder about how to use scp:
 
 .. code-block:: bash
 
-  # shell
   # scp <source> <destination>
   $ scp /path/to/.env <username>@ip/path/to/destination/.env
 
