@@ -6,6 +6,13 @@ import time
 import functools
 from datetime import datetime, timedelta
 
+from os import F_OK, W_OK
+from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWUSR
+import uuid
+from miros import Factory
+from miros import signals, Event, return_status
+import random
+
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=str(env_path))
 
@@ -18,11 +25,11 @@ RABBIT_PASSWORD = os.getenv("RABBIT_PASSWORD")
 class ScoutMemory():
   default_structure = """{
   "nodes": {
-    "private": {
+    "automatic": {
       "addresses": [],
       "amqp_urls": []
     },
-    "public": {
+    "manual": {
       "live" : {
         "addresses": [],
         "amqp_urls": []
@@ -41,10 +48,10 @@ class ScoutMemory():
     '''Create a scout memory object using an optional cache_file_path
 
     The rules which govern this cache file are simple:
-      * An address and it's amqp_url can only exist in either the public live or
-        public dead node, it can not exist in both at the same time.
-      * An address/amqp_url can only be listed once in any of the private, public-live,
-        or public-dead collections.  None of these collections will have
+      * An address and it's amqp_url can only exist in either the manual live or
+        manual dead node, it can not exist in both at the same time.
+      * An address/amqp_url can only be listed once in any of the automatic, manual-live,
+        or manual-dead collections.  None of these collections will have
         duplicates
 
     To build the a scout memory object:
@@ -72,36 +79,36 @@ class ScoutMemory():
 
     self.dict = json.load(open(self.cache_file_name, 'r'))
 
-  def addesses_and_amqp_urls_for(self, private=None, public=None, live=None, dead=None):
+  def addesses_and_amqp_urls_for(self, automatic=None, manual=None, live=None, dead=None):
     '''Get the addresses and amqp_urls for node
 
     The contract rules for this method are:
-      private and not public or not private and public
-      if public then
+      automatic and not manual or not automatic and manual
+      if manual then
         live and not dead or not live and dead
     '''
 
-    assert((private and not public) or (not private and public))
-    if public:
+    assert((automatic and not manual) or (not automatic and manual))
+    if manual:
       assert((live and not dead) or(not live and dead))
 
-    if private:
-      addresses = self.dict['nodes']['private']['addresses']
-      amqp_urls = self.dict['nodes']['private']['amqp_urls']
-    elif public:
+    if automatic:
+      addresses = self.dict['nodes']['automatic']['addresses']
+      amqp_urls = self.dict['nodes']['automatic']['amqp_urls']
+    elif manual:
       if live:
-        addresses = self.dict['nodes']['public']['live']['addresses']
-        amqp_urls = self.dict['nodes']['public']['live']['amqp_urls']
+        addresses = self.dict['nodes']['manual']['live']['addresses']
+        amqp_urls = self.dict['nodes']['manual']['live']['amqp_urls']
       elif dead:
-        addresses = self.dict['nodes']['public']['dead']['addresses']
-        amqp_urls = self.dict['nodes']['public']['dead']['amqp_urls']
+        addresses = self.dict['nodes']['manual']['dead']['addresses']
+        amqp_urls = self.dict['nodes']['manual']['dead']['amqp_urls']
     return (addresses, amqp_urls)
 
-  def append(self, address, amqp_url, private=None, public=None, live=None, dead=None):
+  def append(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
     '''Append an address or amqp_url to a node'''
 
     changed = False
-    addresses, amqp_urls = self.addesses_and_amqp_urls_for(private, public, live, dead)
+    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
 
     if address is not None and (address in addresses) is False:
       addresses.append(address)
@@ -112,10 +119,41 @@ class ScoutMemory():
     if changed:
       self.write()
 
-  def remove(self, address, amqp_url, private=None, public=None, live=None, dead=None):
+  def in_cache(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
+    '''Is an address or amqp_url in a given cache?'''
+    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
+    in_cache = False
+
+    if address in addresses:
+      in_cache |= True
+
+    if amqp_url in amqp_urls:
+      in_cache |= True
+
+    return in_cache
+
+  def in_automatic_cache(self, address, amqp_url):
+    '''Is an address or amqp_url in the automatic cache?'''
+    in_cache_fn = functools.partial(self.in_cache, automatic=True)
+    result = in_cache_fn(address, amqp_url)
+    return result
+
+  def in_manual_live_cache(self, address, amqp_url):
+    '''Is an address or amqp_url in the manual live cache?'''
+    in_cache_fn = functools.partial(self.in_cache, manual=True, live=True)
+    result = in_cache_fn(address, amqp_url)
+    return result
+
+  def in_manual_dead_cache(self, address, amqp_url):
+    '''Is an address or amqp_url in the manual dead cache?'''
+    in_cache_fn = functools.partial(self.in_cache, manual=True, dead=True)
+    result = in_cache_fn(address, amqp_url)
+    return result
+
+  def remove(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
     '''Remove an address or amqp_url to a node'''
     changed = False
-    addresses, amqp_urls = self.addesses_and_amqp_urls_for(private, public, live, dead)
+    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
 
     if address is not None and (address in addresses) is False:
       addresses.remove(address)
@@ -126,28 +164,28 @@ class ScoutMemory():
     if changed:
       self.write()
 
-  def append_private(self, address=None, amqp_url=None):
-    '''Remove an address or amqp_url to a private node'''
-    append = functools.partial(self.append, private=True)
+  def append_automatic(self, address=None, amqp_url=None):
+    '''Append an address or amqp_url to the automatic node'''
+    append = functools.partial(self.append, automatic=True)
     append(address, amqp_url)
 
-  def append_public_live(self, address=None, amqp_url=None):
-    '''Append an address or amqp_url to a public live node
+  def append_manual_live(self, address=None, amqp_url=None):
+    '''Append an address or amqp_url to a manual live node
 
-    If this address and or amqp_url exists in the public dead node, it is
+    If this address and or amqp_url exists in the manual dead node, it is
     removed'''
-    append_to_live = functools.partial(self.append, public=True, live=True)
-    remove_from_dead = functools.partial(self.remove, public=True, dead=True)
+    append_to_live = functools.partial(self.append, manual=True, live=True)
+    remove_from_dead = functools.partial(self.remove, manual=True, dead=True)
     append_to_live(address, amqp_url)
     remove_from_dead(address, amqp_url)
 
-  def append_public_dead(self, address=None, amqp_url=None):
-    '''Append an address or amqp_url to a public dead node
+  def append_manual_dead(self, address=None, amqp_url=None):
+    '''Append an address or amqp_url to a manual dead node
 
-    If this address and or amqp_url exists in the public live node, it is
+    If this address and or amqp_url exists in the manual live node, it is
     removed'''
-    append_to_dead = functools.partial(self.append, public=True, dead=True)
-    remove_from_live = functools.partial(self.remove, public=True, live=True)
+    append_to_dead = functools.partial(self.append, manual=True, dead=True)
+    remove_from_live = functools.partial(self.remove, manual=True, live=True)
     append_to_dead(address, amqp_url)
     remove_from_live(address, amqp_url)
 
@@ -156,18 +194,18 @@ class ScoutMemory():
     with open(self.cache_file_name, "w") as f:
       f.write(json.dumps(self.dict, sort_keys=True, indent=2))
 
-  def remove_all_private(self):
-    '''Remove all private addresses and amqp_urls from the private node'''
-    private_nodes = self.dict['nodes']['private']
-    private_nodes['addresses'] = []
-    private_nodes['amqp_urls'] = []
+  def remove_all_automatic(self):
+    '''Remove all automatic addresses and amqp_urls from the automatic node'''
+    automatic_nodes = self.dict['nodes']['automatic']
+    automatic_nodes['addresses'] = []
+    automatic_nodes['amqp_urls'] = []
     self.write()
 
   def remove_all_dead(self):
-    '''Remove all private addresses and amqp_urls from the public dead node'''
-    private_nodes = self.dict['nodes']['public']['dead']
-    private_nodes['addresses'] = []
-    private_nodes['amqp_urls'] = []
+    '''Remove all automatic addresses and amqp_urls from the manual dead node'''
+    automatic_nodes = self.dict['nodes']['manual']['dead']
+    automatic_nodes['addresses'] = []
+    automatic_nodes['amqp_urls'] = []
     self.write()
 
   def destroy(self):
@@ -194,13 +232,156 @@ class ScoutMemory():
       is_expired = True
     return is_expired
 
+class CacheFile(Factory):
+  def __init__(self, name, file_path, system_read_signal_name=None):
+    super().__init__(name)
+    self.file_path = file_path
+
+    if not self.exists():
+      raise FileNotFoundError("{} file path does not exist".format(self.file_path))
+
+    self.json = None
+    if system_read_signal_name is None:
+      self.system_read_signal_name = signals.CACHE
+    else:
+      self.system_read_signal_name = system_read_signal_name
+
+  def exists(self):
+    return os.access(self.file_path, F_OK)
+
+  def writeable(self):
+    return os.access(self.file_path, W_OK)
+
+  def write_access_off(self):
+    os.chmod(self.file_path, S_IREAD | S_IRGRP | S_IROTH)
+
+  def write_access_on(self):
+    os.chmod(self.file_path, S_IWUSR | S_IREAD | S_IRGRP | S_IROTH)
+
+  def temp_file_name(self):
+    return "temp_file_{}".format(uuid.uuid4().hex.upper()[0:12])
+
+
+def faw_entry(cache, e):
+  '''The file_access_waiting state ENTRY_SIGNAL event handler'''
+  cache.subscribe(Event(signal=signals.CACHE_FILE_READ))
+  cache.subscribe(Event(signal=signals.CACHE_FILE_WRITE))
+  return return_status.HANDLED
+
+def faw_CACHE_FILE_READ(cache, e):
+  '''The file_access_waiting state global CACHE_FILE_READ event handler'''
+  cache.post_fifo(Event(signal=signals.cache_file_read))
+  return return_status.HANDLED
+
+def faw_CACHE_FILE_WRITE(cache, e):
+  '''The file_access_waiting state global CACHE_FILE_WRITE event handler'''
+  cache.json = e.payload  # kept for debugging
+  cache.post_fifo(Event(signal=signals.cache_file_write, payload=e.payload))
+  return return_status.HANDLED
+
+def faw_cache_file_read(cache, e):
+  '''The file_access_waiting state private cache_file_read event handler'''
+  status = return_status.HANDLED
+  if cache.writeable():
+    status = cache.trans(file_read)
+  else:
+    # wait a short amount of time then try again
+    cache.post_fifo(Event(signal=signals.file_read),
+      period=random.uniform(0.001, 0.1),
+      times=1,
+      deferred=True)
+  return status
+
+def faw_cache_file_write(cache, e):
+  '''The file_access_waiting state private cache_file_write event handler'''
+  status = return_status.HANDLED
+  if cache.writeable():
+    status = cache.trans(file_write)
+  else:
+    # wait a short amount of time then try again sending the same payload
+    cache.post_fifo(Event(signal=signals.file_write, payload=e.payload),
+      period=random.uniform(0.001, 0.1),
+      times=1,
+      deferred=True)
+  return status
+
+def fa_entry(cache, e):
+  '''The file_accessed state ENTRY_SIGNAL event handler'''
+  cache.write_access_off()
+  return return_status.HANDLED
+
+def fa_exit(cache, e):
+  '''The file_accessed state EXIT_SIGNAL event handler'''
+  cache.write_access_on()
+  return return_status.HANDLED
+
+def fr_entry(cache, e):
+  '''The file_read state ENTRY_SIGNAL event handler'''
+  status = return_status.HANDLED
+  temp_file = cache.temp_file_name()
+  # atomic copy of cache.file_name into temp_file
+  os.rename(cache.file_name, temp_file)
+  with temp_file as fp:
+    cache.json = fp.read()
+  cache.post_fifo(Event(signal=signals.CACHE, payload=cache.json))
+  os.remove(temp_file)
+  status = cache.trans(file_access_waiting)
+  return status
+
+def fw_entry(cache, e):
+  '''The file_write state ENTRY_SIGNAL event handler'''
+  temp_file = cache.temp_file_name()
+  status = return_status.HANDLED
+  f = open(temp_file, "w")
+  # cache.json = e.payload
+  f.write(e.payload)
+  # write the file to disk
+  f.flush()
+  os.fsync(f.fileno())
+  f.close()
+  # atomic replacement of cache.file_name with temp_file
+  os.rename(temp_file, cache.file_name)
+  status = cache.trans(file_access_waiting)
+  return status
+
+cache_chart = CacheFile('network_cache', file_path=str(Path('.') / '.miros_rabbitmq_cache.json'))
+
+file_access_waiting = cache_chart.create(state='file_access_waiting'). \
+    catch(signal=signals.ENTRY_SIGNAL, handler=faw_entry). \
+    catch(signal=signals.CACHE_FILE_READ, handler=faw_CACHE_FILE_READ). \
+    catch(signal=signals.CACHE_FILE_WRITE, handler=faw_CACHE_FILE_WRITE). \
+    catch(signal=signals.cache_file_read, handler=faw_cache_file_read). \
+    catch(signal=signals.cache_file_write, handler=faw_cache_file_write). \
+    to_method()
+
+file_accessed = cache_chart.create(state='file_accessed'). \
+    catch(signal=signals.ENTRY_SIGNAL, handler=fa_entry). \
+    catch(signal=signals.EXIT_SIGNAL, handler=fa_exit). \
+    to_method()
+
+file_read = cache_chart.create(state='file_read'). \
+    catch(signal=signals.ENTRY_SIGNAL, handler=fr_entry). \
+    to_method()
+
+file_write = cache_chart.create(state='file_write'). \
+    catch(signal=signals.ENTRY_SIGNAL, handler=fw_entry). \
+    to_method()
+
+cache_chart.nest(file_access_waiting, parent=None). \
+    nest(file_accessed, parent=file_access_waiting). \
+    nest(file_read, parent=file_accessed). \
+    nest(file_write, parent=file_accessed)
 
 if __name__ == '__main__':
   sm = ScoutMemory()
-  sm.append_private(address='192.168.1.74')
-  sm.append_public_live(address='192.168.1.74')
-  sm.append_public_dead(address='192.168.1.74')
-  # sm.remove_all_private()
+  sm.append_automatic(address='192.168.1.74')
+  sm.append_manual_live(address='192.168.1.74')
+  sm.append_manual_dead(address='192.168.1.74')
+  # sm.remove_all_automatic()
   print("expired? {}".format(sm.cached_expired()))
   print("{}".format(sm.created_at()))
+
+  cache_chart.live_trace = True
+  cache_chart.start_at(file_access_waiting)
+  time.sleep(1)
 
