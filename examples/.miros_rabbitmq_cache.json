@@ -1,12 +1,12 @@
 {
   "nodes": {
-    "private": {
+    "automatic": {
       "addresses": [
         "192.168.1.74"
       ],
       "amqp_urls": []
     },
-    "public": {
+    "manual": {
       "dead": {
         "addresses": [
           "192.168.1.74"
