@@ -360,15 +360,15 @@ class CacheFileChart(CacheFile):
   @staticmethod
   def faw_cache_file_read(cache, e):
     '''The file_access_waiting state private cache_file_read event handler'''
-    status = return_status.HANDLED
     if cache.writeable():
       status = cache.trans(cache.file_read)
     else:
       # wait a short amount of time then try again
-      cache.post_fifo(Event(signal=signals.file_read),
+      cache.post_fifo(Event(signal=signals.cache_file_read),
         period=random.uniform(0.001, 0.1),
         times=1,
         deferred=True)
+      status = return_status.HANDLED
     return status
 
   @staticmethod
@@ -379,7 +379,7 @@ class CacheFileChart(CacheFile):
       status = cache.trans(cache.file_write)
     else:
       # wait a short amount of time then try again sending the same payload
-      cache.post_fifo(Event(signal=signals.file_write, payload=e.payload),
+      cache.post_fifo(Event(signal=signals.cache_file_write, payload=e.payload),
         period=random.uniform(0.001, 0.1),
         times=1,
         deferred=True)
