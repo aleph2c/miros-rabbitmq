@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>5</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>200</x>
+      <y>165</y>
+      <w>110</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>*CacheFile*
+--
+writable()
+exists()
+write_access_on()
+write_access_off()
+temp_file_name()
+expired()
+--
+json
+file_path
+system_read_signal_name
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>275</x>
+      <y>345</y>
+      <w>565</w>
+      <h>445</h>
+    </coordinates>
+    <panel_attributes>*file_access_waiting*
+--
+entry /
+  cache.subscribe(
+    Event(signal=signals.CACHE_FILE_WRITE))
+  cache.subscribe(
+    Event(signal=signals.CACHE_FILE_READ))
+  if not os.path.isfile(cache.file_path)
+    open(cache.file_path, 'a').close()
+    
+CACHE_FILE_WRITE(e) /
+  cache.json = json
+  cache.post_fifo(
+    Event(
+      signal=signals.file_write,
+    payload=e.payload))
+      
+CACHE_FILE_READ /
+  cache.post_fifo(
+    Event(signal=signals.file_read))
+
+CACHE_DESTROY /
+   cache.post_fifo(
+     Event(signal=signals.file_write, payload="")
+   
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>515</x>
+      <y>390</y>
+      <w>255</w>
+      <h>365</h>
+    </coordinates>
+    <panel_attributes>*file_accessed*
+--
+entry /
+  cache.write_access_off()
+  
+exit / 
+  cache.write_access_on()
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>560</y>
+      <w>90</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+file_read</panel_attributes>
+    <additional_attributes>10.0;20.0;160.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>350</x>
+      <y>560</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=decision</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>365</x>
+      <y>565</y>
+      <w>185</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;350.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>395</x>
+      <y>595</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=flow_final</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>355</x>
+      <y>575</y>
+      <w>50</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>540</x>
+      <y>455</y>
+      <w>215</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>*file_read*
+--
+entry /
+  cache.dict = json.load(open(cache.file_path, 'r'))
+  cache.json = json.dumps(cache.dict, sort_keys=True, indent=2)
+  cache.last_modified = os.path.getmtime(cache.file_path)
+  cache.created_at = time.ctime(os.path.getctime(cache.file_path))
+  payload = {
+    'dict': cache.dict,
+    'last_modified': cache.last_modified,
+    'created_at': cache.created_at,
+    'expired': cache.expired()
+  }
+  cache.post_fifo(Event(signal=signals.CACHE, payload=payload))
+  cache.post_lifo(Event(signal=signals.read_successful))
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>365</x>
+      <y>555</y>
+      <w>70</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>[cache.writable()]
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>295</x>
+      <y>710</y>
+      <w>185</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>chart.post_fifo(
+  Event(signal=signals.file_write, payload=e.payload),
+  period=random.uniform(0.001, timeout),
+  times=1,
+  deferred=True)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>675</y>
+      <w>90</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+file_write</panel_attributes>
+    <additional_attributes>10.0;20.0;160.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>350</x>
+      <y>675</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=decision</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>395</x>
+      <y>710</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=flow_final</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>355</x>
+      <y>690</y>
+      <w>50</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>365</x>
+      <y>680</y>
+      <w>190</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;360.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>370</x>
+      <y>675</y>
+      <w>65</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>[cache.writable()]
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>285</x>
+      <y>595</y>
+      <w>165</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>chart.post_fifo(
+  Event(signal=signals.file_read),
+  period=random.uniform(0.001, timeout),
+  times=1,
+  deferred=True)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>540</x>
+      <y>605</y>
+      <w>215</w>
+      <h>125</h>
+    </coordinates>
+    <panel_attributes>*file_write*
+--
+entry /
+  temp_file = cache.temp_file_name()
+  f = open(temp_file, "w")
+  cache.json = e.payload
+  f.write(e.payload)
+  # write the file to disk
+  f.flush()
+  os.fsync(f.fileno())
+  f.close()
+  # atomic replacement of cache.file_name
+  os.rename(temp_file, cache.file_name)
+  cache.post_lifo(Event(signal=signals.write_successful))
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>485</y>
+      <w>180</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;340.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>770</x>
+      <y>475</y>
+      <w>160</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>&lt;system_read_signal_name(CACHE)&gt; (json)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>520</y>
+      <w>100</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+read_successful</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>665</y>
+      <w>100</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+write_successful</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>895</x>
+      <y>375</y>
+      <w>230</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>Event(signal=signals.&lt;system_read_signal_name, default=CACHE&gt;,
+ payload = {
+  dict:  &lt;cache file contents as dict&gt;
+  last_modified: &lt;time_cache_last_modified&gt;
+  created_at: &lt;time when cache created&gt;
+  expired: &lt;True/False&gt;
+ }
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>890</x>
+      <y>365</y>
+      <w>225</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>The output event:
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>870</x>
+      <y>425</y>
+      <w>70</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;100.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>590</x>
+      <y>235</y>
+      <w>170</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>cache_chart = CacheFileChart(live_trace=True)
+ 
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>590</x>
+      <y>220</y>
+      <w>170</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>To create cache file chart object:
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>495</x>
+      <y>240</y>
+      <w>105</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;140.0;190.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>205</x>
+      <y>265</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+Event Processor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>245</x>
+      <y>295</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>200</x>
+      <y>310</y>
+      <w>660</w>
+      <h>500</h>
+    </coordinates>
+    <panel_attributes>*CacheFileChart*
+--
+
+
+
+
+
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>230</x>
+      <y>445</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>230</x>
+      <y>445</y>
+      <w>55</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>PlotGrid</id>
+    <coordinates>
+      <x>375</x>
+      <y>620</y>
+      <w>145</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>// datasets can have optional names set (in this case "first_name")
+data first_name
+n[0] n[1] n[2] n[3] n[&gt;=4]
+0.1 1.3	2.5 3.7 5 
+
+// some settings are global, like the width of the grid
+
+data
+a	b	c d
+1	2	3 4
+
+// A variable which is on it's own line is valid for every following plot
+type=auto
+colors=auto
+plot</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>430</x>
+      <y>615</y>
+      <w>35</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>timeout:
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>230</x>
+      <y>140</y>
+      <w>50</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>Factory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>250</x>
+      <y>150</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+</diagram>

@@ -328,6 +328,13 @@ class CacheFileChart(CacheFile):
     self.post_fifo(Event(signal=signals.CACHE_FILE_READ))
 
   @staticmethod
+  def timeout(times):
+    top_timeout = 0.1 + (1.2**times)
+    top_timeout = 5 if top_timeout > 5 else top_timeout
+    _timeout = random.uniform(0.001, top_timeout)
+    return _timeout
+
+  @staticmethod
   def faw_entry(cache, e):
     '''The file_access_waiting state ENTRY_SIGNAL event handler'''
     cache.subscribe(Event(signal=signals.CACHE_FILE_READ))
@@ -341,14 +348,15 @@ class CacheFileChart(CacheFile):
   @staticmethod
   def faw_CACHE_FILE_READ(cache, e):
     '''The file_access_waiting state global CACHE_FILE_READ event handler'''
-    cache.post_fifo(Event(signal=signals.cache_file_read))
+    cache.post_fifo(Event(signal=signals.cache_file_read, payload={'times': 0}))
     return return_status.HANDLED
 
   @staticmethod
   def faw_CACHE_FILE_WRITE(cache, e):
     '''The file_access_waiting state global CACHE_FILE_WRITE event handler'''
     cache.json = e.payload  # kept for debugging
-    cache.post_fifo(Event(signal=signals.cache_file_write, payload=e.payload))
+    cache.dict = json.load(open(cache.file_path, 'r'))
+    cache.post_fifo(Event(signal=signals.cache_file_write, payload={'times': 0, 'dict': cache.dict}))
     return return_status.HANDLED
 
   @staticmethod
@@ -364,8 +372,10 @@ class CacheFileChart(CacheFile):
       status = cache.trans(cache.file_read)
     else:
       # wait a short amount of time then try again
-      cache.post_fifo(Event(signal=signals.cache_file_read),
-        period=random.uniform(0.001, 0.1),
+      times = e.payload['times']
+      timeout = random.uniform(0.001, cache.timeout(times))
+      cache.post_fifo(Event(signal=signals.cache_file_read, payload={'times': times + 1}),
+        period=timeout,
         times=1,
         deferred=True)
       status = return_status.HANDLED
@@ -378,9 +388,12 @@ class CacheFileChart(CacheFile):
     if cache.writeable():
       status = cache.trans(cache.file_write)
     else:
+      times = e.payload['times']
+      timeout = random.uniform(0.001, cache.timeout(times))
       # wait a short amount of time then try again sending the same payload
-      cache.post_fifo(Event(signal=signals.cache_file_write, payload=e.payload),
-        period=random.uniform(0.001, 0.1),
+      cache.post_fifo(
+        Event(signal=signals.cache_file_write, payload={'times': times + 1, 'dict': cache.dict}),
+        period=timeout,
         times=1,
         deferred=True)
     return status
@@ -444,7 +457,7 @@ if __name__ == '__main__':
   cache_chart = CacheFileChart(live_trace=True)
   time.sleep(1)
   cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
-  time.sleep(20)
+  time.sleep(200)
 
   sm = ScoutMemory()
   sm.append_automatic(address='192.168.1.74')
@@ -453,5 +466,23 @@ if __name__ == '__main__':
   # sm.remove_all_automatic()
   print("expired? {}".format(sm.cached_expired()))
   print("{}".format(sm.created_at()))
+
+  # network memory
+  #   entry:
+  #    create cache file chart
+  #    request read
+  #   Cache:
+  #    !expired:
+  #      update addresses/calculate AMQP urls
+  #    experied:
+  #      discover_network
+  #   discover_network
+  #     entry:
+  #       create recon object
+  #       wait for NETWORK_RESULTS
+  #       created dict object
+  #       post CACHE_WRITE
+  #       broadcast cache
+  #     
 
 

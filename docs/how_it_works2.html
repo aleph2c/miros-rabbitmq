@@ -1,0 +1,154 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>How it Works (Design Re-write in Progress) &#8212; miros-rabbitmq 2.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example" href="example.html" />
+    <link rel="prev" title="How it Works" href="how_it_works.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="how-it-works-design-re-write-in-progress">
+<h1>How it Works (Design Re-write in Progress)<a class="headerlink" href="#how-it-works-design-re-write-in-progress" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-cache-file-chart">
+<span id="how-it-works2-the-cache-file-chart"></span><h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
+<p>The network discovery process is expensive, so we will cache its results to a
+JSON file.</p>
+<p>The cache will persist beyond the life of the program that wrote it.  When the
+next program runs, it will read the cache, determine if it is young enough to be
+useful, and if so, it will skip the expensive network discovery process.</p>
+<p>We use the JSON format since we will be transmitting this cache to other hosts
+and JSON has become the standard format for transmitting data.</p>
+<p>But there could be thousands of processes trying to read and write to this cache
+file at the same time.  To address this concern, we wrap this file access into
+an active object which will check if the file is writable before trying to read
+or write from it.  If the file is writable, the statechart will determine that
+no other program is using the file.</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_cache_file_chart.svg" src="_images/miros_rabbitmq_cache_file_chart.svg" /></div>
+</a>
+<p>The design was intended to be built within another statechart and to start
+itself upon being constructed.  The CacheFileChart subscribes to the
+<code class="docutils literal"><span class="pre">CACHE_FILE_WRITE</span></code> and the <code class="docutils literal"><span class="pre">CACHE_FILE_READ</span></code> events.  If any other part of the
+program wants to see what is in the cache, they would post a <code class="docutils literal"><span class="pre">CACHE_FILE_READ</span></code>.
+The CacheFileChart will send a <code class="docutils literal"><span class="pre">CACHE</span></code> event with the contents of the cache and
+whether the cache has been expired.</p>
+<p>If any other statechart would like to write the cache, they would place the
+contents of the write into a dict as the payload of the <code class="docutils literal"><span class="pre">CACHE_FILE_WRITE</span></code>.</p>
+<p>Internally the <code class="docutils literal"><span class="pre">CACHE_FILE_READ</span></code> and <code class="docutils literal"><span class="pre">CACHE_FILE_WRITE</span></code> public events are turned
+into the <code class="docutils literal"><span class="pre">file_read</span></code> and <code class="docutils literal"><span class="pre">file_write</span></code> events.  When the state chart sees that such
+an event is posted it will try to enter the file_read or file_write states.
+Such transitions can be blocked if the file is not writable (set by the OS).  In
+the case that the event is blocked, the statechart re-posts the same event to
+itself at a future time, then stops running.  The re-posting time is a random
+number between 0.001 and a timeout.  This timeout parameter increases for each
+re-posting failure, to a maximum value of 5 seconds.</p>
+<p>If a <code class="docutils literal"><span class="pre">file_read</span></code> or <code class="docutils literal"><span class="pre">file_write</span></code> event succeeds to transition past the file access
+state, it will lock the file by making it un-writable.  This global state, put
+onto the file by the operating system will make the file exclusive to this
+program.  When the file is read or written, the CacheFileChart will post either
+a read_successful or write_successful event to itself.  This will cause an exit
+signal to occur on the file_accessed state, which will make the file writable.
+Other programs will now have the ability to access the same file when their
+deferred <code class="docutils literal"><span class="pre">file_read</span></code> or <code class="docutils literal"><span class="pre">file_write</span></code> events fire.</p>
+<p>The internal code within the file_read and file_write states was taken from
+various stack overflow articles describing how to safely read and write a file
+in a very short period of time, in an environment where many other programs are
+trying to do the same thing.</p>
+</div>
+<div class="section" id="producescoutchart">
+<span id="how-it-works2-producescoutchart"></span><h2>ProduceScoutChart<a class="headerlink" href="#producescoutchart" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo_a" src="_static/miros_rabbitmq_icon_only.svg" width="90" alt="Logo" >
+</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How it Works (Design Re-write in Progress)</a><ul>
+<li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
+<li><a class="reference internal" href="#producescoutchart">ProduceScoutChart</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="how_it_works.html" title="previous chapter">How it Works</a></li>
+      <li>Next: <a href="example.html" title="next chapter">Example</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/how_it_works2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scott Volk.
+      
+      |
+      <a href="_sources/how_it_works2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
