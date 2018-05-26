@@ -13,9 +13,11 @@ from miros import Factory
 from miros import signals, Event, return_status
 from miros import pp
 import random
+from miros_rabbitmq.network import PikaTopicPublisher
+from miros_rabbitmq.network import RabbitHelper
 
 env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=str(env_path))
+load_dotenv()
 
 MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
 SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
@@ -453,19 +455,255 @@ class CacheFileChart(CacheFile):
     cache.post_lifo(Event(signal=signals.write_successful))
     return status
 
+class PikaTopicPublisherMaker():
+  '''A class which removes as much of the tedium from building a pika producer as is possible.'''
+  HEARTBEAT_INTERVAL_SEC = 3600
+  CALLBACK_TEMPO = 0.1
+  CONNECTION_ATTEMPTS = 3
+
+  def __init__(self,
+                ip_address,
+                routing_key,
+                exchange_name,
+                connection_attempts=None,
+                heartbeat_interval=None,
+                callback_tempo=None):
+
+    self.ip_address = ip_address
+    self.routing_key = routing_key
+    self.exchange_name = exchange_name
+    if os.getenv('RABBIT_PASSWORD') is None:
+      load_dotenv()  # climb out of this dir to find dir containing .env file
+
+    self.rabbit_user = os.getenv('RABBIT_USER')
+    self.rabbit_password = os.getenv('RABBIT_PASSWORD')
+    self.rabbit_port = os.getenv('RABBIT_PORT')
+    self.encryption_key = os.getenv('MESH_ENCRYPTION_KEY')
+
+    # contract for this make class to work
+    assert(self.rabbit_user)
+    assert(self.rabbit_password)
+    assert(self.rabbit_port)
+    assert(self.encryption_key)
+
+    if heartbeat_interval is None:
+      self.heartbeat_interval = os.getenv('RABBIT_HEARTBEAT_INTERVAL')
+      if not self.heartbeat_interval:
+        self.heartbeat_interval = PikaTopicPublisherMaker.HEARTBEAT_INTERVAL_SEC
+    else:
+      self.heartbeat_interval = heartbeat_interval
+
+    if callback_tempo is None:
+      self.callback_tempo = PikaTopicPublisherMaker.CALLBACK_TEMPO
+    else:
+      self.callback_tempo = callback_tempo
+
+    if connection_attempts is None:
+      connection_attempts = PikaTopicPublisherMaker.CONNECTION_ATTEMPTS
+
+    self.amqp_url = RabbitHelper.make_amqp_url(
+        ip_address=self.ip_address,
+        rabbit_user=self.rabbit_user,
+        rabbit_password=self.rabbit_password,
+        rabbit_port=self.rabbit_port,
+        connection_attempts=connection_attempts,
+        heartbeat_interval=heartbeat_interval)
+
+    self.producer = PikaTopicPublisher(
+        amqp_url = self.amqp_url,
+        routing_key = self.routing_key,
+        publish_tempo_sec = self.callback_tempo,
+        exchange_name = self.exchange_name,
+        encryption_key = self.encryption_key)
+
+class RabbitConsumerScout(Factory):
+  CONNECTION_ATTEMPTS    = 1
+
+  SCOUT_TEMPO_SEC        = 0.01
+  SCOUT_TIMEOUT_SEC      = 0.5
+
+  def __init__(self, ip_address, routing_key, exchange_name):
+    super().__init__(ip_address)
+
+    self.ip_address = ip_address
+    self.routing_key = routing_key
+    self.exchange_name = exchange_name
+
+class RabbitConsumerScoutChart(RabbitConsumerScout):
+  def __init__(self, ip_address, routing_key, exchange_name, live_trace=None, live_spy=None):
+    super().__init__(ip_address, routing_key, exchange_name)
+
+    self.search = self.create(state='search'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.search_entry). \
+      catch(signal=signals.REFACTOR_SEARCH, handler=self.search_refactor_search). \
+      catch(signal=signals.AMQP_CONSUMER_CHECK, handler=self.search_AMPQ_CONSUMER_CHECK).  \
+      catch(signal=signals.INIT_SIGNAL, handler=self.search_init). \
+      to_method()
+
+    self.producer_thread_engaged = self.create(state='producer_thread_engaged'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.producer_thread_engaged_entry). \
+      catch(signal=signals.EXIT_SIGNAL, handler=self.producer_thread_engaged_exit). \
+      catch(signal=signals.try_to_connect_to_consumer, handler=self.producer_try_to_contact_consumer). \
+      catch(signal=signals.consumer_test_complete, handler=self.producer_thread_engaged_consumer_test_complete). \
+      to_method()
+
+    self.producer_post_and_wait = self.create(state='producer_post_and_wait'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.producer_post_and_wait_entry). \
+      to_method()
+
+    self.amqp_consumer_server_found = self.create(state="amqp_consumer_server_found"). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.amqp_consumer_server_found_entry).  \
+      to_method()
+
+    self.no_amqp_consumer_server_found = self.create(state="no_amqp_consumer_server_found"). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.no_amqp_consumer_server_found_entry). \
+      to_method()
+
+    self.nest(self.search, parent=None). \
+      nest(self.producer_thread_engaged, parent=self.search). \
+      nest(self.producer_post_and_wait, parent=self.producer_thread_engaged). \
+      nest(self.amqp_consumer_server_found, parent=self.search). \
+      nest(self.no_amqp_consumer_server_found, parent=self.search)
+
+    if live_trace is None:
+      live_trace = True
+    else:
+      live_trace = live_trace
+
+    if live_spy is None:
+      live_spy = False
+    else:
+      live_spy = live_spy
+
+    self.live_trace = live_trace
+    self.live_spy = live_spy
+    self.start_at(self.search)
+    time.sleep(0.1)
+
+  @staticmethod
+  def search_entry(scout, e):
+    status = return_status.HANDLED
+    scout.producer = PikaTopicPublisherMaker(
+        ip_address=scout.ip_address,
+        routing_key=scout.routing_key,
+        exchange_name=scout.exchange_name,
+        connection_attempts=RabbitConsumerScout.CONNECTION_ATTEMPTS,
+        callback_tempo=RabbitConsumerScout.SCOUT_TEMPO_SEC).producer
+    scout.subscribe(Event(signals.REFACTOR_SEARCH))
+    return status
+
+  @staticmethod
+  def search_AMPQ_CONSUMER_CHECK(scout, e):
+    status = return_status.HANDLED
+    if scout.live_trace or scout.live_spy:
+      pp(e.payload)
+    return status
+
+  @staticmethod
+  def search_refactor_search(scout, e):
+    status = return_status.HANDLED
+    if 'ip_address' in e.payload and scout.name is e.payload['ip_address']:
+      for item in ['routing_key', 'exchange_name']:
+        if item in e.payload:
+          setattr(scout, item, e.payload[item])
+    status = scout.trans(scout.search)
+    return status
+
+  @staticmethod
+  def search_init(scout, e):
+    return scout.trans(scout.producer_thread_engaged)
+
+  @staticmethod
+  def producer_thread_engaged_entry(scout, e):
+    status = return_status.HANDLED
+    scout.producer.start_thread()
+    scout.post_fifo(Event(
+      signal=signals.try_to_connect_to_consumer),
+      times=1,
+      period=0.1,
+      deferred=True)
+    return status
+
+  @staticmethod
+  def producer_try_to_contact_consumer(scout, e):
+    status = scout.trans(scout.producer_post_and_wait)
+    return status
+
+  @staticmethod
+  def producer_thread_engaged_exit(scout, e):
+    status = return_status.HANDLED
+    scout.cancel_events(
+      Event(signal=signals.try_to_connect_to_consumer))
+    scout.producer.stop_thread()
+    return status
+
+  @staticmethod
+  def producer_thread_engaged_consumer_test_complete(scout, e):
+    status = return_status.HANDLED
+    if scout.producer.connect_error:
+      status = scout.trans(scout.no_amqp_consumer_server_found)
+    else:
+      status = scout.trans(scout.amqp_consumer_server_found)
+    return status
+
+  @staticmethod
+  def producer_post_and_wait_entry(scout, e):
+    status = return_status.HANDLED
+    # send a unexpected message to make it harder to decrypt
+    scout.producer.post_fifo(uuid.uuid4().hex.upper()[0:12])
+    scout.post_fifo(
+      Event(signal=signals.consumer_test_complete),
+      times=1,
+      period=0.5,
+      deferred=True
+    )
+    return status
+
+  @staticmethod
+  def amqp_consumer_server_found_entry(scout, e):
+    status = return_status.HANDLED
+    scout.post_fifo(Event(signal=signals.AMQP_CONSUMER_CHECK,
+      payload=(scout.ip_address, True, scout.routing_key, scout.exchange_name)))
+    return status
+
+  @staticmethod
+  def no_amqp_consumer_server_found_entry(scout, e):
+    status = return_status.HANDLED
+    scout.post_fifo(Event(signal=signals.AMQP_CONSUMER_CHECK,
+      payload=(scout.ip_address, False, scout.routing_key, scout.exchange_name)))
+    return status
+
+
 if __name__ == '__main__':
   cache_chart = CacheFileChart(live_trace=True)
   time.sleep(1)
   cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
-  time.sleep(200)
+  #scout1 = RabbitConsumerScoutChart(
+  #          '192.168.1.69',
+  #          'heya.man',
+  #          'miros.mesh.exchange',
+  #          live_trace = True)
+  scout2 = RabbitConsumerScoutChart(
+            '192.168.1.77',
+            'heya.man',
+            'miros.mesh.exchange',
+            live_trace = True)
+  #scout3 = RabbitConsumerScoutChart(
+  #          '192.168.1.75',
+  #          'heya.man',
+  #          'miros.mesh.exchange',
+  #          live_trace = True)
+  time.sleep(1)
+  del(scout2)
+  time.sleep(3)
 
-  sm = ScoutMemory()
-  sm.append_automatic(address='192.168.1.74')
-  sm.append_manual_live(address='192.168.1.74')
-  sm.append_manual_dead(address='192.168.1.74')
+  #sm = ScoutMemory()
+  #sm.append_automatic(address='192.168.1.74')
+  #sm.append_manual_live(address='192.168.1.74')
+  #sm.append_manual_dead(address='192.168.1.74')
   # sm.remove_all_automatic()
-  print("expired? {}".format(sm.cached_expired()))
-  print("{}".format(sm.created_at()))
+  #print("expired? {}".format(sm.cached_expired()))
+  #print("{}".format(sm.created_at()))
 
   # network memory
   #   entry:
@@ -484,5 +722,3 @@ if __name__ == '__main__':
   #       post CACHE_WRITE
   #       broadcast cache
   #     
-
-

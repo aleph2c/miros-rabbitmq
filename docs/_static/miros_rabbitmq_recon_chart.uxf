@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>54</x>
+      <y>18</y>
+      <w>153</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>*LanRecon*
+--
+my.address
+my.addresses
+other.addresses
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>117</x>
+      <y>189</y>
+      <w>900</w>
+      <h>801</h>
+    </coordinates>
+    <panel_attributes>*private_search*
+--
+entry /
+chart.subscribe(
+  Event(signal=signals.RECON_LAN))
+
+RECON_LAN /
+chart.post_fifo(
+  Event(signal=signals.recon_lan))
+  
+exit / 
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>324</x>
+      <y>270</y>
+      <w>675</w>
+      <h>342</h>
+    </coordinates>
+    <panel_attributes>*lan_recon*
+--
+  
+RECON_LAN /
+  chart.defer(e)
+
+exit /
+  chart.recall()
+  
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>387</x>
+      <y>387</y>
+      <w>207</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>*fill_arp_table*
+--
+entry /
+	chart.post_fifo(Event(
+	  signal=signals.ARP_TIME_OUT), 
+	  times=1,
+	  period=2.0,
+	  deferred=True)
+exit / 
+	chart.cancel_events(
+	  signals.ARP_FILL_TIME_OUT)
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>747</x>
+      <y>387</y>
+      <w>234</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>*identify_all_ip_addresses*
+--
+entry /
+	chart.this.addresses = ..
+	chart.other.addresses = .. # apppend
+	chart.post_fifo(
+	  Event(
+	    signal=signals.ip_addresses_found))
+	
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>189</x>
+      <y>639</y>
+      <w>396</w>
+      <h>324</h>
+    </coordinates>
+    <panel_attributes>*Recon Rabbit Consumers*
+--
+entry /
+  chart.subscribe(Event(signal=signal.SCOUTING_COMPLETE))
+  chart.candidate_ip_addresses = []
+  chart.search_space = addresses
+
+for ip_address in chart.other.addresses:
+  amqp_url = ...
+  producer_scout = ProducerScout(ip_address=..
+  chart.candidates[ip] = producer_scout
+  producer_scout.start_at(search)
+
+SCOUTING_COMPLETE(ip, payload) / 
+  if ip in chart.other.addresses
+    if payload==True:
+      chart.candidate_ip_addresses.append(ip)
+    del(chart.candidates[ip])
+
+    chart.search_space.remove(ip)
+    if chart.search_space.empty()
+      chart.post_fifo(Event(signal=signals.RECON_COMPLETE),
+        payload=chart.candidate_ip_addresses)
+  
+
+ 
+    
+  
+
+
+
+  
+
+	
+exit / 
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>792</y>
+      <w>549</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;590.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>684</x>
+      <y>765</y>
+      <w>315</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>RECON_COMPLETE(payload=lan_ip_addresses)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>342</x>
+      <y>468</y>
+      <w>63</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+</panel_attributes>
+    <additional_attributes>10.0;20.0;50.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>342</x>
+      <y>477</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>585</x>
+      <y>459</y>
+      <w>180</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+ARP_FILL_TIME_OUT</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>693</y>
+      <w>459</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+ip_addresses_found</panel_attributes>
+    <additional_attributes>490.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>72</x>
+      <y>477</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>54</x>
+      <y>144</y>
+      <w>990</w>
+      <h>873</h>
+    </coordinates>
+    <panel_attributes>*LanReconChart*
+--
+
+
+
+
+
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>72</x>
+      <y>468</y>
+      <w>63</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+</panel_attributes>
+    <additional_attributes>10.0;20.0;50.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>117</x>
+      <y>108</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>108</x>
+      <y>387</y>
+      <w>234</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+recon_lan</panel_attributes>
+    <additional_attributes>10.0;20.0;240.0;20.0</additional_attributes>
+  </element>
+</diagram>

@@ -88,8 +88,97 @@ various stack overflow articles describing how to safely read and write a file
 in a very short period of time, in an environment where many other programs are
 trying to do the same thing.</p>
 </div>
-<div class="section" id="producescoutchart">
-<span id="how-it-works2-producescoutchart"></span><h2>ProduceScoutChart<a class="headerlink" href="#producescoutchart" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-rabbit-consumer-scout-chart">
+<span id="how-it-works2-producescoutchart"></span><h2>The Rabbit Consumer Scout Chart<a class="headerlink" href="#the-rabbit-consumer-scout-chart" title="Permalink to this headline">¶</a></h2>
+<p>The RabbitConsumerScoutChart searches an IP address to see if there is a
+compatible RabbitMQ consumer running on it.  RabbitConsumerScoutChart was
+designed to:</p>
+<ul class="simple">
+<li>run in parallel with other instances of itself (for parallel searches)</li>
+<li>be started within another statechart</li>
+<li>be destroyed within another statechart</li>
+<li>ensure the RabbitMQ credentials were not in the code base</li>
+<li>ensure the encryption secrets where not in the code base</li>
+<li>hide the complexity of the pika producer creation process</li>
+<li>provide the capability to be run multiple times with different search criterion</li>
+<li>be easy to make</li>
+</ul>
+<p>To perform a scouting mission for a given IP address, routing_key and an
+exchange_name you can write something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
+  <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug the chart</span>
+</pre></div>
+</div>
+<p>The answer will come back in the form of an <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event with a
+payload containing a tuple.  The tuple will have an IP address as its first
+member and a boolean as it’s second member.  The third and forth members will be
+the routing_key and the RabbitMq exchange used in the search.  If the address
+has a amqp consumer that can be reached with the credentials provided, the
+boolean will be, you guessed it, True, otherwise the second tuple member will be
+False.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Other state chart would catch this</span>
+<span class="c1"># if the IP has a working consumer:</span>
+<span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
+  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
+
+<span class="c1"># Other state chart would catch this</span>
+<span class="c1"># if the IP does not have a working consumer:</span>
+<span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
+  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To perform another search on the same scout, in another statechart you would
+post a <code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> event:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">postfifo</span><span class="p">(</span>
+  <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">REFACTOR_SEARCH</span><span class="p">,</span>
+    <span class="n">payload</span><span class="o">=</span><span class="p">{</span>
+      <span class="s1">&#39;ip_address&#39;</span><span class="p">:</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span>
+      <span class="s1">&#39;routing_key&#39;</span><span class="p">:</span> <span class="s1">&#39;archer.bob&#39;</span>
+      <span class="s1">&#39;exchange_name&#39;</span><span class="p">:</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+      <span class="p">}</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<p>Later, assuming this search resulted in a miss, the chart that sent out the
+<code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> would receive the following signal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
+  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;archer.bob&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here is the design diagram from the RabbitConsumerScoutChart, if you can’t see
+it, click on it to download a pdf of the diagram:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_consumer_scout_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_consumer_scout_chart.svg" src="_images/miros_rabbitmq_consumer_scout_chart.svg" /></div>
+</a>
+<p>The <code class="docutils literal"><span class="pre">RabbitConsumerScout</span></code> class contains the data and methods that are used by
+the <code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code>.  The <code class="docutils literal"><span class="pre">RabbitConsumerScout</span></code> class basically
+hides the complexity of building a RabbitMQ producer by asking the
+<code class="docutils literal"><span class="pre">RabbitTopicPublisherMaker</span></code> object to make the producer for it.  This
+<code class="docutils literal"><span class="pre">RabbitTopicPublisherMaker</span></code> object, accesses the hidden credentials from the
+<code class="docutils literal"><span class="pre">.env</span></code> file tucked away somewhere in an outer directory.  The diagram tries to
+describe how this information is stored in an <code class="docutils literal"><span class="pre">.env</span></code> file, loaded into the
+environment then used by the <code class="docutils literal"><span class="pre">RabbitTopidPublisherMaker</span></code> class to build up a
+topic publisher.</p>
+<p>The <code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code> inherits from the <code class="docutils literal"><span class="pre">RabbitConsumerScout</span></code>
+class, so it gets the publisher as part of the deal.  The client basically needs
+to provide it an IP address, a routing key and an exchange name and it is ready
+to perform a search.  A user can provide the <code class="docutils literal"><span class="pre">live_trace</span></code> and <code class="docutils literal"><span class="pre">live_spy</span></code>
+arguments if they need to debug the statechart encase within the
+<code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code>, but by default this instrumentation is off.  Let’s
+turn this instrumentation on and then describe what it is doing.  We will do
+this twice, once for an address that doesn’t have a RabbitMQ server running on
+it and a second time with an address that does.</p>
+<p>Let’s start with failure:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
+  <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug the chart</span>
+</pre></div>
+</div>
+<p>This will result in the following trace instrumentation:</p>
 </div>
 </div>
 
@@ -105,7 +194,7 @@ trying to do the same thing.</p>
   <ul>
 <li><a class="reference internal" href="#">How it Works (Design Re-write in Progress)</a><ul>
 <li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
-<li><a class="reference internal" href="#producescoutchart">ProduceScoutChart</a></li>
+<li><a class="reference internal" href="#the-rabbit-consumer-scout-chart">The Rabbit Consumer Scout Chart</a></li>
 </ul>
 </li>
 </ul>
