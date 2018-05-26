@@ -91,20 +91,19 @@ trying to do the same thing.</p>
 <div class="section" id="the-rabbit-consumer-scout-chart">
 <span id="how-it-works2-producescoutchart"></span><h2>The Rabbit Consumer Scout Chart<a class="headerlink" href="#the-rabbit-consumer-scout-chart" title="Permalink to this headline">¶</a></h2>
 <p>The RabbitConsumerScoutChart searches an IP address to see if there is a
-compatible RabbitMQ consumer running on it.  RabbitConsumerScoutChart was
+compatible RabbitMQ consumer running on it.  The RabbitConsumerScoutChart was
 designed to:</p>
 <ul class="simple">
-<li>run in parallel with other instances of itself (for parallel searches)</li>
-<li>be started within another statechart</li>
-<li>be destroyed within another statechart</li>
-<li>ensure the RabbitMQ credentials were not in the code base</li>
-<li>ensure the encryption secrets where not in the code base</li>
-<li>hide the complexity of the pika producer creation process</li>
-<li>provide the capability to be run multiple times with different search criterion</li>
-<li>be easy to make</li>
+<li>be created/started/destroyed within another statechart</li>
+<li>run in parallel with other instances of itself (to speed up searches of large LANs)</li>
+<li>ensure that the RabbitMQ credentials were not in the code base</li>
+<li>ensure that the encryption secrets where not in the code base</li>
+<li>hide the complexity of the pika producer’s creation process</li>
+<li>provide the capability to be run many times with different search criterion</li>
 </ul>
-<p>To perform a scouting mission for a given IP address, routing_key and an
-exchange_name you can write something like this:</p>
+<p>To perform a scouting mission for a given IP address, you will also need the
+routing_key and an exchange_name you want to connect to, then do something like
+this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
   <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
   <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -112,13 +111,8 @@ exchange_name you can write something like this:</p>
   <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug the chart</span>
 </pre></div>
 </div>
-<p>The answer will come back in the form of an <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event with a
-payload containing a tuple.  The tuple will have an IP address as its first
-member and a boolean as it’s second member.  The third and forth members will be
-the routing_key and the RabbitMq exchange used in the search.  If the address
-has a amqp consumer that can be reached with the credentials provided, the
-boolean will be, you guessed it, True, otherwise the second tuple member will be
-False.</p>
+<p>The answer will come back to you in the payload of an asynchronous event named <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>.
+The answer-payload consist of a tuple: <code class="docutils literal"><span class="pre">(&lt;ip</span> <span class="pre">address&gt;,</span> <span class="pre">&lt;True/False&gt;,</span> <span class="pre">&lt;routing_key&gt;,</span> <span class="pre">&lt;exchange&gt;)</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Other state chart would catch this</span>
 <span class="c1"># if the IP has a working consumer:</span>
 <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
@@ -179,6 +173,66 @@ it and a second time with an address that does.</p>
 </pre></div>
 </div>
 <p>This will result in the following trace instrumentation:</p>
+<p>Comparing it it’s statemachine:</p>
+<a class="reference external image-reference" href="_static/search_machine.pdf"><div align="center" class="align-center"><img alt="_images/search_machine.svg" src="_images/search_machine.svg" /></div>
+</a>
+<p>Then viewing the information as a sequence diagram:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">]</span>
+               <span class="n">top</span>   <span class="n">producer_thread_engaged</span>          <span class="n">producer_post_and_wait</span>    <span class="n">no_amqp_consumer_server_found</span>
+                <span class="o">+--</span><span class="n">start_at</span><span class="p">()</span><span class="o">--&gt;|</span>                                <span class="o">|</span>                             <span class="o">|</span>
+                <span class="o">|</span>     <span class="p">(</span><span class="mi">1</span><span class="p">)</span>       <span class="o">|</span>                                <span class="o">|</span>                             <span class="o">|</span>
+                <span class="o">|</span>               <span class="o">+--</span><span class="n">try_to_connect_to_consumer</span><span class="p">()</span><span class="o">-&gt;|</span>                             <span class="o">|</span>
+                <span class="o">|</span>               <span class="o">|</span>              <span class="p">(</span><span class="mi">2</span><span class="p">)</span>               <span class="o">|</span>                             <span class="o">|</span>
+                <span class="o">|</span>               <span class="o">|</span>                                <span class="o">+--</span><span class="n">consumer_test_complete</span><span class="p">()</span><span class="o">--&gt;|</span>
+                <span class="o">|</span>               <span class="o">|</span>                                <span class="o">|</span>            <span class="p">(</span><span class="mi">3</span><span class="p">)</span>              <span class="o">|</span>
+<span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">We see that when the state machine starts, it initializes itself into the
+<code class="docutils literal"><span class="pre">search</span></code> state which builds a <code class="docutils literal"><span class="pre">scout.producer</span></code> object and subscribes the
+machine with the global <code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> event.  Upon completing these
+tasks the <code class="docutils literal"><span class="pre">search</span></code> state is issued the <code class="docutils literal"><span class="pre">INIT_SIGNAL</span></code> which causes the
+state machine to enter the <code class="docutils literal"><span class="pre">producer_thread_engaged</span></code> state.  Upon entering
+this state the <code class="docutils literal"><span class="pre">scout.produer</span></code>’s thread is started and a delayed one-shot
+<code class="docutils literal"><span class="pre">try_to_connect_to_consumer</span></code> event is built, then started.  This
+one-shot is intended to give the <code class="docutils literal"><span class="pre">scout.producer</span></code> thread enough time to
+turn itself on before we start using it.</p>
+</li>
+<li><p class="first">About 200 ms after step 1, the <code class="docutils literal"><span class="pre">try_to_connect_to_consumer</span></code>
+one-shot event causes a transition out of the <code class="docutils literal"><span class="pre">producer_thread_engaged</span></code>
+state into the <code class="docutils literal"><span class="pre">producer_post_and_wait</span></code> state.  Upon entering the
+<code class="docutils literal"><span class="pre">producer_post_and_wait</span></code> state, the state machine sends a test message out
+to any consumer that might exist on the IP address being searched.  There is
+a lot happening in the background; the message is setup as a random string
+of character, it’s encrypted and serialized by the <code class="docutils literal"><span class="pre">scout.producer</span></code>, it’s
+routing key and exchange information and RabbitMQ credentials are stamped
+onto it.  This is really of no concern to the state machine, all of this
+work is being done within the <code class="docutils literal"><span class="pre">scout.producer</span></code> object.</p>
+<p>Once the message is sent the <code class="docutils literal"><span class="pre">producer_post_and_wait</span></code> state arms a
+<code class="docutils literal"><span class="pre">consumer_test_complete</span></code> one-shot to fire in 500 ms.  This means that the
+consumer, if it exists has half a second to respond to our search otherwise
+the state machine will conclude that it is not there.</p>
+</li>
+<li><p class="first">The <code class="docutils literal"><span class="pre">consumer_test_complete</span></code> event is fired roughly 500 ms after the end
+of step 2.  This causes a call to the signal hygiene <code class="docutils literal"><span class="pre">cancel_events</span></code> method,
+then the state machine checks the results of the producer’s search by looking at
+it’s <code class="docutils literal"><span class="pre">scout.producer.connect_error</span></code> flag.  In this case no connection was
+made so the flag is set to True.  This causes a transition into the
+<code class="docutils literal"><span class="pre">no_amqp_consumer_server_found</span></code> state.  Upon entering the state the public
+event <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> is made with a four element tuple result:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Some other statechart that has subscribed to the <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>
+will catch this event and determine that the address 192.168.1.77 will not
+respond to the RabbitMQ credentials, the encryption key with the current
+topic key and exchange name.</p>
+</li>
+</ol>
+<p>A very similar process would have been followed had the IP address of
+<code class="docutils literal"><span class="pre">192.168.1.77</span></code> had a RabbitMQ consumer with the correct credentials.</p>
 </div>
 </div>
 

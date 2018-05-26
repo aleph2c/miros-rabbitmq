@@ -64,20 +64,19 @@ trying to do the same thing.
 The Rabbit Consumer Scout Chart
 -------------------------------
 The RabbitConsumerScoutChart searches an IP address to see if there is a
-compatible RabbitMQ consumer running on it.  RabbitConsumerScoutChart was
+compatible RabbitMQ consumer running on it.  The RabbitConsumerScoutChart was
 designed to:
 
-* run in parallel with other instances of itself (for parallel searches)
-* be started within another statechart
-* be destroyed within another statechart
-* ensure the RabbitMQ credentials were not in the code base
-* ensure the encryption secrets where not in the code base
-* hide the complexity of the pika producer creation process
-* provide the capability to be run multiple times with different search criterion
-* be easy to make
+* be created/started/destroyed within another statechart
+* run in parallel with other instances of itself (to speed up searches of large LANs)
+* ensure that the RabbitMQ credentials were not in the code base
+* ensure that the encryption secrets where not in the code base
+* hide the complexity of the pika producer's creation process
+* provide the capability to be run many times with different search criterion
 
-To perform a scouting mission for a given IP address, routing_key and an
-exchange_name you can write something like this:
+To perform a scouting mission for a given IP address, you will also need the
+routing_key and an exchange_name you want to connect to, then do something like
+this:
 
 .. code-block:: python
   
@@ -87,13 +86,8 @@ exchange_name you can write something like this:
     exchange='miros.mesh.exchange',
     live_trace=True)  # to debug the chart
 
-The answer will come back in the form of an ``AMQP_CONSUMER_CHECK`` event with a
-payload containing a tuple.  The tuple will have an IP address as its first
-member and a boolean as it's second member.  The third and forth members will be
-the routing_key and the RabbitMq exchange used in the search.  If the address
-has a amqp consumer that can be reached with the credentials provided, the
-boolean will be, you guessed it, True, otherwise the second tuple member will be
-False.
+The answer will come back to you in the payload of an asynchronous event named ``AMQP_CONSUMER_CHECK``.
+The answer-payload consist of a tuple: ``(<ip address>, <True/False>, <routing_key>, <exchange>)``:
 
 .. code-block:: python
 
@@ -175,4 +169,71 @@ This will result in the following trace instrumentation:
   [2018-05-25 18:50:34.990279] [192.168.1.77] e->try_to_connect_to_consumer() producer_thread_engaged->producer_post_and_wait
   [2018-05-25 18:50:35.569538] [192.168.1.77] e->consumer_test_complete() producer_post_and_wait->no_amqp_consumer_server_found
   ('192.168.1.77', False, 'heya.man', 'miros.mesh.exchange')
+
+Comparing it it's statemachine:
+
+.. image:: _static/search_machine.svg
+    :target: _static/search_machine.pdf
+    :align: center
+
+Then viewing the information as a sequence diagram:
+
+.. code-block:: python
+
+  [Statechart: 192.168.1.77]
+                 top   producer_thread_engaged          producer_post_and_wait    no_amqp_consumer_server_found
+                  +--start_at()-->|                                |                             |
+                  |     (1)       |                                |                             |
+                  |               +--try_to_connect_to_consumer()->|                             |
+                  |               |              (2)               |                             |
+                  |               |                                +--consumer_test_complete()-->|
+                  |               |                                |            (3)              |
+  (4) -> ('192.168.1.77', False, 'heya.man', 'miros.mesh.exchange')
+
+1.  We see that when the state machine starts, it initializes itself into the
+    ``search`` state which builds a ``scout.producer`` object and subscribes the
+    machine with the global ``REFACTOR_SEARCH`` event.  Upon completing these
+    tasks the ``search`` state is issued the ``INIT_SIGNAL`` which causes the
+    state machine to enter the ``producer_thread_engaged`` state.  Upon entering
+    this state the ``scout.produer``'s thread is started and a delayed one-shot
+    ``try_to_connect_to_consumer`` event is built, then started.  This
+    one-shot is intended to give the ``scout.producer`` thread enough time to
+    turn itself on before we start using it.
+
+2.  About 200 ms after step 1, the ``try_to_connect_to_consumer``
+    one-shot event causes a transition out of the ``producer_thread_engaged``
+    state into the ``producer_post_and_wait`` state.  Upon entering the
+    ``producer_post_and_wait`` state, the state machine sends a test message out
+    to any consumer that might exist on the IP address being searched.  There is
+    a lot happening in the background; the message is setup as a random string
+    of character, it's encrypted and serialized by the ``scout.producer``, it's
+    routing key and exchange information and RabbitMQ credentials are stamped
+    onto it.  This is really of no concern to the state machine, all of this
+    work is being done within the ``scout.producer`` object.
+
+    Once the message is sent the ``producer_post_and_wait`` state arms a
+    ``consumer_test_complete`` one-shot to fire in 500 ms.  This means that the
+    consumer, if it exists has half a second to respond to our search otherwise
+    the state machine will conclude that it is not there.
+
+3.  The ``consumer_test_complete`` event is fired roughly 500 ms after the end
+    of step 2.  This causes a call to the signal hygiene ``cancel_events`` method,
+    then the state machine checks the results of the producer's search by looking at
+    it's ``scout.producer.connect_error`` flag.  In this case no connection was
+    made so the flag is set to True.  This causes a transition into the
+    ``no_amqp_consumer_server_found`` state.  Upon entering the state the public
+    event ``AMQP_CONSUMER_CHECK`` is made with a four element tuple result:
+
+    .. code-block:: python
+
+       ('192.168.1.77', False, 'heya.man', 'miros.mesh.exchange')
+
+4. Some other statechart that has subscribed to the ``AMQP_CONSUMER_CHECK``
+   will catch this event and determine that the address 192.168.1.77 will not
+   respond to the RabbitMQ credentials, the encryption key with the current
+   topic key and exchange name.
+
+A very similar process would have been followed had the IP address of
+``192.168.1.77`` had a RabbitMQ consumer with the correct credentials.
+
 
