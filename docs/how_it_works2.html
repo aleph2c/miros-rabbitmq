@@ -45,6 +45,21 @@
 <h1>How it Works (Design Re-write in Progress)<a class="headerlink" href="#how-it-works-design-re-write-in-progress" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="the-cache-file-chart">
 <span id="how-it-works2-the-cache-file-chart"></span><h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
+<p>The CacheFileChart caches network information so that your distributed system
+can startup faster by avoiding the slow network discovery phase.  The CacheFileChart
+was designed to:</p>
+<ul class="simple">
+<li>be created/started/destroyed within another statechart</li>
+<li>allow one cache file to be readable and writable from thousands of different
+programs running at the same time.</li>
+<li>hide the complexity of a concurrent file read into JSON from the user</li>
+<li>hide the complexity of a file write from JSON from the user</li>
+<li>have a stochastic-exponential-timeout mechanism for pending read/write waits</li>
+<li>Write a file based on an asynchronous event published from another statechart</li>
+<li>Convert a file read into an asynchronous event which can be subscribed to
+by another statechart</li>
+<li>be easy to debug/document</li>
+</ul>
 <p>The network discovery process is expensive, so we will cache its results to a
 JSON file.</p>
 <p>The cache will persist beyond the life of the program that wrote it.  When the
@@ -52,7 +67,7 @@ next program runs, it will read the cache, determine if it is young enough to be
 useful, and if so, it will skip the expensive network discovery process.</p>
 <p>We use the JSON format since we will be transmitting this cache to other hosts
 and JSON has become the standard format for transmitting data.</p>
-<p>But there could be thousands of processes trying to read and write to this cache
+<p>There could be thousands of processes trying to read and write to this cache
 file at the same time.  To address this concern, we wrap this file access into
 an active object which will check if the file is writable before trying to read
 or write from it.  If the file is writable, the statechart will determine that
@@ -100,10 +115,13 @@ designed to:</p>
 <li>ensure that the encryption secrets where not in the code base</li>
 <li>hide the complexity of the pika producer’s creation process</li>
 <li>provide the capability to be run many times with different search criterion</li>
+<li>provide it’s answers in the form of asynchronous events to which other
+statecharts can subscribe.</li>
+<li>be easy to debug/document</li>
 </ul>
-<p>To perform a scouting mission for a given IP address, you will also need the
-routing_key and an exchange_name you want to connect to, then do something like
-this:</p>
+<p>To perform a scouting mission for a given IP address, you will need the
+routing_key and an exchange_name that you want to connect to, then do something
+like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
   <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
   <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -111,22 +129,43 @@ this:</p>
   <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug the chart</span>
 </pre></div>
 </div>
-<p>The answer will come back to you in the payload of an asynchronous event named <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>.
-The answer-payload consist of a tuple: <code class="docutils literal"><span class="pre">(&lt;ip</span> <span class="pre">address&gt;,</span> <span class="pre">&lt;True/False&gt;,</span> <span class="pre">&lt;routing_key&gt;,</span> <span class="pre">&lt;exchange&gt;)</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Other state chart would catch this</span>
-<span class="c1"># if the IP has a working consumer:</span>
-<span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
-  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
-
-<span class="c1"># Other state chart would catch this</span>
-<span class="c1"># if the IP does not have a working consumer:</span>
-<span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
-  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
+<p>The above call would construct a statechart, start it and scout the network with
+the provided information.</p>
+<p>Upon completing it’s scouting mission, the <code class="docutils literal"><span class="pre">scout1</span></code> object would answer in
+the form of an asynchronous event named <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>.  The answer
+will be in the payload of the event in the form of a namedtuple:</p>
+<p><code class="docutils literal"><span class="pre">AMQPConsumerCheckPayload(ip_address,</span> <span class="pre">result,</span> <span class="pre">routing_key,</span> <span class="pre">exchange_name)</span></code>:</p>
+<p>To get access to this answer within the statechart initiating the search, all it
+would have to do is subscribe to the event:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>To perform another search on the same scout, in another statechart you would
-post a <code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> event:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">postfifo</span><span class="p">(</span>
+<p>For the subscribing state machine to extract the answer it would need to react
+to the <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event. Here is how you would do that within a
+miros Factory object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># The callback used to see the event</span>
+<span class="k">def</span> <span class="nf">callback_AMQP_CONSUMER_CHECK</span><span class="p">(</span><span class="n">lan</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+  <span class="n">ip</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">ip_address</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">result</span>
+  <span class="n">routing_key</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">routing_key</span>
+  <span class="n">exchange_name</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">exchange_name</span>
+
+  <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;AMQP consumer at searched location&quot;</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;AMQP consumer NOT at searched location&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># linking a state to an event and it&#39;s callback</span>
+<span class="n">some_state</span> <span class="o">=</span> <span class="n">recce</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;some_state&#39;</span><span class="p">)</span><span class="o">.</span> \
+  <span class="n">catch</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
+        <span class="n">handler</span><span class="o">=</span><span class="n">recce_rabbit_consumers_AMQP_CONSUMER_CHECK</span><span class="p">)</span><span class="o">.</span> \
+  <span class="n">to_method</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To perform another search on the same <code class="docutils literal"><span class="pre">scout1</span></code> object, post a <code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> event to it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span><span class="o">.</span><span class="n">postfifo</span><span class="p">(</span>
   <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">REFACTOR_SEARCH</span><span class="p">,</span>
     <span class="n">payload</span><span class="o">=</span><span class="p">{</span>
       <span class="s1">&#39;ip_address&#39;</span><span class="p">:</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span>
@@ -134,12 +173,6 @@ post a <code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></
       <span class="s1">&#39;exchange_name&#39;</span><span class="p">:</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
       <span class="p">}</span>
   <span class="p">)</span>
-</pre></div>
-</div>
-<p>Later, assuming this search resulted in a miss, the chart that sent out the
-<code class="docutils literal"><span class="pre">REFACTOR_SEARCH</span></code> would receive the following signal:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">,</span>
-  <span class="n">payload</span><span class="o">=</span><span class="p">(</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;archer.bob&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Here is the design diagram from the RabbitConsumerScoutChart, if you can’t see
@@ -159,12 +192,11 @@ topic publisher.</p>
 class, so it gets the publisher as part of the deal.  The client basically needs
 to provide it an IP address, a routing key and an exchange name and it is ready
 to perform a search.  A user can provide the <code class="docutils literal"><span class="pre">live_trace</span></code> and <code class="docutils literal"><span class="pre">live_spy</span></code>
-arguments if they need to debug the statechart encase within the
+arguments if they need to debug the statechart encased within the
 <code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code>, but by default this instrumentation is off.  Let’s
 turn this instrumentation on and then describe what it is doing.  We will do
-this twice, once for an address that doesn’t have a RabbitMQ server running on
-it and a second time with an address that does.</p>
-<p>Let’s start with failure:</p>
+once for an address that doesn’t have a RabbitMQ server running on
+it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
   <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
   <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -173,6 +205,12 @@ it and a second time with an address that does.</p>
 </pre></div>
 </div>
 <p>This will result in the following trace instrumentation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">25</span> <span class="mi">18</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span><span class="mf">34.888810</span><span class="p">]</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">producer_thread_engaged</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">25</span> <span class="mi">18</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span><span class="mf">34.990279</span><span class="p">]</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">try_to_connect_to_consumer</span><span class="p">()</span> <span class="n">producer_thread_engaged</span><span class="o">-&gt;</span><span class="n">producer_post_and_wait</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">25</span> <span class="mi">18</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span><span class="mf">35.569538</span><span class="p">]</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.77</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">consumer_test_complete</span><span class="p">()</span> <span class="n">producer_post_and_wait</span><span class="o">-&gt;</span><span class="n">no_amqp_consumer_server_found</span>
+<span class="n">AMQPConsumerCheckPayload</span><span class="p">(</span><span class="n">ip_address</span><span class="o">=</span><span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Comparing it it’s statemachine:</p>
 <a class="reference external image-reference" href="_static/search_machine.pdf"><div align="center" class="align-center"><img alt="_images/search_machine.svg" src="_images/search_machine.svg" /></div>
 </a>
@@ -185,7 +223,12 @@ it and a second time with an address that does.</p>
                 <span class="o">|</span>               <span class="o">|</span>              <span class="p">(</span><span class="mi">2</span><span class="p">)</span>               <span class="o">|</span>                             <span class="o">|</span>
                 <span class="o">|</span>               <span class="o">|</span>                                <span class="o">+--</span><span class="n">consumer_test_complete</span><span class="p">()</span><span class="o">--&gt;|</span>
                 <span class="o">|</span>               <span class="o">|</span>                                <span class="o">|</span>            <span class="p">(</span><span class="mi">3</span><span class="p">)</span>              <span class="o">|</span>
-<span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;heya.man&#39;</span><span class="p">,</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="n">AMQPConsumerCheckPayload</span><span class="p">(</span>
+    <span class="n">ip_address</span><span class="o">=</span><span class="s1">&#39;192.168.1.69&#39;</span><span class="p">,</span>
+    <span class="n">result</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+    <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic">
@@ -231,8 +274,132 @@ respond to the RabbitMQ credentials, the encryption key with the current
 topic key and exchange name.</p>
 </li>
 </ol>
-<p>A very similar process would have been followed had the IP address of
-<code class="docutils literal"><span class="pre">192.168.1.77</span></code> had a RabbitMQ consumer with the correct credentials.</p>
+</div>
+<div class="section" id="the-lanreccechart">
+<span id="how-it-works2-the-lanreccechart"></span><h2>The LanRecceChart<a class="headerlink" href="#the-lanreccechart" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The word Recce is the Canadian/British way of saying recon.  Recon, is the
+short form of the word reconnaissance.  I didn’t know this before I googled
+recon, but being a good Canadian I decided to use <code class="docutils literal"><span class="pre">recce</span></code> to name the
+objects and classes in the part of the design, instead of the word recon (we
+all have to do our parts to resist American cultural hegemony).</p>
+<p class="last">Being new to the word I had to figure out how to say it, recce is pronounced
+like ‘wreck-ee’.</p>
+</div>
+<p>The LanRecceChart performs multiple scouting missions of your local area network
+for compatible RabbitMQ consumers.  The LanRecceChart was designed to:</p>
+<ul class="simple">
+<li>be created/started/destroyed within another statechart</li>
+<li>hide the complexity of the local area networking search details</li>
+<li>build a set of search criterion based on it’s LAN discovery process</li>
+<li>rely on the RabbitConsumerScoutChart specialists to perform the individual
+scouting missions for compatible RabbitMQ consumers.</li>
+<li>perform all of it’s scouting missions in parallel</li>
+<li>work in Linux and on the Windows Linux Subsystem</li>
+<li>provide it’s result in the form of asynchronous events to which other
+statecharts can subscribe.</li>
+<li>be easy to debug/document</li>
+</ul>
+<p>Here is the design diagram for the LanRecceChart, if it is too small, click on
+the picture to download a pdf of the diagram:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+</a>
+<p>The LanRecce class, inherited by the LanRecceChart contains all of the methods
+required to search your local area network and your local machine for the IP
+addresses needed to begin a search for compatible RabbitMQ consumers.  The three
+main methods used by the LanRecceChart during the dynamic portion of it’s life
+are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">LanRecce.get_working_ip_address</span></code></li>
+<li><code class="docutils literal"><span class="pre">ping_to_fill_arp_table</span></code></li>
+<li><code class="docutils literal"><span class="pre">candidiate_ip_addresses</span></code></li>
+</ul>
+</div></blockquote>
+<p>The rest of the methods help these main methods perform their required tasks.</p>
+<p>To build a CacheFileChart with a live_trace:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lan_recce</span> <span class="o">=</span> <span class="n">LanRecceChart</span><span class="p">(</span>
+    <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+    <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+    <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The LanRecceChart does not start itself.  The statechart that wants to start the
+network reconnaissance will have to publish a <code class="docutils literal"><span class="pre">RECCE_LAN</span></code> event or use the
+<code class="docutils literal"><span class="pre">post_fifo</span></code> method on the <code class="docutils literal"><span class="pre">LanRecceChart</span></code> object with the <code class="docutils literal"><span class="pre">RECCE_LAN</span></code>
+event.  Let’s just post to it directly using the <code class="docutils literal"><span class="pre">post_fifo</span></code> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lan_recce</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">RECCE_LAN</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now let’s look at the trace:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372046</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">private_search</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372522</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">recce_lan</span><span class="p">()</span> <span class="n">private_search</span><span class="o">-&gt;</span><span class="n">fill_arp_table</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.386858</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">ARP_TIME_OUT</span><span class="p">()</span> <span class="n">fill_arp_table</span><span class="o">-&gt;</span><span class="n">identify_all_ip_addresses</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.454212</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">ip_addresses_found</span><span class="p">()</span> <span class="n">identify_all_ip_addresses</span><span class="o">-&gt;</span><span class="n">recce_rabbit_consumers</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mf">00.048376</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">lan_recce_complete</span><span class="p">()</span> <span class="n">recce_rabbit_consumers</span><span class="o">-&gt;</span><span class="n">private_search</span>
+</pre></div>
+</div>
+<p>Compare this trace with it’s statechart:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+</a>
+<p>Compare the statechart within the <code class="docutils literal"><span class="pre">LanRecceChart</span></code> class to the sequence diagram with a description:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="n">lan_recce_chart</span><span class="p">]</span>
+           <span class="n">top</span>     <span class="n">private_search</span>  <span class="n">fill_arp_table</span>  <span class="n">identify_all_ip_addresses</span>  <span class="n">recce_rabbit_consumers</span>
+            <span class="o">+-</span><span class="n">start_at</span><span class="p">()</span><span class="o">-&gt;|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>    <span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">+-</span><span class="n">recce_lan</span><span class="p">()</span><span class="o">-&gt;|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>    <span class="p">(</span><span class="mi">2</span><span class="p">)</span>       <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">+----</span><span class="n">ARP_TIME_OUT</span><span class="p">()</span><span class="o">---&gt;|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>         <span class="p">(</span><span class="mi">3</span><span class="p">)</span>          <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">+--</span><span class="n">ip_addresses_found</span><span class="p">()</span><span class="o">-&gt;|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">4</span><span class="p">)</span>           <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">+&lt;-------------+----------------------+--</span><span class="n">lan_recce_complete</span><span class="p">()</span><span class="o">--|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">5</span><span class="p">)</span>           <span class="o">|</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">The <code class="docutils literal"><span class="pre">LanRecceChart</span></code> starts itself in the <code class="docutils literal"><span class="pre">private_search</span></code> state.
+Immediately upon entering the <code class="docutils literal"><span class="pre">private_search</span></code> state the state machine
+subscribes to the <code class="docutils literal"><span class="pre">RECCE_LAN</span></code> and <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events.  The
+<code class="docutils literal"><span class="pre">RECCE_LAN</span></code> event will be used by some outside statechart to begin a search
+of the local network and the <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events will be initiated
+within the <code class="docutils literal"><span class="pre">recce_rabbit_consumers</span></code> state, talked about in step 4.</p>
+<p>After subscribing to the public events it uses the <code class="docutils literal"><span class="pre">get_working_ip_address</span></code>
+static to get it’s working IP address.</p>
+</li>
+<li><p class="first">In response to our posted <code class="docutils literal"><span class="pre">RECCE_LAN</span></code> event the chart posts a private
+<code class="docutils literal"><span class="pre">recce_lan</span></code> event and begins a search of the local area network.  Notice
+that while the state machine is within the <code class="docutils literal"><span class="pre">lan_recce</span></code> state, all
+additional <code class="docutils literal"><span class="pre">RECCE_LAN</span></code> events will be deferred until the state is exited.
+This is an example of the <a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event">deferred event pattern</a>.</p>
+<p>After the event processor enters the <code class="docutils literal"><span class="pre">lan_recce</span></code> state, it’s initialization
+signal causes a transition into the <code class="docutils literal"><span class="pre">fill_arp_table</span></code>.  Upon entering the
+<code class="docutils literal"><span class="pre">file_arp_table</span></code> the state machine pings the broadcast address of the local
+network to fill the arp table and triggers a one shot event called
+<code class="docutils literal"><span class="pre">ARP_FILL_TIME_OUT</span></code> to fire in <code class="docutils literal"><span class="pre">lan.arp_time_sec</span></code>.  This value can be
+passed into the LanRecceChart as an optional parameter, by default it is set
+to 2 seconds.</p>
+</li>
+<li><p class="first">2 seconds after step 2, the <code class="docutils literal"><span class="pre">ARP_FILL_TIME_OUT</span></code> one shot is fired, causing
+a transition into the <code class="docutils literal"><span class="pre">identify_all_ip_addresses</span></code> state.  Upon entering
+this state the state machine determines what the network addresses are by
+reading the arp table within a call to the <code class="docutils literal"><span class="pre">candidiate_ip_addresses</span></code>
+method.  It then posts the <code class="docutils literal"><span class="pre">ip_address_found</span></code> event to itself.</p>
+</li>
+<li><p class="first">At this stage, each of the discovered IP addresses is used to begin a
+scouting mission.  The missions run in parallel using their own
+<code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code> instance.  When a mission is completed, the
+result is published by the <code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code> within the payload of
+the <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event and caught and handled within the
+<code class="docutils literal"><span class="pre">recce_rabbit_consumers</span></code> state.</p>
+<p>When all of the searches have returned their respect <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>
+the IP addresses that have been confirmed to have a RabbitMQ consumer are put
+into the payload of a <code class="docutils literal"><span class="pre">LAN_RECCE_COMPLETE</span></code> event and published to the task
+fabric so that any statechart subscribing to this event will receive the
+results of the reconnaissance of the local network.</p>
+</li>
+</ol>
 </div>
 </div>
 
@@ -249,6 +416,7 @@ topic key and exchange name.</p>
 <li><a class="reference internal" href="#">How it Works (Design Re-write in Progress)</a><ul>
 <li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
 <li><a class="reference internal" href="#the-rabbit-consumer-scout-chart">The Rabbit Consumer Scout Chart</a></li>
+<li><a class="reference internal" href="#the-lanreccechart">The LanRecceChart</a></li>
 </ul>
 </li>
 </ul>

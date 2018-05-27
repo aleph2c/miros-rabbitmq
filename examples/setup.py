@@ -16,6 +16,12 @@ import random
 from miros_rabbitmq.network import PikaTopicPublisher
 from miros_rabbitmq.network import RabbitHelper
 
+from collections import namedtuple
+import ipaddress
+import socket
+import subprocess
+import netifaces
+
 env_path = Path('.') / '.env'
 load_dotenv()
 
@@ -314,7 +320,7 @@ class CacheFileChart(CacheFile):
         nest(self.file_write, parent=self.file_accessed)
 
     if live_trace is None:
-      live_trace = True
+      live_trace = False
     else:
       live_trace = live_trace
 
@@ -326,7 +332,6 @@ class CacheFileChart(CacheFile):
     self.live_trace = live_trace
     self.live_spy = live_spy
     self.start_at(self.file_access_waiting)
-    time.sleep(0.1)
     self.post_fifo(Event(signal=signals.CACHE_FILE_READ))
 
   @staticmethod
@@ -516,6 +521,10 @@ class PikaTopicPublisherMaker():
         exchange_name = self.exchange_name,
         encryption_key = self.encryption_key)
 
+AMQPConsumerCheckPayload = \
+  namedtuple('AMQPConsumerCheckPayload',
+    ['ip_address', 'result', 'routing_key', 'exchange_name'])
+
 class RabbitConsumerScout(Factory):
   CONNECTION_ATTEMPTS    = 1
 
@@ -528,6 +537,13 @@ class RabbitConsumerScout(Factory):
     self.ip_address = ip_address
     self.routing_key = routing_key
     self.exchange_name = exchange_name
+
+  def get_amqp_consumer_check_payload(self, result):
+    return AMQPConsumerCheckPayload(
+      ip_address=self.ip_address,
+      result=result,
+      routing_key=self.routing_key,
+      exchange_name=self.exchange_name)
 
 class RabbitConsumerScoutChart(RabbitConsumerScout):
   def __init__(self, ip_address, routing_key, exchange_name, live_trace=None, live_spy=None):
@@ -566,7 +582,7 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
       nest(self.no_amqp_consumer_server_found, parent=self.search)
 
     if live_trace is None:
-      live_trace = True
+      live_trace = False
     else:
       live_trace = live_trace
 
@@ -578,7 +594,6 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
     self.live_trace = live_trace
     self.live_spy = live_spy
     self.start_at(self.search)
-    time.sleep(0.1)
 
   @staticmethod
   def search_entry(scout, e):
@@ -590,6 +605,7 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
         connection_attempts=RabbitConsumerScout.CONNECTION_ATTEMPTS,
         callback_tempo=RabbitConsumerScout.SCOUT_TEMPO_SEC).producer
     scout.subscribe(Event(signals.REFACTOR_SEARCH))
+    scout.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
     return status
 
   @staticmethod
@@ -659,43 +675,335 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
     )
     return status
 
+
   @staticmethod
   def amqp_consumer_server_found_entry(scout, e):
     status = return_status.HANDLED
-    scout.post_fifo(Event(signal=signals.AMQP_CONSUMER_CHECK,
-      payload=(scout.ip_address, True, scout.routing_key, scout.exchange_name)))
+    payload = scout.get_amqp_consumer_check_payload(True)
+    scout.publish(Event(signal=signals.AMQP_CONSUMER_CHECK, payload=payload))
     return status
 
   @staticmethod
   def no_amqp_consumer_server_found_entry(scout, e):
     status = return_status.HANDLED
-    scout.post_fifo(Event(signal=signals.AMQP_CONSUMER_CHECK,
-      payload=(scout.ip_address, False, scout.routing_key, scout.exchange_name)))
+    payload = scout.get_amqp_consumer_check_payload(False)
+    scout.publish(Event(signal=signals.AMQP_CONSUMER_CHECK, payload=payload))
     return status
 
+class Attribute():
+  def __init__(self):
+    pass
+
+LanRecceNode = namedtuple('REFACTOR_NODE', ['searched', 'result', 'scout'])
+
+class LanRecce(Factory):
+  def __init__(self, routing_key, exchange_name, name=None,):
+    if name is None:
+      name = 'lan_recce_chart'
+    super().__init__(name)
+    self.my  = Attribute()
+    self.other = Attribute()
+    self.routing_key = routing_key
+    self.exchange_name = exchange_name
+    self.candidates = None
+
+  def get_ipv4_network(self):
+    ip_address = LanRecce.get_working_ip_address()
+    netmask    = self.netmask_on_this_machine()
+    inet4      = ipaddress.ip_network(ip_address + '/' + netmask, strict=False)
+    return inet4
+
+  def netmask_on_this_machine(self):
+    interfaces = [interface for interface in netifaces.interfaces()]
+    local_netmask = None
+    working_address = LanRecce.get_working_ip_address()
+    for interface in interfaces:
+      interface_network_types = netifaces.ifaddresses(interface)
+      if netifaces.AF_INET in interface_network_types:
+        if interface_network_types[netifaces.AF_INET][0]['addr'] == working_address:
+          local_netmask = interface_network_types[netifaces.AF_INET][0]['netmask']
+          break
+    return local_netmask
+
+  def ping_to_fill_arp_table(self):
+    linux_cmd = 'ping -b {}'
+    inet4 = self.get_ipv4_network()
+
+    if inet4.num_addresses <= 256:
+      broadcast_address = inet4[-1]
+      fcmd = linux_cmd.format(broadcast_address)
+      fcmd_as_list = fcmd.split(" ")
+      try:
+        ps = subprocess.Popen(fcmd_as_list, stdout=open(os.devnull, "wb"))
+        ps.wait(2)
+      except:
+        ps.kill()
+    return
+
+  def candidate_ip_addresses(self):
+    lan_ip_addresses = []
+    a = set(self.ip_addresses_on_lan())
+    b = set(self.ip_addresses_on_this_machine())
+    c = set([LanRecce.get_working_ip_address()])
+    candidates = list(a - b ^ c)
+    inet4 = self.get_ipv4_network()
+    for host in inet4.hosts():
+      shost = str(host)
+      if shost in candidates:
+        lan_ip_addresses.append(shost)
+    return lan_ip_addresses
+
+  def ip_addresses_on_lan(self):
+    wsl_cmd   = 'cmd.exe /C arp.exe -a'
+    linux_cmd = 'arp -a'
+
+    grep_cmd = 'grep -Po 192\.\d+\.\d+\.\d+'
+    candidates = []
+
+    for cmd in [wsl_cmd, linux_cmd]:
+      cmd_as_list = cmd.split(" ")
+      grep_as_list = grep_cmd.split(" ")
+      output = ''
+      try:
+        ps = subprocess.Popen(cmd_as_list, stdout=subprocess.PIPE)
+        output = subprocess.check_output(grep_as_list, stdin=ps.stdout, timeout=0.5)
+        ps.wait()
+        if output is not '':
+          candidates = output.decode('utf-8').split('\n')
+          if len(candidates) > 0:
+            break
+      except:
+        # our windows command did not work on Linux
+        pass
+    return list(filter(None, candidates))
+
+  def ip_addresses_on_this_machine(self):
+    interfaces = [interface for interface in netifaces.interfaces()]
+    local_ip_addresses = []
+    for interface in interfaces:
+      interface_network_types = netifaces.ifaddresses(interface)
+      if netifaces.AF_INET in interface_network_types:
+        ip_address = interface_network_types[netifaces.AF_INET][0]['addr']
+        local_ip_addresses.append(ip_address)
+    return local_ip_addresses
+
+  @staticmethod
+  def get_working_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+      s.connect(('10.255.255.255', 1))
+      ip = s.getsockname()[0]
+    except:
+      ip = '127.0.0.1'
+    finally:
+      s.close()
+    return ip
+
+class LanRecceChart(LanRecce):
+  ARP_TIME_OUT_SEC = 2.0
+
+  def __init__(self, routing_key, exchange_name, live_trace=None, live_spy=None, arp_timeout_sec=None):
+
+    super().__init__(routing_key, exchange_name, name='lan_recce_chart')
+
+    if arp_timeout_sec is None:
+      self.arp_timeout_sec = LanRecceChart.ARP_TIME_OUT_SEC
+
+    self.private_search = self.create(state="private_search"). \
+      catch(signals.ENTRY_SIGNAL, handler=self.private_search_entry). \
+      catch(signals.RECCE_LAN, handler=self.private_search_RECCE_LAN). \
+      catch(signals.recce_lan, handler=self.private_recce_lan). \
+      catch(signal=signals.LAN_RECCE_COMPLETE, handler=self.private_search_RECCE_COMPLETE). \
+      to_method()
+
+    self.lan_recce = self.create(state='recce'). \
+      catch(signals.RECCE_LAN, handler=self.lan_recce_RECCE_LAN). \
+      catch(signals.INIT_SIGNAL, handler=self.lan_recce_init). \
+      catch(signals.EXIT_SIGNAL, handler=self.lan_recce_exit). \
+      catch(signal=signals.ip_addresses_found, handler=self.lan_recce_ip_addresses_found). \
+      to_method()
+
+    self.fill_arp_table = self.create(state='fill_arp_table'). \
+      catch(signals.ENTRY_SIGNAL, handler=self.fill_arp_table_entry). \
+      catch(signals.EXIT_SIGNAL, handler=self.fill_arp_table_exit). \
+      catch(signal=signals.ARP_TIME_OUT, handler=self.fill_arp_table_ARP_TIME_OUT). \
+      to_method()
+
+    self.identify_all_ip_addresses = self.create(state='identify_all_ip_addresses'). \
+      catch(signals.ENTRY_SIGNAL, handler=self.identify_all_ip_addresses_entry). \
+      to_method()
+
+    self.recce_rabbit_consumers = self.create(state='recce_rabbit_consumers'). \
+      catch(signals.ENTRY_SIGNAL, handler=self.recce_rabbit_consumers_entry). \
+      catch(signals.AMQP_CONSUMER_CHECK, handler=self.recce_rabbit_consumers_AMQP_CONSUMER_CHECK). \
+      catch(signals.lan_recce_complete, handler=self.recce_rabbit_consumers_lan_recce_complete). \
+      to_method()
+
+    self.nest(self.private_search, parent=None). \
+      nest(self.lan_recce, parent=self.private_search). \
+      nest(self.fill_arp_table, parent=self.lan_recce). \
+      nest(self.identify_all_ip_addresses, parent=self.lan_recce). \
+      nest(self.recce_rabbit_consumers, parent=self.lan_recce)
+
+    if live_trace is None:
+      live_trace = False
+    else:
+      live_trace = live_trace
+
+    if live_spy is None:
+      live_spy = False
+    else:
+      live_spy = live_spy
+
+    self.live_trace = live_trace
+    self.live_spy = live_spy
+    self.start_at(self.private_search)
+
+  @staticmethod
+  def private_search_entry(lan, e):
+    status = return_status.HANDLED
+    lan.subscribe(Event(signals.RECCE_LAN))
+    lan.subscribe(Event(signals.AMQP_CONSUMER_CHECK))
+    lan.subscribe(Event(signal=signals.LAN_RECCE_COMPLETE))
+    lan.my.address = LanRecce.get_working_ip_address()
+    return status
+
+  @staticmethod
+  def private_search_RECCE_LAN(lan, e):
+    status = return_status.HANDLED
+    lan.post_fifo(Event(signal=signals.recce_lan))
+    return status
+
+  @staticmethod
+  def private_recce_lan(lan, e):
+    status = lan.trans(lan.lan_recce)
+    return status
+
+  @staticmethod
+  def private_search_RECCE_COMPLETE(lan, e):
+    status = return_status.HANDLED
+    pp(e.payload)
+    return status
+
+  @staticmethod
+  def lan_recce_RECCE_LAN(lan, e):
+    status = return_status.HANDLED
+    lan.defer(e)
+    return status
+
+  @staticmethod
+  def lan_recce_init(lan, e):
+    status = lan.trans(lan.fill_arp_table)
+    return status
+
+  @staticmethod
+  def lan_recce_exit(lan, e):
+    status = return_status.HANDLED
+    lan.recall()
+    return status
+
+  @staticmethod
+  def lan_recce_ip_addresses_found(lan, e):
+    status = lan.trans(lan.recce_rabbit_consumers)
+    return status
+
+  @staticmethod
+  def fill_arp_table_entry(lan, e):
+    status = return_status.HANDLED
+    lan.ping_to_fill_arp_table()
+    lan.post_fifo(
+      Event(signal=signals.ARP_TIME_OUT),
+      times=1,
+      period=lan.arp_timeout_sec,
+      deferred=True)
+    return status
+
+  @staticmethod
+  def fill_arp_table_exit(lan, e):
+    status = return_status.HANDLED
+    lan.cancel_events(Event(signal=signals.ARP_TIME_OUT))
+    return status
+
+  @staticmethod
+  def fill_arp_table_ARP_TIME_OUT(lan, e):
+    status = lan.trans(lan.identify_all_ip_addresses)
+    return status
+
+  @staticmethod
+  def identify_all_ip_addresses_entry(lan, e):
+    status = return_status.HANDLED
+    lan.my.addresses = lan.candidate_ip_addresses()
+    lan.other.addresses = list(set(lan.my.addresses) - set(lan.my.address))
+    lan.post_fifo(Event(signal=signals.ip_addresses_found))
+    return status
+
+  @staticmethod
+  def recce_rabbit_consumers_entry(lan, e):
+    status = return_status.HANDLED
+    lan.candidates = {}
+    for ip_address in lan.my.addresses:
+      scout = \
+        RabbitConsumerScoutChart(ip_address, lan.routing_key, lan.exchange_name)
+      lan.candidates[ip_address] = LanRecceNode(
+        searched=False,
+        result=False,
+        scout=scout
+      )
+    return status
+
+  @staticmethod
+  def recce_rabbit_consumers_lan_recce_complete(lan, e):
+    return lan.trans(lan.private_search)
+
+  @staticmethod
+  def recce_rabbit_consumers_AMQP_CONSUMER_CHECK(lan, e):
+    status = return_status.HANDLED
+    ip, result = e.payload.ip_address, e.payload.result
+    is_one_of_my_ip_addresses = ip in lan.my.addresses
+    is_my_routing_key = e.payload.routing_key is lan.routing_key
+    is_my_exchange_name = e.payload.exchange_name is lan.exchange_name
+
+    if is_one_of_my_ip_addresses and is_my_routing_key and is_my_exchange_name:
+      lan.candidates[ip] = LanRecceNode(searched=True, result=result, scout=None)
+
+    search_complete = all([node.searched for node in lan.candidates.values()])
+
+    if search_complete:
+      working_ip_addresses = []
+      for ip_address, lan_recce_node in lan.candidates.items():
+        if lan_recce_node.result:
+          working_ip_addresses.append(ip_address)
+      lan.publish(Event(signal=signals.LAN_RECCE_COMPLETE, payload=working_ip_addresses))
+      lan.post_fifo(Event(signal=signals.lan_recce_complete))
+    return status
 
 if __name__ == '__main__':
   cache_chart = CacheFileChart(live_trace=True)
   time.sleep(1)
   cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
-  #scout1 = RabbitConsumerScoutChart(
-  #          '192.168.1.69',
+  scout1 = RabbitConsumerScoutChart(
+            '192.168.1.69',
+            'heya.man',
+            'miros.mesh.exchange')
+  #scout2 = RabbitConsumerScoutChart(
+  #          '192.168.1.77',
   #          'heya.man',
   #          'miros.mesh.exchange',
   #          live_trace = True)
-  scout2 = RabbitConsumerScoutChart(
-            '192.168.1.77',
-            'heya.man',
-            'miros.mesh.exchange',
-            live_trace = True)
   #scout3 = RabbitConsumerScoutChart(
   #          '192.168.1.75',
   #          'heya.man',
   #          'miros.mesh.exchange',
   #          live_trace = True)
-  time.sleep(1)
-  del(scout2)
   time.sleep(3)
+  lan_recce = LanRecceChart(
+    routing_key='heya.man',
+    exchange_name='miros.mesh.exchange',
+    live_trace=True)
+  lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
+
+  time.sleep(1)
+  time.sleep(10)
 
   #sm = ScoutMemory()
   #sm.append_automatic(address='192.168.1.74')
@@ -716,7 +1024,7 @@ if __name__ == '__main__':
   #      discover_network
   #   discover_network
   #     entry:
-  #       create recon object
+  #       create recce object
   #       wait for NETWORK_RESULTS
   #       created dict object
   #       post CACHE_WRITE

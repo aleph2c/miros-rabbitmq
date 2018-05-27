@@ -4,8 +4,8 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>420</x>
-      <y>294</y>
+      <x>427</x>
+      <y>322</y>
       <w>21</w>
       <h>49</h>
     </coordinates>
@@ -15,10 +15,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>273</x>
-      <y>322</y>
+      <x>280</x>
+      <y>350</y>
       <w>826</w>
-      <h>623</h>
+      <h>602</h>
     </coordinates>
     <panel_attributes>*search*
 --
@@ -43,8 +43,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>588</x>
-      <y>413</y>
+      <x>595</x>
+      <y>441</y>
       <w>483</w>
       <h>224</h>
     </coordinates>
@@ -70,8 +70,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>518</x>
-      <y>518</y>
+      <x>525</x>
+      <y>546</y>
       <w>14</w>
       <h>14</h>
     </coordinates>
@@ -81,8 +81,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>518</x>
-      <y>518</y>
+      <x>525</x>
+      <y>546</y>
       <w>84</w>
       <h>21</h>
     </coordinates>
@@ -92,8 +92,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>385</x>
-      <y>938</y>
+      <x>392</x>
+      <y>945</y>
       <w>336</w>
       <h>84</h>
     </coordinates>
@@ -104,17 +104,18 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>637</x>
-      <y>735</y>
+      <x>595</x>
+      <y>763</y>
       <w>224</w>
       <h>84</h>
     </coordinates>
     <panel_attributes>*AMQP_CONSUMER_SERVER_FOUND*
 --
 entry /
-  scout.post_fifo(
+  payload = scout.get_amqp_payload(True)
+  scout.publish(
 	  signal=signals.AMQP_CONSUMER_CHECK,
-	  payload=(chart.ip, True)
+	  payload=payload)
 	
   
 exit / 
@@ -125,17 +126,18 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>336</x>
-      <y>819</y>
+      <x>343</x>
+      <y>847</y>
       <w>252</w>
       <h>84</h>
     </coordinates>
     <panel_attributes>*NO_AMQP_CONSUMER_SERVER_FOUND*
 --
 entry /
-  scout.post_fifo(
+  payload = scout.get_amqp_payload(True)
+  scout.publish(
     Event(signal=signals.AMQP_CONSUMER_CHECK),
-    payload=(scout.ip_address,False)
+    payload=payload)
 
 valign=top
 </panel_attributes>
@@ -144,8 +146,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>700</x>
-      <y>630</y>
+      <x>609</x>
+      <y>658</y>
       <w>21</w>
       <h>56</h>
     </coordinates>
@@ -155,30 +157,30 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>427</x>
-      <y>679</y>
-      <w>280</w>
+      <x>434</x>
+      <y>707</y>
+      <w>182</w>
       <h>154</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>380.0;10.0;10.0;10.0;10.0;200.0</additional_attributes>
+    <additional_attributes>240.0;10.0;10.0;10.0;10.0;200.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>714</x>
-      <y>679</y>
-      <w>49</w>
+      <x>623</x>
+      <y>707</y>
+      <w>98</w>
       <h>70</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;50.0;10.0;50.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;80.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>420</x>
-      <y>665</y>
+      <x>427</x>
+      <y>693</y>
       <w>196</w>
       <h>49</h>
     </coordinates>
@@ -189,10 +191,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>210</x>
-      <y>84</y>
-      <w>154</w>
-      <h>105</h>
+      <x>217</x>
+      <y>77</y>
+      <w>203</w>
+      <h>147</h>
     </coordinates>
     <panel_attributes>*RabbitConsumerScout*
 --
@@ -203,16 +205,20 @@ exchange_name
 --
 producer
 --
+get_amqp_payload(result)
+--
 CONNETION_ATTEMPTS
 SCOUT_TEMPO_SEC
+--
+get_amqp_consumer_check_payload(result)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>322</x>
-      <y>252</y>
+      <x>329</x>
+      <y>280</y>
       <w>140</w>
       <h>35</h>
     </coordinates>
@@ -223,8 +229,8 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>385</x>
-      <y>280</y>
+      <x>392</x>
+      <y>308</y>
       <w>49</w>
       <h>42</h>
     </coordinates>
@@ -234,8 +240,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>693</x>
-      <y>672</y>
+      <x>602</x>
+      <y>700</y>
       <w>28</w>
       <h>28</h>
     </coordinates>
@@ -245,56 +251,44 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>854</x>
-      <y>763</y>
-      <w>343</w>
+      <x>812</x>
+      <y>791</y>
+      <w>378</w>
       <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;470.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;520.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>581</x>
-      <y>847</y>
-      <w>616</w>
+      <x>588</x>
+      <y>875</y>
+      <w>602</w>
       <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;860.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;840.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>861</x>
-      <y>749</y>
-      <w>238</w>
-      <h>28</h>
+      <x>819</x>
+      <y>777</y>
+      <w>378</w>
+      <h>21</h>
     </coordinates>
-    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, TRUE)
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Text</id>
-    <coordinates>
-      <x>595</x>
-      <y>833</y>
-      <w>252</w>
-      <h>28</h>
-    </coordinates>
-    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, FALSE)
+    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, TRUE, routing_key, exchange_name)
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>210</x>
-      <y>217</y>
+      <x>217</x>
+      <y>245</y>
       <w>938</w>
-      <h>840</h>
+      <h>784</h>
     </coordinates>
     <panel_attributes>*RabbitConsumerScoutChart*
 --
@@ -309,19 +303,19 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
-      <y>182</y>
+      <x>308</x>
+      <y>217</y>
       <w>21</w>
-      <h>49</h>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>819</x>
-      <y>448</y>
+      <x>826</x>
+      <y>476</y>
       <w>224</w>
       <h>119</h>
     </coordinates>
@@ -344,8 +338,8 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>714</x>
-      <y>644</y>
+      <x>623</x>
+      <y>672</y>
       <w>266</w>
       <h>21</h>
     </coordinates>
@@ -356,8 +350,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>693</x>
-      <y>588</y>
+      <x>700</x>
+      <y>616</y>
       <w>154</w>
       <h>28</h>
     </coordinates>
@@ -368,8 +362,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>581</x>
-      <y>560</y>
+      <x>588</x>
+      <y>588</y>
       <w>350</w>
       <h>63</h>
     </coordinates>
@@ -379,8 +373,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>224</x>
-      <y>518</y>
+      <x>231</x>
+      <y>546</y>
       <w>14</w>
       <h>14</h>
     </coordinates>
@@ -390,8 +384,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>224</x>
-      <y>518</y>
+      <x>231</x>
+      <y>546</y>
       <w>63</w>
       <h>21</h>
     </coordinates>
@@ -401,8 +395,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>392</x>
-      <y>945</y>
+      <x>399</x>
+      <y>952</y>
       <w>336</w>
       <h>70</h>
     </coordinates>
@@ -418,19 +412,19 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>357</x>
-      <y>98</y>
-      <w>84</w>
+      <x>413</x>
+      <y>133</y>
+      <w>56</w>
       <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;100.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>427</x>
-      <y>0</y>
+      <x>455</x>
+      <y>35</y>
       <w>154</w>
       <h>189</h>
     </coordinates>
@@ -457,8 +451,8 @@ CONNECTION_ATTEMPTS
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>245</x>
-      <y>49</y>
+      <x>287</x>
+      <y>42</y>
       <w>70</w>
       <h>21</h>
     </coordinates>
@@ -468,8 +462,8 @@ CONNECTION_ATTEMPTS
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>616</x>
-      <y>0</y>
+      <x>623</x>
+      <y>35</y>
       <w>217</w>
       <h>70</h>
     </coordinates>
@@ -483,19 +477,19 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>574</x>
-      <y>14</y>
-      <w>56</w>
+      <x>602</x>
+      <y>49</y>
+      <w>35</w>
       <h>63</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;70.0;60.0;10.0</additional_attributes>
+    <additional_attributes>10.0;70.0;30.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>616</x>
-      <y>84</y>
+      <x>623</x>
+      <y>119</y>
       <w>427</w>
       <h>105</h>
     </coordinates>
@@ -513,8 +507,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>700</x>
-      <y>63</y>
+      <x>707</x>
+      <y>98</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
@@ -522,34 +516,10 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
     <additional_attributes>10.0;30.0;10.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>Text</id>
-    <coordinates>
-      <x>364</x>
-      <y>84</y>
-      <w>21</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>1
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Text</id>
-    <coordinates>
-      <x>413</x>
-      <y>84</y>
-      <w>21</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>1
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>245</x>
-      <y>14</y>
+      <x>287</x>
+      <y>7</y>
       <w>70</w>
       <h>21</h>
     </coordinates>
@@ -559,8 +529,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>273</x>
-      <y>63</y>
+      <x>315</x>
+      <y>56</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
@@ -570,12 +540,83 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>273</x>
-      <y>28</y>
+      <x>315</x>
+      <y>21</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>518</x>
+      <y>287</y>
+      <w>273</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>AMQPConsumerCheckPayload = \
+  namedtuple('AMQPConsumerCheckPayload',
+    ['ip_address', 'result', 'routing_key', 'exchange_name'])
+
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>518</x>
+      <y>273</y>
+      <w>259</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Note..</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>595</x>
+      <y>861</y>
+      <w>378</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, FALSE, routing_key, exchange_name)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>203</y>
+      <w>210</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;50.0;280.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>770</x>
+      <y>294</y>
+      <w>378</w>
+      <h>490</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;510.0;10.0;520.0;680.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>889</x>
+      <y>798</y>
+      <w>84</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;90.0;100.0;10.0</additional_attributes>
   </element>
 </diagram>

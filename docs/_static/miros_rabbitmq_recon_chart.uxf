@@ -4,16 +4,29 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>189</x>
-      <y>27</y>
-      <w>153</w>
-      <h>99</h>
+      <x>27</x>
+      <y>18</y>
+      <w>297</w>
+      <h>234</h>
     </coordinates>
-    <panel_attributes>*LanRecon*
+    <panel_attributes>*LanRecce*
 --
-my.address
-my.addresses
-other.addresses
+routing_key
+exchange_name
+--
+my.address          # working IP
+my.addresses      # all addresses
+other.addresses   # my.addresses - my.address
+--
+get_candidate_addresses()
+ping_to_fill_arp_table()
+get_ipv4_network()
+ping_to_fill_arp_table()
+acandidate_ip_addresses()
+ip_addresses_on_lan()
+ip_addresses_on_this_machine()
+--
+LanRecce.get_working_ip_address()
 
 
 </panel_attributes>
@@ -22,23 +35,21 @@ other.addresses
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>252</x>
-      <y>198</y>
-      <w>900</w>
-      <h>801</h>
+      <x>90</x>
+      <y>324</y>
+      <w>1107</w>
+      <h>1053</h>
     </coordinates>
     <panel_attributes>*private_search*
 --
 entry /
-chart.subscribe(
-  Event(signal=signals.RECON_LAN))
+  lan.subscribe(Event(signals.RECCE_LAN))
+  lan.subscribe(Event(signals.AMQP_CONSUMER_CHECK))
+  lan.my.address = LanRecon.get_working_ip_address()
 
-RECON_LAN /
-chart.post_fifo(
-  Event(signal=signals.recon_lan))
+RECCE_LAN /
+  lan.post_fifo(Event(signal=signals.recon_lan))
   
-exit / 
-
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -46,19 +57,19 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>459</x>
-      <y>279</y>
-      <w>675</w>
-      <h>342</h>
+      <x>207</x>
+      <y>477</y>
+      <w>972</w>
+      <h>882</h>
     </coordinates>
-    <panel_attributes>*lan_recon*
+    <panel_attributes>*lan_recce*
 --
   
-RECON_LAN /
-  chart.defer(e)
+RECCE_LAN /
+  lan.defer(e)
 
 exit /
-  chart.recall()
+  lan.recall()
   
 valign=top
 </panel_attributes>
@@ -67,22 +78,22 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>522</x>
-      <y>396</y>
-      <w>207</w>
-      <h>180</h>
+      <x>297</x>
+      <y>558</y>
+      <w>315</w>
+      <h>234</h>
     </coordinates>
     <panel_attributes>*fill_arp_table*
 --
 entry /
-	chart.post_fifo(Event(
-	  signal=signals.ARP_TIME_OUT), 
-	  times=1,
-	  period=2.0,
-	  deferred=True)
+  lan.ping_to_fill_arp_table()
+  lan.post_fifo(
+    Event(signal=signals.ARP_TIME_OUT), 
+      times=1,
+      period=2.0,
+      deferred=True))
 exit / 
-	chart.cancel_events(
-	  signals.ARP_FILL_TIME_OUT)
+  lan.cancel_events(Event(signals.ARP_TIME_OUT))
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -90,19 +101,20 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>882</x>
-      <y>396</y>
-      <w>234</w>
+      <x>837</x>
+      <y>594</y>
+      <w>297</w>
       <h>180</h>
     </coordinates>
     <panel_attributes>*identify_all_ip_addresses*
 --
 entry /
-	chart.this.addresses = ..
-	chart.other.addresses = .. # apppend
-	chart.post_fifo(
-	  Event(
-	    signal=signals.ip_addresses_found))
+  lan.this.addresses = \
+    lan.candidate_ip_addresses()
+  lan.other.addresses = \
+    list(set(lan.my.addresses) - set(lan.my.address))
+  lan.post_fifo(
+    Event(signal=signals.ip_addresses_found))
 	
 
 valign=top
@@ -112,37 +124,47 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>324</x>
-      <y>648</y>
-      <w>396</w>
-      <h>324</h>
+      <x>297</x>
+      <y>819</y>
+      <w>576</w>
+      <h>522</h>
     </coordinates>
-    <panel_attributes>*Recon Rabbit Consumers*
+    <panel_attributes>*recce_rabbit_consumers*
 --
 entry /
-  chart.subscribe(Event(signal=signal.SCOUTING_COMPLETE))
-  chart.candidate_ip_addresses = []
-  chart.search_space = addresses
+  lan.candidates = {}
+  for ip_address in lan.my.addresses:
+    lan.candidates[ip_address] = \
+      LanRecceNode(
+        searched=False, 
+        result=False
+        scout=RabbitConsumerScoutChart(
+          ip_address, lan.routing_key, lan.exchange_name
+        )
+      )
 
-for ip_address in chart.other.addresses:
-  amqp_url = ...
-  producer_scout = ProducerScout(ip_address=..
-  chart.candidates[ip] = producer_scout
-  producer_scout.start_at(search)
+AMQP_CONSUMER_CHECK as e with payload /
+  ip, result = e.payload.ip_address, e.payload.result
+  is_one_of_my_ip_addresses = ip in lan.my.addresses
+  is_my_routing_key = e.payload.routing_key is lan.routing_key
+  is_my_exchange_name = e.payload.exchange_name is lan.exchange_name
 
-SCOUTING_COMPLETE(ip, payload) / 
-  if ip in chart.other.addresses
-    if payload==True:
-      chart.candidate_ip_addresses.append(ip)
-    del(chart.candidates[ip])
+  if is_one_of_my_ip_addresses and is_my_routing_key and is_my_exchange_name:
+    lan.candidates[ip] = LanRecceNode(searched=True, result=result, scout=None)
+    
+  search_complete = all([node.searched for node in lan.candidates.values()])
 
-    chart.search_space.remove(ip)
-    if chart.search_space.empty()
-      chart.post_fifo(Event(signal=signals.RECON_COMPLETE),
-        payload=chart.candidate_ip_addresses)
-  
+  if search_complete:
+    working_ip_addresses = []
+    for ip_address, lan_recce_node in lan.candidates.items():
+      if lan_recce_node.result:
+        working_ip_addresses.append(ip_address)
 
- 
+    lan.publish(
+      Event(
+        signal=signals.LAN_RECCE_COMPLETE,
+        payload=working_ip_addresses))
+    lan.post_fifo(Event(signals.lan_recce_complete))
     
   
 
@@ -160,31 +182,31 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>711</x>
-      <y>801</y>
-      <w>549</w>
+      <x>864</x>
+      <y>999</y>
+      <w>387</w>
       <h>27</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;590.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;410.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>819</x>
-      <y>774</y>
+      <x>882</x>
+      <y>981</y>
       <w>315</w>
-      <h>36</h>
+      <h>27</h>
     </coordinates>
-    <panel_attributes>RECON_COMPLETE(payload=lan_ip_addresses)
+    <panel_attributes>RECCE_COMPLETE(payload=lan_ip_addresses)
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>477</x>
-      <y>477</y>
+      <x>252</x>
+      <y>675</y>
       <w>63</w>
       <h>36</h>
     </coordinates>
@@ -195,8 +217,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>477</x>
-      <y>486</y>
+      <x>252</x>
+      <y>684</y>
       <w>18</w>
       <h>18</h>
     </coordinates>
@@ -206,32 +228,32 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>720</x>
-      <y>468</y>
-      <w>180</w>
+      <x>603</x>
+      <y>666</y>
+      <w>252</w>
       <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ARP_FILL_TIME_OUT</panel_attributes>
-    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;260.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>711</x>
-      <y>702</y>
-      <w>459</w>
+      <x>864</x>
+      <y>900</y>
+      <w>333</w>
       <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ip_addresses_found</panel_attributes>
-    <additional_attributes>490.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>350.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>207</x>
-      <y>486</y>
+      <x>45</x>
+      <y>684</y>
       <w>18</w>
       <h>18</h>
     </coordinates>
@@ -241,12 +263,12 @@ ip_addresses_found</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>189</x>
-      <y>153</y>
-      <w>990</w>
-      <h>873</h>
+      <x>27</x>
+      <y>279</y>
+      <w>1188</w>
+      <h>1116</h>
     </coordinates>
-    <panel_attributes>*LanReconChart*
+    <panel_attributes>*LanRecceChart*
 --
 
 
@@ -259,8 +281,8 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>207</x>
-      <y>477</y>
+      <x>45</x>
+      <y>675</y>
       <w>63</w>
       <h>36</h>
     </coordinates>
@@ -271,8 +293,8 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>252</x>
-      <y>117</y>
+      <x>90</x>
+      <y>243</y>
       <w>27</w>
       <h>54</h>
     </coordinates>
@@ -282,13 +304,62 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>243</x>
-      <y>396</y>
-      <w>234</w>
+      <x>81</x>
+      <y>594</y>
+      <w>144</w>
       <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
-recon_lan</panel_attributes>
-    <additional_attributes>10.0;20.0;240.0;20.0</additional_attributes>
+recce_lan</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>522</x>
+      <y>873</y>
+      <w>351</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>AMQPConsumerCheckPayload = \
+  namedtuple('AMQPConsumerCheckPayload',
+    ['ip_address', 'result', 'routing_key', 'exchange_name'])
+
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>522</x>
+      <y>855</y>
+      <w>333</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Note:</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>918</y>
+      <w>153</w>
+      <h>117</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;110.0;110.0;70.0;150.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>864</x>
+      <y>1071</y>
+      <w>351</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+lan_recce_complete</panel_attributes>
+    <additional_attributes>10.0;20.0;370.0;20.0</additional_attributes>
   </element>
 </diagram>

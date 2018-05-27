@@ -6,6 +6,21 @@ How it Works (Design Re-write in Progress)
 
 The Cache File Chart
 --------------------
+The CacheFileChart caches network information so that your distributed system
+can startup faster by avoiding the slow network discovery phase.  The CacheFileChart
+was designed to:
+
+* be created/started/destroyed within another statechart
+* allow one cache file to be readable and writable from thousands of different
+  programs running at the same time.
+* hide the complexity of a concurrent file read into JSON from the user
+* hide the complexity of a file write from JSON from the user
+* have a stochastic-exponential-timeout mechanism for pending read/write waits 
+* Write a file based on an asynchronous event published from another statechart
+* Convert a file read into an asynchronous event which can be subscribed to
+  by another statechart
+* be easy to debug/document
+
 The network discovery process is expensive, so we will cache its results to a
 JSON file.
 
@@ -16,7 +31,7 @@ useful, and if so, it will skip the expensive network discovery process.
 We use the JSON format since we will be transmitting this cache to other hosts
 and JSON has become the standard format for transmitting data.
 
-But there could be thousands of processes trying to read and write to this cache
+There could be thousands of processes trying to read and write to this cache
 file at the same time.  To address this concern, we wrap this file access into
 an active object which will check if the file is writable before trying to read
 or write from it.  If the file is writable, the statechart will determine that
@@ -73,10 +88,13 @@ designed to:
 * ensure that the encryption secrets where not in the code base
 * hide the complexity of the pika producer's creation process
 * provide the capability to be run many times with different search criterion
+* provide it's answers in the form of asynchronous events to which other
+  statecharts can subscribe.
+* be easy to debug/document
 
-To perform a scouting mission for a given IP address, you will also need the
-routing_key and an exchange_name you want to connect to, then do something like
-this:
+To perform a scouting mission for a given IP address, you will need the
+routing_key and an exchange_name that you want to connect to, then do something
+like this:
 
 .. code-block:: python
   
@@ -86,27 +104,53 @@ this:
     exchange='miros.mesh.exchange',
     live_trace=True)  # to debug the chart
 
-The answer will come back to you in the payload of an asynchronous event named ``AMQP_CONSUMER_CHECK``.
-The answer-payload consist of a tuple: ``(<ip address>, <True/False>, <routing_key>, <exchange>)``:
+The above call would construct a statechart, start it and scout the network with
+the provided information.  
+
+Upon completing it's scouting mission, the ``scout1`` object would answer in
+the form of an asynchronous event named ``AMQP_CONSUMER_CHECK``.  The answer
+will be in the payload of the event in the form of a namedtuple: 
+
+``AMQPConsumerCheckPayload(ip_address, result, routing_key, exchange_name)``:
+
+To get access to this answer within the statechart initiating the search, all it
+would have to do is subscribe to the event:
 
 .. code-block:: python
 
-  # Other state chart would catch this 
-  # if the IP has a working consumer:
-  Event(signal=signals.AMQP_CONSUMER_CHECK,
-    payload=(192.168.1.77, True, 'heya.man', 'miros.mesh.exchange'))
+  chart.subscribe(Event(signals.AMQP_CONSUMER_CHECK))
 
-  # Other state chart would catch this
-  # if the IP does not have a working consumer:
-  Event(signal=signals.AMQP_CONSUMER_CHECK,
-    payload=(192.168.1.77, False, 'heya.man', 'miros.mesh.exchange'))
-
-To perform another search on the same scout, in another statechart you would
-post a ``REFACTOR_SEARCH`` event:
+For the subscribing state machine to extract the answer it would need to react
+to the ``AMQP_CONSUMER_CHECK`` event. Here is how you would do that within a
+miros Factory object:
 
 .. code-block:: python
 
-  chart.postfifo(
+  # The callback used to see the event
+  def callback_AMQP_CONSUMER_CHECK(lan, e):
+    status = return_status.HANDLED
+    ip = e.payload.ip_address
+    result = e.payload.result
+    routing_key = e.payload.routing_key
+    exchange_name = e.payload.exchange_name
+
+    if result:
+      print("AMQP consumer at searched location")
+    else:
+      print("AMQP consumer NOT at searched location")
+
+
+  # linking a state to an event and it's callback
+  some_state = recce.create(state='some_state'). \
+    catch(signals.AMQP_CONSUMER_CHECK, 
+          handler=recce_rabbit_consumers_AMQP_CONSUMER_CHECK). \
+    to_method()
+
+To perform another search on the same ``scout1`` object, post a ``REFACTOR_SEARCH`` event to it:
+
+.. code-block:: python
+
+  scout1.postfifo(
     Event(signal=signals.REFACTOR_SEARCH,
       payload={
         'ip_address':192.168.1.77,
@@ -114,14 +158,6 @@ post a ``REFACTOR_SEARCH`` event:
         'exchange_name': 'miros.mesh.exchange', 
         }
     )
-
-Later, assuming this search resulted in a miss, the chart that sent out the
-``REFACTOR_SEARCH`` would receive the following signal:
-
-.. code-block:: python
-
-  Event(signal=signals.AMQP_CONSUMER_CHECK,
-    payload=(192.168.1.77, False, 'archer.bob', 'miros.mesh.exchange'))
 
 Here is the design diagram from the RabbitConsumerScoutChart, if you can't see
 it, click on it to download a pdf of the diagram:
@@ -144,13 +180,11 @@ The ``RabbitConsumerScoutChart`` inherits from the ``RabbitConsumerScout``
 class, so it gets the publisher as part of the deal.  The client basically needs
 to provide it an IP address, a routing key and an exchange name and it is ready
 to perform a search.  A user can provide the ``live_trace`` and ``live_spy``
-arguments if they need to debug the statechart encase within the
+arguments if they need to debug the statechart encased within the
 ``RabbitConsumerScoutChart``, but by default this instrumentation is off.  Let's
 turn this instrumentation on and then describe what it is doing.  We will do
-this twice, once for an address that doesn't have a RabbitMQ server running on
-it and a second time with an address that does.
-
-Let's start with failure:
+once for an address that doesn't have a RabbitMQ server running on
+it:
 
 .. code-block:: python
 
@@ -163,12 +197,11 @@ Let's start with failure:
 This will result in the following trace instrumentation:
 
 .. code-block:: python
-   fontSize: 8
 
   [2018-05-25 18:50:34.888810] [192.168.1.77] e->start_at() top->producer_thread_engaged
   [2018-05-25 18:50:34.990279] [192.168.1.77] e->try_to_connect_to_consumer() producer_thread_engaged->producer_post_and_wait
   [2018-05-25 18:50:35.569538] [192.168.1.77] e->consumer_test_complete() producer_post_and_wait->no_amqp_consumer_server_found
-  ('192.168.1.77', False, 'heya.man', 'miros.mesh.exchange')
+  AMQPConsumerCheckPayload(ip_address='192.168.1.77', result=False, routing_key='heya.man', exchange_name='miros.mesh.exchange')
 
 Comparing it it's statemachine:
 
@@ -188,7 +221,12 @@ Then viewing the information as a sequence diagram:
                   |               |              (2)               |                             |
                   |               |                                +--consumer_test_complete()-->|
                   |               |                                |            (3)              |
-  (4) -> ('192.168.1.77', False, 'heya.man', 'miros.mesh.exchange')
+  (4) -> 
+    AMQPConsumerCheckPayload(
+      ip_address='192.168.1.69',
+      result=False,
+      routing_key='heya.man',
+      exchange_name='miros.mesh.exchange')
 
 1.  We see that when the state machine starts, it initializes itself into the
     ``search`` state which builds a ``scout.producer`` object and subscribes the
@@ -233,7 +271,145 @@ Then viewing the information as a sequence diagram:
    respond to the RabbitMQ credentials, the encryption key with the current
    topic key and exchange name.
 
-A very similar process would have been followed had the IP address of
-``192.168.1.77`` had a RabbitMQ consumer with the correct credentials.
+.. _how_it_works2-the-lanreccechart:
 
+The LanRecceChart
+-----------------
+.. note::
+
+  The word Recce is the Canadian/British way of saying recon.  Recon, is the
+  short form of the word reconnaissance.  I didn't know this before I googled
+  recon, but being a good Canadian I decided to use ``recce`` to name the
+  objects and classes in the part of the design, instead of the word recon (we
+  all have to do our parts to resist American cultural hegemony).
+
+  Being new to the word I had to figure out how to say it, recce is pronounced
+  like 'wreck-ee'.
+
+The LanRecceChart performs multiple scouting missions of your local area network
+for compatible RabbitMQ consumers.  The LanRecceChart was designed to:
+
+* be created/started/destroyed within another statechart
+* hide the complexity of the local area networking search details
+* build a set of search criterion based on it's LAN discovery process
+* rely on the RabbitConsumerScoutChart specialists to perform the individual
+  scouting missions for compatible RabbitMQ consumers.
+* perform all of it's scouting missions in parallel
+* work in Linux and on the Windows Linux Subsystem
+* provide it's result in the form of asynchronous events to which other
+  statecharts can subscribe.
+* be easy to debug/document
+
+Here is the design diagram for the LanRecceChart, if it is too small, click on
+the picture to download a pdf of the diagram:
+
+.. image:: _static/miros_rabbitmq_recce_chart.svg
+    :target: _static/miros_rabbitmq_recce_chart.pdf
+    :align: center
+
+The LanRecce class, inherited by the LanRecceChart contains all of the methods
+required to search your local area network and your local machine for the IP
+addresses needed to begin a search for compatible RabbitMQ consumers.  The three
+main methods used by the LanRecceChart during the dynamic portion of it's life
+are:
+
+  * ``LanRecce.get_working_ip_address``
+  * ``ping_to_fill_arp_table``
+  * ``candidiate_ip_addresses``
+
+The rest of the methods help these main methods perform their required tasks.
+
+To build a CacheFileChart with a live_trace:
+
+.. code-block:: python
+
+  lan_recce = LanRecceChart(
+      routing_key='heya.man',
+      exchange_name='miros.mesh.exchange',
+      live_trace=True)
+
+The LanRecceChart does not start itself.  The statechart that wants to start the
+network reconnaissance will have to publish a ``RECCE_LAN`` event or use the
+``post_fifo`` method on the ``LanRecceChart`` object with the ``RECCE_LAN``
+event.  Let's just post to it directly using the ``post_fifo`` method:
+
+.. code-block:: python
+
+  lan_recce.post_fifo(Event(signals.RECCE_LAN))
+
+Now let's look at the trace:
+
+.. code-block:: python
+
+  [2018-05-27 09:56:54.372046] [lan_recce_chart] e->start_at() top->private_search
+  [2018-05-27 09:56:54.372522] [lan_recce_chart] e->recce_lan() private_search->fill_arp_table
+  [2018-05-27 09:56:58.386858] [lan_recce_chart] e->ARP_TIME_OUT() fill_arp_table->identify_all_ip_addresses
+  [2018-05-27 09:56:58.454212] [lan_recce_chart] e->ip_addresses_found() identify_all_ip_addresses->recce_rabbit_consumers
+  [2018-05-27 09:57:00.048376] [lan_recce_chart] e->lan_recce_complete() recce_rabbit_consumers->private_search
+
+Compare this trace with it's statechart:
+
+.. image:: _static/miros_rabbitmq_recce_chart.svg
+    :target: _static/miros_rabbitmq_recce_chart.pdf
+    :align: center
+
+Compare the statechart within the ``LanRecceChart`` class to the sequence diagram with a description:
+
+.. code-block:: python
+
+  [Statechart: lan_recce_chart]
+             top     private_search  fill_arp_table  identify_all_ip_addresses  recce_rabbit_consumers
+              +-start_at()->|              |                      |                        |
+              |    (1)      |              |                      |                        |
+              |             +-recce_lan()->|                      |                        |
+              |             |    (2)       |                      |                        |
+              |             |              +----ARP_TIME_OUT()--->|                        |
+              |             |              |         (3)          |                        |
+              |             |              |                      +--ip_addresses_found()->|
+              |             |              |                      |          (4)           |
+              |             +<-------------+----------------------+--lan_recce_complete()--|
+              |             |              |                      |          (5)           |
+
+1. The ``LanRecceChart`` starts itself in the ``private_search`` state.
+   Immediately upon entering the ``private_search`` state the state machine
+   subscribes to the ``RECCE_LAN`` and ``AMQP_CONSUMER_CHECK`` events.  The
+   ``RECCE_LAN`` event will be used by some outside statechart to begin a search
+   of the local network and the ``AMQP_CONSUMER_CHECK`` events will be initiated
+   within the ``recce_rabbit_consumers`` state, talked about in step 4.
+   
+   After subscribing to the public events it uses the ``get_working_ip_address``
+   static to get it's working IP address.
+
+2. In response to our posted ``RECCE_LAN`` event the chart posts a private
+   ``recce_lan`` event and begins a search of the local area network.  Notice
+   that while the state machine is within the ``lan_recce`` state, all
+   additional ``RECCE_LAN`` events will be deferred until the state is exited.
+   This is an example of the `deferred event pattern <https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_.
+
+   After the event processor enters the ``lan_recce`` state, it's initialization
+   signal causes a transition into the ``fill_arp_table``.  Upon entering the
+   ``file_arp_table`` the state machine pings the broadcast address of the local
+   network to fill the arp table and triggers a one shot event called
+   ``ARP_FILL_TIME_OUT`` to fire in ``lan.arp_time_sec``.  This value can be
+   passed into the LanRecceChart as an optional parameter, by default it is set
+   to 2 seconds.
+
+3. 2 seconds after step 2, the ``ARP_FILL_TIME_OUT`` one shot is fired, causing
+   a transition into the ``identify_all_ip_addresses`` state.  Upon entering
+   this state the state machine determines what the network addresses are by
+   reading the arp table within a call to the ``candidiate_ip_addresses``
+   method.  It then posts the ``ip_address_found`` event to itself.
+
+4. At this stage, each of the discovered IP addresses is used to begin a
+   scouting mission.  The missions run in parallel using their own
+   ``RabbitConsumerScoutChart`` instance.  When a mission is completed, the
+   result is published by the ``RabbitConsumerScoutChart`` within the payload of
+   the ``AMQP_CONSUMER_CHECK`` event and caught and handled within the
+   ``recce_rabbit_consumers`` state.
+
+   When all of the searches have returned their respect ``AMQP_CONSUMER_CHECK``
+   the IP addresses that have been confirmed to have a RabbitMQ consumer are put
+   into the payload of a ``LAN_RECCE_COMPLETE`` event and published to the task
+   fabric so that any statechart subscribing to this event will receive the
+   results of the reconnaissance of the local network.
 
