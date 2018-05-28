@@ -4,8 +4,8 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>427</x>
-      <y>322</y>
+      <x>238</x>
+      <y>315</y>
       <w>21</w>
       <h>49</h>
     </coordinates>
@@ -15,8 +15,8 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>280</x>
-      <y>350</y>
+      <x>91</x>
+      <y>343</y>
       <w>826</w>
       <h>602</h>
     </coordinates>
@@ -43,8 +43,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>595</x>
-      <y>441</y>
+      <x>406</x>
+      <y>434</y>
       <w>483</w>
       <h>224</h>
     </coordinates>
@@ -70,8 +70,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>525</x>
-      <y>546</y>
+      <x>336</x>
+      <y>539</y>
       <w>14</w>
       <h>14</h>
     </coordinates>
@@ -81,8 +81,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>525</x>
-      <y>546</y>
+      <x>336</x>
+      <y>539</y>
       <w>84</w>
       <h>21</h>
     </coordinates>
@@ -92,8 +92,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>392</x>
-      <y>945</y>
+      <x>203</x>
+      <y>938</y>
       <w>336</w>
       <h>84</h>
     </coordinates>
@@ -104,8 +104,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>595</x>
-      <y>763</y>
+      <x>406</x>
+      <y>756</y>
       <w>224</w>
       <h>84</h>
     </coordinates>
@@ -126,8 +126,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>343</x>
-      <y>847</y>
+      <x>154</x>
+      <y>840</y>
       <w>252</w>
       <h>84</h>
     </coordinates>
@@ -146,8 +146,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>609</x>
-      <y>658</y>
+      <x>420</x>
+      <y>651</y>
       <w>21</w>
       <h>56</h>
     </coordinates>
@@ -157,8 +157,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>434</x>
-      <y>707</y>
+      <x>245</x>
+      <y>700</y>
       <w>182</w>
       <h>154</h>
     </coordinates>
@@ -168,8 +168,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>623</x>
-      <y>707</y>
+      <x>434</x>
+      <y>700</y>
       <w>98</w>
       <h>70</h>
     </coordinates>
@@ -179,8 +179,8 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>427</x>
-      <y>693</y>
+      <x>238</x>
+      <y>686</y>
       <w>196</w>
       <h>49</h>
     </coordinates>
@@ -191,8 +191,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>217</x>
-      <y>77</y>
+      <x>28</x>
+      <y>70</y>
       <w>203</w>
       <h>147</h>
     </coordinates>
@@ -217,8 +217,8 @@ get_amqp_consumer_check_payload(result)
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>329</x>
-      <y>280</y>
+      <x>140</x>
+      <y>273</y>
       <w>140</w>
       <h>35</h>
     </coordinates>
@@ -229,8 +229,8 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>392</x>
-      <y>308</y>
+      <x>203</x>
+      <y>301</y>
       <w>49</w>
       <h>42</h>
     </coordinates>
@@ -240,8 +240,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>602</x>
-      <y>700</y>
+      <x>413</x>
+      <y>693</y>
       <w>28</w>
       <h>28</h>
     </coordinates>
@@ -251,19 +251,19 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>812</x>
-      <y>791</y>
-      <w>378</w>
+      <x>623</x>
+      <y>784</y>
+      <w>392</w>
       <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;520.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;540.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>875</y>
+      <x>399</x>
+      <y>868</y>
       <w>602</w>
       <h>21</h>
     </coordinates>
@@ -273,8 +273,8 @@ Event Processor</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>819</x>
-      <y>777</y>
+      <x>644</x>
+      <y>770</y>
       <w>378</w>
       <h>21</h>
     </coordinates>
@@ -285,8 +285,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>217</x>
-      <y>245</y>
+      <x>28</x>
+      <y>238</y>
       <w>938</w>
       <h>784</h>
     </coordinates>
@@ -303,8 +303,8 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>308</x>
-      <y>217</y>
+      <x>119</x>
+      <y>210</y>
       <w>21</w>
       <h>42</h>
     </coordinates>
@@ -314,8 +314,8 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>826</x>
-      <y>476</y>
+      <x>637</x>
+      <y>469</y>
       <w>224</w>
       <h>119</h>
     </coordinates>
@@ -338,8 +338,8 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>623</x>
-      <y>672</y>
+      <x>434</x>
+      <y>665</y>
       <w>266</w>
       <h>21</h>
     </coordinates>
@@ -350,8 +350,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>700</x>
-      <y>616</y>
+      <x>511</x>
+      <y>609</y>
       <w>154</w>
       <h>28</h>
     </coordinates>
@@ -362,8 +362,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>588</y>
+      <x>399</x>
+      <y>581</y>
       <w>350</w>
       <h>63</h>
     </coordinates>
@@ -373,8 +373,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>231</x>
-      <y>546</y>
+      <x>42</x>
+      <y>539</y>
       <w>14</w>
       <h>14</h>
     </coordinates>
@@ -384,8 +384,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>231</x>
-      <y>546</y>
+      <x>42</x>
+      <y>539</y>
       <w>63</w>
       <h>21</h>
     </coordinates>
@@ -395,8 +395,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>399</x>
-      <y>952</y>
+      <x>210</x>
+      <y>945</y>
       <w>336</w>
       <h>70</h>
     </coordinates>
@@ -412,8 +412,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>413</x>
-      <y>133</y>
+      <x>224</x>
+      <y>126</y>
       <w>56</w>
       <h>21</h>
     </coordinates>
@@ -423,8 +423,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>455</x>
-      <y>35</y>
+      <x>266</x>
+      <y>28</y>
       <w>154</w>
       <h>189</h>
     </coordinates>
@@ -451,8 +451,8 @@ CONNECTION_ATTEMPTS
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>287</x>
-      <y>42</y>
+      <x>98</x>
+      <y>35</y>
       <w>70</w>
       <h>21</h>
     </coordinates>
@@ -462,8 +462,8 @@ CONNECTION_ATTEMPTS
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>623</x>
-      <y>35</y>
+      <x>434</x>
+      <y>28</y>
       <w>217</w>
       <h>70</h>
     </coordinates>
@@ -477,8 +477,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>602</x>
-      <y>49</y>
+      <x>413</x>
+      <y>42</y>
       <w>35</w>
       <h>63</h>
     </coordinates>
@@ -488,8 +488,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>623</x>
-      <y>119</y>
+      <x>434</x>
+      <y>112</y>
       <w>427</w>
       <h>105</h>
     </coordinates>
@@ -507,8 +507,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>707</x>
-      <y>98</y>
+      <x>518</x>
+      <y>91</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
@@ -518,8 +518,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>287</x>
-      <y>7</y>
+      <x>98</x>
+      <y>0</y>
       <w>70</w>
       <h>21</h>
     </coordinates>
@@ -529,8 +529,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>315</x>
-      <y>56</y>
+      <x>126</x>
+      <y>49</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
@@ -540,8 +540,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>315</x>
-      <y>21</y>
+      <x>126</x>
+      <y>14</y>
       <w>21</w>
       <h>35</h>
     </coordinates>
@@ -551,8 +551,8 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>518</x>
-      <y>287</y>
+      <x>329</x>
+      <y>280</y>
       <w>273</w>
       <h>49</h>
     </coordinates>
@@ -566,8 +566,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>518</x>
-      <y>273</y>
+      <x>329</x>
+      <y>266</y>
       <w>259</w>
       <h>56</h>
     </coordinates>
@@ -577,8 +577,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>595</x>
-      <y>861</y>
+      <x>420</x>
+      <y>854</y>
       <w>378</w>
       <h>21</h>
     </coordinates>
@@ -589,8 +589,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>350</x>
-      <y>203</y>
+      <x>161</x>
+      <y>196</y>
       <w>210</w>
       <h>84</h>
     </coordinates>
@@ -600,23 +600,71 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>770</x>
-      <y>294</y>
+      <x>581</x>
+      <y>287</y>
       <w>378</w>
       <h>490</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;510.0;10.0;520.0;680.0</additional_attributes>
+    <additional_attributes>10.0;10.0;520.0;10.0;520.0;680.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>889</x>
-      <y>798</y>
-      <w>84</w>
+      <x>714</x>
+      <y>791</y>
+      <w>70</w>
       <h>77</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;90.0;100.0;10.0</additional_attributes>
+    <additional_attributes>10.0;90.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>630</x>
+      <y>777</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>406</x>
+      <y>861</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>77</x>
+      <y>462</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>196</x>
+      <y>945</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

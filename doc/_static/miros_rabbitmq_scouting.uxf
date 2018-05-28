@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>6</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>150</x>
-      <y>192</y>
-      <w>18</w>
-      <h>42</h>
+      <x>200</x>
+      <y>368</y>
+      <w>24</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -15,10 +15,10 @@
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>954</x>
-      <y>222</y>
-      <w>120</w>
-      <h>36</h>
+      <x>1272</x>
+      <y>408</y>
+      <w>160</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -27,10 +27,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1008</x>
-      <y>246</y>
-      <w>30</w>
-      <h>48</h>
+      <x>1344</x>
+      <y>440</y>
+      <w>40</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>20.0;10.0;20.0;50.0</additional_attributes>
@@ -38,10 +38,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>948</x>
-      <y>162</y>
-      <w>132</w>
-      <h>108</h>
+      <x>1264</x>
+      <y>328</y>
+      <w>176</w>
+      <h>144</h>
     </coordinates>
     <panel_attributes>*Recon*
 --
@@ -56,10 +56,10 @@ other.addresses
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>810</x>
-      <y>306</y>
-      <w>540</w>
-      <h>486</h>
+      <x>1080</x>
+      <y>520</y>
+      <w>720</w>
+      <h>648</h>
     </coordinates>
     <panel_attributes>*private_search*
 --
@@ -73,10 +73,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>876</x>
-      <y>342</y>
-      <w>444</w>
-      <h>198</h>
+      <x>1168</x>
+      <y>568</y>
+      <w>592</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>*lan_recon*
 --
@@ -88,10 +88,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>918</x>
-      <y>390</y>
-      <w>138</w>
-      <h>120</h>
+      <x>1224</x>
+      <y>632</y>
+      <w>184</w>
+      <h>160</h>
     </coordinates>
     <panel_attributes>*fill_arp_table*
 --
@@ -111,10 +111,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1158</x>
-      <y>390</y>
-      <w>144</w>
-      <h>120</h>
+      <x>1544</x>
+      <y>632</y>
+      <w>192</w>
+      <h>160</h>
     </coordinates>
     <panel_attributes>*identify_all_ip_addresses*
 --
@@ -133,10 +133,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>96</x>
-      <y>216</y>
-      <w>498</w>
-      <h>438</h>
+      <x>128</x>
+      <y>400</y>
+      <w>664</w>
+      <h>584</h>
     </coordinates>
     <panel_attributes>*search*
 --
@@ -152,10 +152,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>228</x>
-      <y>246</y>
-      <w>240</w>
-      <h>144</h>
+      <x>304</x>
+      <y>440</y>
+      <w>320</w>
+      <h>192</h>
     </coordinates>
     <panel_attributes>*post_and_wait*
 --
@@ -179,10 +179,10 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>174</x>
-      <y>312</y>
-      <w>12</w>
-      <h>12</h>
+      <x>232</x>
+      <y>528</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -190,10 +190,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>174</x>
-      <y>312</y>
-      <w>66</w>
-      <h>18</h>
+      <x>232</x>
+      <y>528</y>
+      <w>88</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;90.0;10.0</additional_attributes>
@@ -201,10 +201,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>90</x>
-      <y>336</y>
-      <w>150</w>
-      <h>24</h>
+      <x>120</x>
+      <y>560</y>
+      <w>200</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 SCOUT_NETWORK</panel_attributes>
@@ -213,10 +213,10 @@ SCOUT_NETWORK</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>384</x>
-      <y>486</y>
-      <w>192</w>
-      <h>72</h>
+      <x>512</x>
+      <y>760</y>
+      <w>256</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>*AMQP_SERVER*
 --
@@ -235,10 +235,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>162</x>
-      <y>558</y>
-      <w>186</w>
-      <h>72</h>
+      <x>216</x>
+      <y>856</y>
+      <w>248</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>*NOT_AMQP_SERVER*
 --
@@ -254,10 +254,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>330</x>
-      <y>384</y>
-      <w>18</w>
-      <h>60</h>
+      <x>440</x>
+      <y>624</y>
+      <w>24</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
@@ -265,10 +265,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>240</x>
-      <y>438</y>
-      <w>96</w>
-      <h>132</h>
+      <x>320</x>
+      <y>696</y>
+      <w>128</w>
+      <h>176</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>140.0;10.0;10.0;10.0;10.0;200.0</additional_attributes>
@@ -276,10 +276,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>342</x>
-      <y>438</y>
-      <w>150</w>
-      <h>60</h>
+      <x>456</x>
+      <y>696</y>
+      <w>200</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;230.0;10.0;230.0;80.0</additional_attributes>
@@ -287,10 +287,10 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>156</x>
-      <y>426</y>
-      <w>168</w>
-      <h>42</h>
+      <x>208</x>
+      <y>680</y>
+      <w>224</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>[chart.producer.thread.connection_error]
 style=wordwrap</panel_attributes>
@@ -299,10 +299,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>846</x>
-      <y>558</y>
-      <w>264</w>
-      <h>216</h>
+      <x>1128</x>
+      <y>856</y>
+      <w>352</w>
+      <h>288</h>
     </coordinates>
     <panel_attributes>*Recon Rabbit Consumers*
 --
@@ -346,10 +346,10 @@ valign=top
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>6</x>
-      <y>0</y>
-      <w>132</w>
-      <h>90</h>
+      <x>8</x>
+      <y>112</y>
+      <w>176</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>*RabbitConsumerScout*
 --
@@ -365,10 +365,10 @@ encryption_key
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>72</x>
-      <y>132</y>
-      <w>120</w>
-      <h>30</h>
+      <x>96</x>
+      <y>288</y>
+      <w>160</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -377,10 +377,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>126</x>
-      <y>156</y>
-      <w>36</w>
-      <h>60</h>
+      <x>168</x>
+      <y>320</y>
+      <w>48</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;70.0;30.0;70.0</additional_attributes>
@@ -388,10 +388,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1014</x>
-      <y>282</y>
-      <w>18</w>
-      <h>42</h>
+      <x>1352</x>
+      <y>488</y>
+      <w>24</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -399,10 +399,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>324</x>
-      <y>432</y>
-      <w>24</w>
-      <h>24</h>
+      <x>432</x>
+      <y>688</y>
+      <w>32</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -410,10 +410,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>570</x>
-      <y>510</y>
-      <w>234</w>
-      <h>18</h>
+      <x>760</x>
+      <y>792</y>
+      <w>312</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;370.0;10.0</additional_attributes>
@@ -421,10 +421,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>342</x>
-      <y>588</y>
-      <w>468</w>
-      <h>18</h>
+      <x>456</x>
+      <y>896</y>
+      <w>624</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;760.0;10.0</additional_attributes>
@@ -432,10 +432,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>648</x>
-      <y>492</y>
-      <w>156</w>
-      <h>24</h>
+      <x>864</x>
+      <y>768</y>
+      <w>208</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>SCOUTING_COMPLETE(ip, TRUE)
 style=wordwrap</panel_attributes>
@@ -444,10 +444,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>642</x>
-      <y>570</y>
-      <w>156</w>
-      <h>24</h>
+      <x>856</x>
+      <y>872</y>
+      <w>208</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>SCOUTING_COMPLETE(ip, FALSE)
 style=wordwrap</panel_attributes>
@@ -456,10 +456,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1104</x>
-      <y>660</y>
-      <w>306</w>
-      <h>18</h>
+      <x>1472</x>
+      <y>992</y>
+      <w>408</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;490.0;10.0</additional_attributes>
@@ -467,10 +467,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1116</x>
-      <y>642</y>
-      <w>186</w>
-      <h>24</h>
+      <x>1488</x>
+      <y>968</y>
+      <w>248</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>RECON_COMPLETE(payload=ip_address)
 style=wordwrap</panel_attributes>
@@ -479,10 +479,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>888</x>
-      <y>444</y>
-      <w>42</w>
-      <h>24</h>
+      <x>1184</x>
+      <y>704</y>
+      <w>56</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 </panel_attributes>
@@ -491,10 +491,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>888</x>
-      <y>450</y>
-      <w>12</w>
-      <h>12</h>
+      <x>1184</x>
+      <y>712</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -502,10 +502,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1050</x>
-      <y>438</y>
-      <w>120</w>
-      <h>24</h>
+      <x>1400</x>
+      <y>696</y>
+      <w>160</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ARP_FILL_TIME_OUT</panel_attributes>
@@ -514,10 +514,10 @@ ARP_FILL_TIME_OUT</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1104</x>
-      <y>594</y>
-      <w>258</w>
-      <h>24</h>
+      <x>1472</x>
+      <y>904</y>
+      <w>344</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 RECON</panel_attributes>
@@ -526,10 +526,10 @@ RECON</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>1428</x>
-      <y>138</y>
-      <w>120</w>
-      <h>36</h>
+      <x>1904</x>
+      <y>296</y>
+      <w>160</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -538,10 +538,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1482</x>
-      <y>162</y>
-      <w>30</w>
-      <h>48</h>
+      <x>1976</x>
+      <y>328</y>
+      <w>40</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>20.0;10.0;20.0;50.0</additional_attributes>
@@ -549,17 +549,22 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1422</x>
-      <y>66</y>
-      <w>174</w>
-      <h>120</h>
+      <x>1896</x>
+      <y>120</y>
+      <w>232</w>
+      <h>240</h>
     </coordinates>
-    <panel_attributes>*RabbitCache*
+    <panel_attributes>*MirosRabbitMQConnections*
 --
-my.address
-my.addresses
 other.addresses
 --
+RabbitCache.make_amqp_url(
+  ip_address,
+  rabbit_user,
+  rabbit_port, 
+  connection_attempts,
+  heartbeat_interval)
+  
 expired(last_modified, time_out_in_minutes)
 
 
@@ -569,10 +574,10 @@ expired(last_modified, time_out_in_minutes)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1488</x>
-      <y>198</y>
-      <w>18</w>
-      <h>36</h>
+      <x>1984</x>
+      <y>376</y>
+      <w>24</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -580,27 +585,22 @@ expired(last_modified, time_out_in_minutes)
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1416</x>
-      <y>216</y>
-      <w>750</w>
-      <h>846</h>
+      <x>1888</x>
+      <y>400</y>
+      <w>960</w>
+      <h>880</h>
     </coordinates>
     <panel_attributes>*scout memory*
 --
 entry /
   if not hasattr(chart, 'cache_file_chart'):
     chart.cache_file_chart = CacheFileChart(live_trace=True)
-  chart.subscribe(
-    Event(signal=signals.RECON_COMPLETE))
-  chart.subscribe(
-    Event(signal=signals.SCOUTING_COMPLETE))
-  chart.subscribe(
-    Event(signal=signals.CACHE))
-
-  chart.post_fifo(Event(signal=signals.READ_CACHE))
     
-
-        
+  if not hasattr(chart, 'rabbitmq_lan_recce'):
+    chart.rabbitmq_lan_recce = LanRecceChart(chart.routing_key,chart.exchange_name)
+  
+  chart.subscribe(Event(signal=signals.LAN_RECCE_COMPLETE))
+  chart.subscribe(Event(signal=signals.CACHE))
 
 valign=top
 </panel_attributes>
@@ -609,15 +609,18 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1584</x>
-      <y>372</y>
-      <w>534</w>
-      <h>390</h>
+      <x>2112</x>
+      <y>608</y>
+      <w>712</w>
+      <h>520</h>
     </coordinates>
     <panel_attributes>*Read the cache*
 --
 entry /
-  chart.sm = ScoutMemory()
+
+
+OTHER_ALIEN_CACHE /
+  chart.defer(e)
 
 
 
@@ -635,10 +638,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1866</x>
-      <y>546</y>
-      <w>186</w>
-      <h>114</h>
+      <x>2288</x>
+      <y>928</y>
+      <w>248</w>
+      <h>152</h>
     </coordinates>
     <panel_attributes>*Broadcast the cache*
 --
@@ -655,44 +658,12 @@ valign=top
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>1554</x>
-      <y>780</y>
-      <w>564</w>
-      <h>252</h>
-    </coordinates>
-    <panel_attributes>*Alien cache received*
---
-chart.subscribe(Event(signal=signal.SCOUTING_COMPLETE))
-alien_ips = list(set(self.address) - set(self.other_addresses))
-
-for ip_address in alien_ips:
-  amqp_url = ...
-  producer_scout = ProducerScout(ip_address=..
-  chart.candidates[ip] = producer_scout
-  producer_scout.start_at(search)
-
-SCOUTING_COMPLETE(ip, payload) / 
-  if payload==True:
-    chart.candidate_ip_addresses.append(ip)
-  del(chart.candidates[ip])
-
-  chart.search_space.remove(ip)
-  if chart.search_space.empty()
-    chart.post_fifo(Event(signal=signals.RECON_COMPLETE),
-      payload=chart.candidate_ip_addresses)
-valign=top
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
-      <x>1410</x>
-      <y>480</y>
-      <w>186</w>
-      <h>30</h>
+      <x>1880</x>
+      <y>752</y>
+      <w>248</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 
@@ -702,21 +673,19 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1716</x>
-      <y>444</y>
-      <w>378</w>
-      <h>90</h>
+      <x>2288</x>
+      <y>664</y>
+      <w>504</w>
+      <h>224</h>
     </coordinates>
     <panel_attributes>*DiscoverNetwork*
 --
 entry /
-  recon = Recon()
-  recon.start_at(search)
+  chart.publish(Event(signals.RECCE_LAN))
 
-ALIEN_CACHE /
-  chart.defer(e)
-
-
+LAN_RECCE_COMPLETE as e /
+   live_ip_address = e.payload
+   
   
 
 
@@ -727,10 +696,10 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>828</x>
-      <y>390</y>
-      <w>12</w>
-      <h>12</h>
+      <x>1104</x>
+      <y>632</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -738,10 +707,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>828</x>
-      <y>384</y>
-      <w>60</w>
-      <h>24</h>
+      <x>1104</x>
+      <y>624</y>
+      <w>80</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 </panel_attributes>
@@ -750,48 +719,34 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1722</x>
-      <y>528</y>
-      <w>156</w>
-      <h>72</h>
+      <x>2984</x>
+      <y>584</y>
+      <w>208</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 </panel_attributes>
     <additional_attributes>10.0;10.0;10.0;100.0;240.0;100.0</additional_attributes>
   </element>
   <element>
-    <id>Text</id>
-    <coordinates>
-      <x>1734</x>
-      <y>552</y>
-      <w>144</w>
-      <h>42</h>
-    </coordinates>
-    <panel_attributes>RECON_COMPLETE
-# append ip addresses
-# read amqp values into memory
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
-      <x>1410</x>
-      <y>924</y>
-      <w>156</w>
-      <h>24</h>
+      <x>1880</x>
+      <y>1216</y>
+      <w>208</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
-ALIEN_CACHE</panel_attributes>
+OTHER_ALIEN_CACHE</panel_attributes>
     <additional_attributes>10.0;20.0;240.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>1608</x>
-      <y>450</y>
-      <w>12</w>
-      <h>12</h>
+      <x>2144</x>
+      <y>712</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -799,10 +754,10 @@ ALIEN_CACHE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1620</x>
-      <y>480</y>
-      <w>108</w>
-      <h>24</h>
+      <x>2160</x>
+      <y>752</y>
+      <w>144</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 </panel_attributes>
@@ -811,10 +766,10 @@ ALIEN_CACHE</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>1602</x>
-      <y>480</y>
-      <w>24</w>
-      <h>24</h>
+      <x>2136</x>
+      <y>752</y>
+      <w>32</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -822,10 +777,10 @@ ALIEN_CACHE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1608</x>
-      <y>450</y>
-      <w>18</w>
-      <h>42</h>
+      <x>2144</x>
+      <y>712</y>
+      <w>24</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes/>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -833,67 +788,44 @@ ALIEN_CACHE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1608</x>
-      <y>498</y>
-      <w>270</w>
-      <h>150</h>
+      <x>2144</x>
+      <y>776</y>
+      <w>160</w>
+      <h>288</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;230.0;430.0;230.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;340.0;180.0;340.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1980</x>
-      <y>600</y>
-      <w>282</w>
-      <h>18</h>
+      <x>2640</x>
+      <y>912</y>
+      <w>352</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;450.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;420.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>2172</x>
-      <y>918</y>
-      <w>138</w>
-      <h>42</h>
+      <x>2848</x>
+      <y>896</y>
+      <w>184</w>
+      <h>56</h>
     </coordinates>
-    <panel_attributes>NETWORK_RESULTS
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1980</x>
-      <y>930</y>
-      <w>282</w>
-      <h>18</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;450.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Text</id>
-    <coordinates>
-      <x>2172</x>
-      <y>588</y>
-      <w>138</w>
-      <h>42</h>
-    </coordinates>
-    <panel_attributes>NETWORK_RESULTS
+    <panel_attributes>OTHER_ALIEN_CACHE
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>186</x>
-      <y>672</y>
-      <w>132</w>
-      <h>162</h>
+      <x>248</x>
+      <y>1008</y>
+      <w>176</w>
+      <h>216</h>
     </coordinates>
     <panel_attributes>*CacheFile*
 --
@@ -916,10 +848,10 @@ system_read_signal_name
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>102</x>
-      <y>888</y>
-      <w>678</w>
-      <h>534</h>
+      <x>136</x>
+      <y>1296</y>
+      <w>904</w>
+      <h>712</h>
     </coordinates>
     <panel_attributes>*file_access_waiting*
 --
@@ -954,10 +886,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>390</x>
-      <y>942</y>
-      <w>306</w>
-      <h>438</h>
+      <x>520</x>
+      <y>1368</y>
+      <w>408</w>
+      <h>584</h>
     </coordinates>
     <panel_attributes>*file_accessed*
 --
@@ -974,10 +906,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>96</x>
-      <y>1146</y>
-      <w>108</w>
-      <h>24</h>
+      <x>128</x>
+      <y>1640</y>
+      <w>144</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 file_read</panel_attributes>
@@ -986,10 +918,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>192</x>
-      <y>1146</y>
-      <w>24</w>
-      <h>24</h>
+      <x>256</x>
+      <y>1640</y>
+      <w>32</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -997,10 +929,10 @@ file_read</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>210</x>
-      <y>1152</y>
-      <w>222</w>
-      <h>18</h>
+      <x>280</x>
+      <y>1648</y>
+      <w>296</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;350.0;10.0</additional_attributes>
@@ -1008,10 +940,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>246</x>
-      <y>1188</y>
-      <w>12</w>
-      <h>12</h>
+      <x>328</x>
+      <y>1696</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=flow_final</panel_attributes>
     <additional_attributes/>
@@ -1019,10 +951,10 @@ file_read</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>198</x>
-      <y>1164</y>
-      <w>60</w>
-      <h>42</h>
+      <x>264</x>
+      <y>1664</y>
+      <w>80</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
@@ -1030,10 +962,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>420</x>
-      <y>1020</y>
-      <w>258</w>
-      <h>168</h>
+      <x>560</x>
+      <y>1472</y>
+      <w>344</w>
+      <h>224</h>
     </coordinates>
     <panel_attributes>*file_read*
 --
@@ -1059,10 +991,10 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>210</x>
-      <y>1140</y>
-      <w>84</w>
-      <h>18</h>
+      <x>280</x>
+      <y>1632</y>
+      <w>112</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>[cache.writable()]
 style=wordwrap</panel_attributes>
@@ -1071,10 +1003,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>126</x>
-      <y>1326</y>
-      <w>222</w>
-      <h>54</h>
+      <x>168</x>
+      <y>1880</y>
+      <w>296</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>chart.post_fifo(
   Event(signal=signals.file_write, payload=e.payload),
@@ -1087,10 +1019,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>96</x>
-      <y>1284</y>
-      <w>108</w>
-      <h>24</h>
+      <x>128</x>
+      <y>1824</y>
+      <w>144</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 file_write</panel_attributes>
@@ -1099,10 +1031,10 @@ file_write</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>192</x>
-      <y>1284</y>
-      <w>24</w>
-      <h>24</h>
+      <x>256</x>
+      <y>1824</y>
+      <w>32</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -1110,10 +1042,10 @@ file_write</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>246</x>
-      <y>1326</y>
-      <w>12</w>
-      <h>12</h>
+      <x>328</x>
+      <y>1880</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=flow_final</panel_attributes>
     <additional_attributes/>
@@ -1121,10 +1053,10 @@ file_write</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>198</x>
-      <y>1302</y>
-      <w>60</w>
-      <h>42</h>
+      <x>264</x>
+      <y>1848</y>
+      <w>80</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
@@ -1132,10 +1064,10 @@ file_write</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>210</x>
-      <y>1290</y>
-      <w>228</w>
-      <h>18</h>
+      <x>280</x>
+      <y>1832</y>
+      <w>304</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;360.0;10.0</additional_attributes>
@@ -1143,10 +1075,10 @@ file_write</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>216</x>
-      <y>1284</y>
-      <w>78</w>
-      <h>18</h>
+      <x>288</x>
+      <y>1824</y>
+      <w>104</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>[cache.writable()]
 style=wordwrap</panel_attributes>
@@ -1155,10 +1087,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>114</x>
-      <y>1188</y>
-      <w>198</w>
-      <h>54</h>
+      <x>152</x>
+      <y>1696</y>
+      <w>264</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>chart.post_fifo(
   Event(signal=signals.file_read),
@@ -1171,10 +1103,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>420</x>
-      <y>1200</y>
-      <w>258</w>
-      <h>150</h>
+      <x>560</x>
+      <y>1712</y>
+      <w>344</w>
+      <h>200</h>
     </coordinates>
     <panel_attributes>*file_write*
 --
@@ -1197,10 +1129,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>672</x>
-      <y>1056</y>
-      <w>216</w>
-      <h>18</h>
+      <x>896</x>
+      <y>1520</y>
+      <w>288</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;340.0;10.0</additional_attributes>
@@ -1208,10 +1140,10 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>696</x>
-      <y>1044</y>
-      <w>192</w>
-      <h>24</h>
+      <x>928</x>
+      <y>1504</y>
+      <w>256</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>&lt;system_read_signal_name(CACHE)&gt; (json)
 style=wordwrap</panel_attributes>
@@ -1220,10 +1152,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>672</x>
-      <y>1098</y>
-      <w>120</w>
-      <h>24</h>
+      <x>896</x>
+      <y>1576</y>
+      <w>160</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 read_successful</panel_attributes>
@@ -1232,10 +1164,10 @@ read_successful</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>672</x>
-      <y>1272</y>
-      <w>120</w>
-      <h>24</h>
+      <x>896</x>
+      <y>1808</y>
+      <w>160</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 write_successful</panel_attributes>
@@ -1244,10 +1176,10 @@ write_successful</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>846</x>
-      <y>924</y>
-      <w>276</w>
-      <h>66</h>
+      <x>1128</x>
+      <y>1344</y>
+      <w>368</w>
+      <h>88</h>
     </coordinates>
     <panel_attributes>Event(signal=signals.&lt;system_read_signal_name, default=CACHE&gt;,
  payload = {
@@ -1262,10 +1194,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>840</x>
-      <y>912</y>
-      <w>270</w>
-      <h>78</h>
+      <x>1120</x>
+      <y>1328</y>
+      <w>360</w>
+      <h>104</h>
     </coordinates>
     <panel_attributes>The output event:
 fg=blue</panel_attributes>
@@ -1274,10 +1206,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>816</x>
-      <y>984</y>
-      <w>84</w>
-      <h>72</h>
+      <x>1088</x>
+      <y>1424</y>
+      <w>112</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;100.0;120.0;10.0</additional_attributes>
@@ -1285,10 +1217,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>480</x>
-      <y>756</y>
-      <w>204</w>
-      <h>30</h>
+      <x>640</x>
+      <y>1120</y>
+      <w>272</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>cache_chart = CacheFileChart(live_trace=True)
  
@@ -1298,10 +1230,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>480</x>
-      <y>738</y>
-      <w>204</w>
-      <h>48</h>
+      <x>640</x>
+      <y>1096</y>
+      <w>272</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>To create cache file chart object:
 fg=blue</panel_attributes>
@@ -1310,10 +1242,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>366</x>
-      <y>762</y>
-      <w>126</w>
-      <h>96</h>
+      <x>488</x>
+      <y>1128</y>
+      <w>168</w>
+      <h>128</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;140.0;190.0;10.0</additional_attributes>
@@ -1321,10 +1253,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>192</x>
-      <y>792</y>
-      <w>120</w>
-      <h>36</h>
+      <x>256</x>
+      <y>1168</y>
+      <w>160</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -1333,10 +1265,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>276</x>
-      <y>828</y>
-      <w>18</w>
-      <h>30</h>
+      <x>368</x>
+      <y>1216</y>
+      <w>24</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
@@ -1344,10 +1276,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>12</x>
-      <y>846</y>
-      <w>792</w>
-      <h>600</h>
+      <x>16</x>
+      <y>1240</y>
+      <w>1056</w>
+      <h>800</h>
     </coordinates>
     <panel_attributes>*CacheFileChart*
 --
@@ -1362,10 +1294,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>48</x>
-      <y>1008</y>
-      <w>12</w>
-      <h>12</h>
+      <x>64</x>
+      <y>1456</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -1373,10 +1305,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>48</x>
-      <y>1008</y>
-      <w>66</w>
-      <h>18</h>
+      <x>64</x>
+      <y>1456</y>
+      <w>88</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;90.0;10.0</additional_attributes>
@@ -1384,10 +1316,10 @@ fg=blue</panel_attributes>
   <element>
     <id>PlotGrid</id>
     <coordinates>
-      <x>222</x>
-      <y>1218</y>
-      <w>174</w>
-      <h>66</h>
+      <x>296</x>
+      <y>1736</y>
+      <w>232</w>
+      <h>88</h>
     </coordinates>
     <panel_attributes>// datasets can have optional names set (in this case "first_name")
 data first_name
@@ -1409,10 +1341,10 @@ plot</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>288</x>
-      <y>1212</y>
-      <w>42</w>
-      <h>18</h>
+      <x>384</x>
+      <y>1728</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>timeout:
 style=wordwrap</panel_attributes>
@@ -1421,24 +1353,24 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1416</x>
-      <y>456</y>
-      <w>174</w>
-      <h>42</h>
+      <x>1888</x>
+      <y>720</y>
+      <w>232</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>CACHE(e)
-chart.cache.dict = e.payload['dict']
-chart.cache.expired = e.payload['expired']
+chart.cache.dict = e.payload.dict
+chart.cache.expired = e.payload.expired
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1626</x>
-      <y>468</y>
-      <w>108</w>
-      <h>30</h>
+      <x>2168</x>
+      <y>736</y>
+      <w>144</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>
 [chart.cache.expired]
@@ -1449,9 +1381,9 @@ style=wordwrap</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>102</y>
-      <w>648</w>
-      <h>564</h>
+      <y>248</y>
+      <w>864</w>
+      <h>752</h>
     </coordinates>
     <panel_attributes>*RabbitConsumerScoutChart*
 --
@@ -1466,12 +1398,111 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>66</x>
-      <y>84</y>
-      <w>18</w>
-      <h>30</h>
+      <x>88</x>
+      <y>224</y>
+      <w>24</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>2072</x>
+      <y>1208</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Alien Cache Receive
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>2272</x>
+      <y>720</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>1872</x>
+      <y>728</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>1888</x>
+      <y>1216</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>2344</x>
+      <y>432</y>
+      <w>296</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>CacheReadPayload = \
+  namedtuple('CacheReadPayload',
+    ['dict', 'last_modified', 'created_at', 'expired'])</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1912</x>
+      <y>480</y>
+      <w>472</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>570.0;10.0;450.0;130.0;10.0;130.0;10.0;300.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>2536</x>
+      <y>688</y>
+      <w>208</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>RecceCompletePayload = \
+  namedtuple(
+    'RecceCompletePayload',
+        ['other_addresses', 'my_address'])
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2440</x>
+      <y>696</y>
+      <w>112</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;50.0;80.0;50.0;120.0;10.0</additional_attributes>
   </element>
 </diagram>

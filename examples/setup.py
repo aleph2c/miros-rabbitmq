@@ -25,14 +25,45 @@ import netifaces
 env_path = Path('.') / '.env'
 load_dotenv()
 
-MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
-SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
-SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
-RABBIT_USER = os.getenv("RABBIT_USER")
-RABBIT_PASSWORD = os.getenv("RABBIT_PASSWORD")
+class EnvContractBroken(Exception):
+  pass
 
-class ScoutMemory():
-  default_structure = """{
+class LoadEnvironmentalVariables():
+  def __init__(self):
+    if os.getenv('RABBIT_PASSWORD') is None:
+      load_dotenv()  # climb out of this dir to find dir containing .env file
+
+    # What this package needs from the .env file for this software to run.
+    # if the file is missing any of this information, crash now
+    if not os.getenv('RABBIT_PASSWORD'):
+      raise EnvContractBroken('RABBIT_PASSWORD is missing from your .env file')
+
+    if not os.getenv('RABBIT_USER'):
+      raise EnvContractBroken('RABBIT_USER is missing from your .env file')
+
+    if not os.getenv('RABBIT_PORT'):
+      raise EnvContractBroken('RABBIT_PORT is missing from your .env file')
+
+    if not os.getenv('RABBIT_HEARTBEAT_INTERVAL'):
+      raise EnvContractBroken('RABBIT_HEARTBEAT_INTERVAL is missing from your .env file')
+
+    if not os.getenv('CONNECTION_ATTEMPTS'):
+      raise EnvContractBroken('CONNECTION_ATTEMPTS is missing from your .env file')
+
+    if not os.getenv('MESH_ENCRYPTION_KEY'):
+      raise EnvContractBroken('MESH_ENCRYPTION_KEY is missing from your .env file')
+
+    if not os.getenv('SNOOP_TRACE_ENCRYPTION_KEY'):
+      raise EnvContractBroken('SNOOP_TRACE_ENCRYPTION_KEY is missing from your .env file')
+
+    if not os.getenv('SNOOP_SPY_ENCRYPTION_KEY'):
+      raise EnvContractBroken('SNOOP_SPY_ENCRYPTION_KEY is missing from your .env file')
+
+    # if not os.getenv('SNOOP_BOB'):
+    #   raise EnvContractBroken('SNOOP_BOB is missing from your .env file')
+
+class MirosRabbitMQConnections():
+  default_json_structure = """{
   "nodes": {
     "automatic": {
       "addresses": [],
@@ -54,39 +85,55 @@ class ScoutMemory():
 """
 
   def __init__(self, cache_file_path=None):
-    '''Create a scout memory object using an optional cache_file_path
+    '''Create a scout memory interface'''
+    LoadEnvironmentalVariables()
+    self.rabbit_user = os.getenv('RABBIT_USER')
+    self.rabbit_password = os.getenv('RABBIT_PASSWORD')
+    self.rabbit_port = os.getenv('RABBIT_PORT')
+    self.rabbit_heartbeat_interval = os.getenv('RABBIT_HEARTBEAT_INTERVAL')
+    self.connection_attempts = os.getenv('CONNECTION_ATTEMPTS')
 
-    The rules which govern this cache file are simple:
-      * An address and it's amqp_url can only exist in either the manual live or
-        manual dead node, it can not exist in both at the same time.
-      * An address/amqp_url can only be listed once in any of the automatic, manual-live,
-        or manual-dead collections.  None of these collections will have
-        duplicates
+  def make_amqp_url(self,
+               ip_address,
+               rabbit_user=None,
+               rabbit_password=None,
+               rabbit_port=None,
+               connection_attempts=None,
+               heartbeat_interval=None):
+    '''Make a RabbitMq url.
 
-    To build the a scout memory object:
+      **Example**:
 
-      scout_memory = ScoutMemory(<path_to_your_cache_file>)
+      .. code-block:: python
 
-      If this <path_to_your_cache_file> is None then a default file called
-      '.miros_rabbitmq_cache.json' will be made in the directory that you
-      building this object from.
+        amqp_url = \\
+          self.make_amqp_url(
+              ip_address=192.168.1.1,    # only mandatory argument
+              rabbit_user='peter',       # if any of the following args not given
+              rabbit_password='rabbit',  # the .env file will be used
+              connection_attempts='3',
+              heartbeat_interval='3600')
+
+        print(amqp_url)  # =>
+          'amqp://bob:dobbs@192.168.1.1:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
 
     '''
-    if cache_file_path is None:
-      self.cache_file_name = str(Path('.') / '.miros_rabbitmq_cache.json')
-    else:
-      self.cache_file_name = cache_file_path
+    if rabbit_port is None:
+      rabbit_port = self.rabbit_port
+    if connection_attempts is None:
+      connection_attempts = self.connection_attempts
+    if heartbeat_interval is None:
+      heartbeat_interval = self.rabbit_heartbeat_interval
 
-    # check if file exists, if not make it with nothing in it
-    if not os.path.isfile(self.cache_file_name):
-      open(self.cache_file_name, 'a').close()
-
-    # if the cache is empty write a default structure
-    if os.path.getsize(self.cache_file_name) is 0:
-      with open(self.cache_file_name, "w") as f:
-        f.write(ScoutMemory.default_structure)
-
-    self.dict = json.load(open(self.cache_file_name, 'r'))
+    amqp_url = \
+      "amqp://{}:{}@{}:{}/%2F?connection_attempts={}&heartbeat_interval={}".format(
+          rabbit_user,
+          rabbit_password,
+          ip_address,
+          rabbit_port,
+          connection_attempts,
+          heartbeat_interval)
+    return amqp_url
 
   def addesses_and_amqp_urls_for(self, automatic=None, manual=None, live=None, dead=None):
     '''Get the addresses and amqp_urls for node
@@ -198,48 +245,29 @@ class ScoutMemory():
     append_to_dead(address, amqp_url)
     remove_from_live(address, amqp_url)
 
-  def write(self, addresses=None, ampq_urls=None):
-    '''Write the cache file to disk'''
-    with open(self.cache_file_name, "w") as f:
-      f.write(json.dumps(self.dict, sort_keys=True, indent=2))
+  #def write(self, addresses=None, ampq_urls=None):
+  #  '''Write the cache file to disk'''
+  #  with open(self.cache_file_name, "w") as f:
+  #    f.write(json.dumps(self.dict, sort_keys=True, indent=2))
 
   def remove_all_automatic(self):
     '''Remove all automatic addresses and amqp_urls from the automatic node'''
     automatic_nodes = self.dict['nodes']['automatic']
     automatic_nodes['addresses'] = []
     automatic_nodes['amqp_urls'] = []
-    self.write()
+    #self.write()
 
   def remove_all_dead(self):
     '''Remove all automatic addresses and amqp_urls from the manual dead node'''
     automatic_nodes = self.dict['nodes']['manual']['dead']
     automatic_nodes['addresses'] = []
     automatic_nodes['amqp_urls'] = []
-    self.write()
+    #self.write()
 
   def destroy(self):
     '''Delete the cache file all addresses and amqp_urls will be destroyed'''
     self.dict = {}
     os.remove(self.cache_file_name)
-
-  def last_modified(self):
-    '''Return when the cache file was last modified'''
-    return time.ctime(os.path.getmtime(self.cache_file_name))
-
-  def created_at(self):
-    '''Return when the cache file was created'''
-    return time.ctime(os.path.getctime(self.cache_file_name))
-
-  def cached_expired(self):
-    '''Using the "time_out_in_minutes" value in the cache file, determine if the
-    cache file has expired'''
-    last_modified = datetime.fromtimestamp(os.path.getmtime(self.cache_file_name))
-    duration = datetime.now() - last_modified
-    timeout = timedelta(minutes=self.dict['time_out_in_minutes'])
-    is_expired = False
-    if duration > timeout:
-      is_expired = True
-    return is_expired
 
 class CacheFile(Factory):
   def __init__(self, name, file_path, system_read_signal_name=None):
@@ -282,6 +310,9 @@ class CacheFile(Factory):
       is_expired = False
     return is_expired
 
+CacheReadPayload = \
+  namedtuple('CacheReadPayload',
+    ['dict', 'last_modified', 'created_at', 'expired'])
 
 class CacheFileChart(CacheFile):
   def __init__(self, file_path=None, live_trace=None, live_spy=None):
@@ -424,12 +455,12 @@ class CacheFileChart(CacheFile):
     cache.json = json.dumps(cache.dict, sort_keys=True, indent=2)
     cache.last_modified = os.path.getmtime(cache.file_path)
     cache.created_at = time.ctime(os.path.getctime(cache.file_path))
-    payload = {
-      'dict': cache.dict,
-      'last_modified': cache.last_modified,
-      'created_at': cache.created_at,
-      'expired': cache.expired()
-    }
+    payload = CacheReadPayload(
+      dict=cache.dict,
+      last_modified=cache.last_modified,
+      created_at=cache.created_at,
+      expired=cache.expired()
+    )
     cache.post_fifo(Event(signal=signals.CACHE, payload=payload))
     cache.post_lifo(Event(signal=signals.read_successful))
     pp(cache.json)
@@ -460,6 +491,7 @@ class CacheFileChart(CacheFile):
     cache.post_lifo(Event(signal=signals.write_successful))
     return status
 
+
 class PikaTopicPublisherMaker():
   '''A class which removes as much of the tedium from building a pika producer as is possible.'''
   HEARTBEAT_INTERVAL_SEC = 3600
@@ -474,11 +506,11 @@ class PikaTopicPublisherMaker():
                 heartbeat_interval=None,
                 callback_tempo=None):
 
+    LoadEnvironmentalVariables()
+
     self.ip_address = ip_address
     self.routing_key = routing_key
     self.exchange_name = exchange_name
-    if os.getenv('RABBIT_PASSWORD') is None:
-      load_dotenv()  # climb out of this dir to find dir containing .env file
 
     self.rabbit_user = os.getenv('RABBIT_USER')
     self.rabbit_password = os.getenv('RABBIT_PASSWORD')
@@ -696,6 +728,7 @@ class Attribute():
 
 LanRecceNode = namedtuple('REFACTOR_NODE', ['searched', 'result', 'scout'])
 
+
 class LanRecce(Factory):
   def __init__(self, routing_key, exchange_name, name=None,):
     if name is None:
@@ -799,6 +832,9 @@ class LanRecce(Factory):
       s.close()
     return ip
 
+RecceCompletePayload = \
+  namedtuple('RecceCompletePayload', ['other_addresses', 'my_address'])
+
 class LanRecceChart(LanRecce):
   ARP_TIME_OUT_SEC = 2.0
 
@@ -826,7 +862,7 @@ class LanRecceChart(LanRecce):
     self.fill_arp_table = self.create(state='fill_arp_table'). \
       catch(signals.ENTRY_SIGNAL, handler=self.fill_arp_table_entry). \
       catch(signals.EXIT_SIGNAL, handler=self.fill_arp_table_exit). \
-      catch(signal=signals.ARP_TIME_OUT, handler=self.fill_arp_table_ARP_TIME_OUT). \
+      catch(signal=signals.arp_time_out, handler=self.fill_arp_table_ARP_TIME_OUT). \
       to_method()
 
     self.identify_all_ip_addresses = self.create(state='identify_all_ip_addresses'). \
@@ -912,7 +948,7 @@ class LanRecceChart(LanRecce):
     status = return_status.HANDLED
     lan.ping_to_fill_arp_table()
     lan.post_fifo(
-      Event(signal=signals.ARP_TIME_OUT),
+      Event(signal=signals.arp_time_out),
       times=1,
       period=lan.arp_timeout_sec,
       deferred=True)
@@ -921,7 +957,7 @@ class LanRecceChart(LanRecce):
   @staticmethod
   def fill_arp_table_exit(lan, e):
     status = return_status.HANDLED
-    lan.cancel_events(Event(signal=signals.ARP_TIME_OUT))
+    lan.cancel_events(Event(signal=signals.arp_time_out))
     return status
 
   @staticmethod
@@ -973,13 +1009,16 @@ class LanRecceChart(LanRecce):
       for ip_address, lan_recce_node in lan.candidates.items():
         if lan_recce_node.result:
           working_ip_addresses.append(ip_address)
-      lan.publish(Event(signal=signals.LAN_RECCE_COMPLETE, payload=working_ip_addresses))
+      payload = RecceCompletePayload(
+                  other_addresses=working_ip_addresses,
+                  my_address=lan.my.address)
+      lan.publish(Event(signal=signals.LAN_RECCE_COMPLETE, payload=payload))
       lan.post_fifo(Event(signal=signals.lan_recce_complete))
     return status
 
 if __name__ == '__main__':
   cache_chart = CacheFileChart(live_trace=True)
-  time.sleep(1)
+  time.sleep(2)
   cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
   scout1 = RabbitConsumerScoutChart(
             '192.168.1.69',
@@ -1005,7 +1044,7 @@ if __name__ == '__main__':
   time.sleep(1)
   time.sleep(10)
 
-  #sm = ScoutMemory()
+  #sm = MirosRabbitMQConnections()
   #sm.append_automatic(address='192.168.1.74')
   #sm.append_manual_live(address='192.168.1.74')
   #sm.append_manual_dead(address='192.168.1.74')

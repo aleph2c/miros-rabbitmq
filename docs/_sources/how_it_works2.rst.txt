@@ -1,14 +1,12 @@
 How it Works (Design Re-write in Progress)
 ==========================================
 
-
 .. _how_it_works2-the-cache-file-chart:
 
 The Cache File Chart
 --------------------
-The CacheFileChart caches network information so that your distributed system
-can startup faster by avoiding the slow network discovery phase.  The CacheFileChart
-was designed to:
+The CacheFileChart is used to read and write the network discovery cache
+information.  It was designed to:
 
 * be created/started/destroyed within another statechart
 * allow one cache file to be readable and writable from thousands of different
@@ -40,6 +38,19 @@ no other program is using the file.
 .. image:: _static/miros_rabbitmq_cache_file_chart.svg
     :target: _static/miros_rabbitmq_cache_file_chart.pdf
     :align: center
+
+To construct the ``CacheFileChart`` with a live trace, for debugging:
+
+.. code-block:: python
+
+  cache_file = CacheFileChart(live_trace=True)
+
+To read the file, subscribe to the ``CACHE`` event, then publish a
+``CACHE_FILE_READ`` event to the active fabric and wait for a ``CACHE`` event to
+come back.  This ``CACHE`` event will contain a dictionary version of the JSON
+cache file.
+
+Here is a bit about how it works:
 
 The design was intended to be built within another statechart and to start
 itself upon being constructed.  The CacheFileChart subscribes to the
@@ -203,13 +214,14 @@ This will result in the following trace instrumentation:
   [2018-05-25 18:50:35.569538] [192.168.1.77] e->consumer_test_complete() producer_post_and_wait->no_amqp_consumer_server_found
   AMQPConsumerCheckPayload(ip_address='192.168.1.77', result=False, routing_key='heya.man', exchange_name='miros.mesh.exchange')
 
-Comparing it it's statemachine:
+To see what is going on, compare the above trace to the state machine in this diagram:
 
-.. image:: _static/search_machine.svg
-    :target: _static/search_machine.pdf
+.. image:: _static/miros_rabbitmq_consumer_scout_chart.svg
+    :target: _static/miros_rabbitmq_consumer_scout_chart.pdf
     :align: center
 
-Then viewing the information as a sequence diagram:
+Here we will turn the trace into a sequence diagram, then explain what happens
+during each event:
 
 .. code-block:: python
 
@@ -343,7 +355,7 @@ Now let's look at the trace:
 
   [2018-05-27 09:56:54.372046] [lan_recce_chart] e->start_at() top->private_search
   [2018-05-27 09:56:54.372522] [lan_recce_chart] e->recce_lan() private_search->fill_arp_table
-  [2018-05-27 09:56:58.386858] [lan_recce_chart] e->ARP_TIME_OUT() fill_arp_table->identify_all_ip_addresses
+  [2018-05-27 09:56:58.386858] [lan_recce_chart] e->arp_time_out() fill_arp_table->identify_all_ip_addresses
   [2018-05-27 09:56:58.454212] [lan_recce_chart] e->ip_addresses_found() identify_all_ip_addresses->recce_rabbit_consumers
   [2018-05-27 09:57:00.048376] [lan_recce_chart] e->lan_recce_complete() recce_rabbit_consumers->private_search
 
@@ -363,7 +375,7 @@ Compare the statechart within the ``LanRecceChart`` class to the sequence diagra
               |    (1)      |              |                      |                        |
               |             +-recce_lan()->|                      |                        |
               |             |    (2)       |                      |                        |
-              |             |              +----ARP_TIME_OUT()--->|                        |
+              |             |              +----arp_time_out()--->|                        |
               |             |              |         (3)          |                        |
               |             |              |                      +--ip_addresses_found()->|
               |             |              |                      |          (4)           |
