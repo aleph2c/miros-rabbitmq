@@ -14,7 +14,6 @@ from miros import signals, Event, return_status
 from miros import pp
 import random
 from miros_rabbitmq.network import PikaTopicPublisher
-from miros_rabbitmq.network import RabbitHelper
 
 from collections import namedtuple
 import ipaddress
@@ -62,23 +61,81 @@ class LoadEnvironmentalVariables():
     # if not os.getenv('SNOOP_BOB'):
     #   raise EnvContractBroken('SNOOP_BOB is missing from your .env file')
 
+class RabbitHelper():
+  def __init__(self):
+    '''Create a scout memory interface'''
+    LoadEnvironmentalVariables()
+    self.rabbit_user = os.getenv('RABBIT_USER')
+    self.rabbit_password = os.getenv('RABBIT_PASSWORD')
+    self.rabbit_port = os.getenv('RABBIT_PORT')
+    self.rabbit_heartbeat_interval = os.getenv('RABBIT_HEARTBEAT_INTERVAL')
+    self.connection_attempts = os.getenv('CONNECTION_ATTEMPTS')
+
+  def make_amqp_url(self,
+               ip_address,
+               rabbit_user=None,
+               rabbit_password=None,
+               rabbit_port=None,
+               connection_attempts=None,
+               heartbeat_interval=None):
+    '''Make a RabbitMq url.
+
+      **Example**:
+
+      .. code-block:: python
+
+        amqp_url = \\
+          self.make_amqp_url(
+              ip_address=192.168.1.1,    # only mandatory argument
+              rabbit_user='peter',       # if any of the following args not given
+              rabbit_password='rabbit',  # the .env file will be used
+              connection_attempts='3',
+              heartbeat_interval='3600')
+
+        print(amqp_url)  # =>
+          'amqp://bob:dobbs@192.168.1.1:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
+
+    '''
+    if rabbit_port is None:
+      rabbit_port = self.rabbit_port
+    if connection_attempts is None:
+      connection_attempts = self.connection_attempts
+    if heartbeat_interval is None:
+      heartbeat_interval = self.rabbit_heartbeat_interval
+
+    amqp_url = \
+      "amqp://{}:{}@{}:{}/%2F?connection_attempts={}&heartbeat_interval={}".format(
+          self.rabbit_user,
+          self.rabbit_password,
+          ip_address,
+          rabbit_port,
+          connection_attempts,
+          heartbeat_interval)
+    return amqp_url
+
+class JsonCache():
+  default_structure = """{
+  "live" : {
+    "addresses": [],
+    "amqp_urls": []
+  },
+  "dead" : {
+    "addresses": [],
+    "amqp_urls": []
+  },
+  "time_out_in_minutes": 30
+}
+"""
+
 class MirosRabbitMQConnections():
   default_json_structure = """{
-  "nodes": {
-    "automatic": {
-      "addresses": [],
-      "amqp_urls": []
-    },
-    "manual": {
-      "live" : {
-        "addresses": [],
-        "amqp_urls": []
-      },
-      "dead" : {
-        "addresses": [],
-        "amqp_urls": []
-      }
-    }
+  "live" : {
+    "addresses": [],
+    "amqp_urls": []
+  },
+  "dead" : {
+    "addresses": [],
+    "amqp_urls": []
   },
   "time_out_in_minutes": 30
 }
@@ -303,7 +360,7 @@ class CacheFile(Factory):
     duration = datetime.now() - last_modified
     try:
       timeout = timedelta(minutes=self.dict['time_out_in_minutes'])
-      is_expired = False
+      is_expired = True if timeout == timedelta(0) else False
       if duration > timeout:
         is_expired = True
     except:
@@ -312,14 +369,18 @@ class CacheFile(Factory):
 
 CacheReadPayload = \
   namedtuple('CacheReadPayload',
-    ['dict', 'last_modified', 'created_at', 'expired'])
+    ['dict', 'last_modified', 'created_at', 'expired', 'file_name'])
+
+CacheWritePayload = \
+  namedtuple('CacheWritePayload', ['json'])
 
 class CacheFileChart(CacheFile):
   def __init__(self, file_path=None, live_trace=None, live_spy=None):
     if file_path is None:
       file_path = str(Path('.') / '.miros_rabbitmq_cache.json')
+    self.file_name = os.path.basename(file_path)
+    super().__init__(self.file_name, file_path=file_path)
 
-    super().__init__('network_cache', file_path=file_path)
 
     self.file_access_waiting = self.create(state='file_access_waiting'). \
         catch(signal=signals.ENTRY_SIGNAL, handler=self.faw_entry). \
@@ -363,7 +424,7 @@ class CacheFileChart(CacheFile):
     self.live_trace = live_trace
     self.live_spy = live_spy
     self.start_at(self.file_access_waiting)
-    self.post_fifo(Event(signal=signals.CACHE_FILE_READ))
+    #self.post_fifo(Event(signal=signals.CACHE_FILE_READ))
 
   @staticmethod
   def timeout(times):
@@ -392,15 +453,19 @@ class CacheFileChart(CacheFile):
   @staticmethod
   def faw_CACHE_FILE_WRITE(cache, e):
     '''The file_access_waiting state global CACHE_FILE_WRITE event handler'''
-    cache.json = e.payload  # kept for debugging
+    cache.json = e.payload.json  # kept for debugging
     cache.dict = json.load(open(cache.file_path, 'r'))
+    assert('time_out_in_minutes' in cache.dict)
     cache.post_fifo(Event(signal=signals.cache_file_write, payload={'times': 0, 'dict': cache.dict}))
     return return_status.HANDLED
 
   @staticmethod
   def faw_CACHE_DESTROY(cache, e):
     '''The file_access_waiting state global faw_CACHE_DESTROY event handler'''
-    cache.post_fifo(Event(signal=signals.cache_file_write, payload=""))
+    # write empty cache with a timeout of 0 to meet our contract, yet to cause a
+    # timeout
+    cache.post_fifo(Event(signal=signals.cache_file_write),
+        payload=CacheWritePayload(json=json.dumps({'time_out_in_minutes': 0})))
     return return_status.HANDLED
 
   @staticmethod
@@ -459,9 +524,10 @@ class CacheFileChart(CacheFile):
       dict=cache.dict,
       last_modified=cache.last_modified,
       created_at=cache.created_at,
-      expired=cache.expired()
+      expired=cache.expired(),
+      file_name = cache.file_name
     )
-    cache.post_fifo(Event(signal=signals.CACHE, payload=payload))
+    cache.publish(Event(signal=signals.CACHE, payload=payload))
     cache.post_lifo(Event(signal=signals.read_successful))
     pp(cache.json)
     return return_status.HANDLED
@@ -477,10 +543,9 @@ class CacheFileChart(CacheFile):
   @staticmethod
   def fw_entry(cache, e):
     '''The file_write state ENTRY_SIGNAL event handler'''
-    temp_file = cache.temp_file_name()
     status = return_status.HANDLED
+    temp_file = cache.temp_file_name()
     f = open(temp_file, "w")
-    cache.json = json.dumps(e.payload, sort_keys=True, indent=2)
     f.write(cache.json)
     # write the file to disk
     f.flush()
@@ -538,7 +603,8 @@ class PikaTopicPublisherMaker():
     if connection_attempts is None:
       connection_attempts = PikaTopicPublisherMaker.CONNECTION_ATTEMPTS
 
-    self.amqp_url = RabbitHelper.make_amqp_url(
+    self.rabbit_helper = RabbitHelper()
+    self.amqp_url = self.rabbit_helper.make_amqp_url(
         ip_address=self.ip_address,
         rabbit_user=self.rabbit_user,
         rabbit_password=self.rabbit_password,
@@ -702,11 +768,10 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
     scout.post_fifo(
       Event(signal=signals.consumer_test_complete),
       times=1,
-      period=0.5,
+      period=RabbitConsumerScout.SCOUT_TIMEOUT_SEC,
       deferred=True
     )
     return status
-
 
   @staticmethod
   def amqp_consumer_server_found_entry(scout, e):
@@ -727,7 +792,6 @@ class Attribute():
     pass
 
 LanRecceNode = namedtuple('REFACTOR_NODE', ['searched', 'result', 'scout'])
-
 
 class LanRecce(Factory):
   def __init__(self, routing_key, exchange_name, name=None,):
@@ -1016,14 +1080,162 @@ class LanRecceChart(LanRecce):
       lan.post_fifo(Event(signal=signals.lan_recce_complete))
     return status
 
+ConnectionDiscoveryPayload = \
+  namedtuple('ConnectionDiscoveryPayload', ['ip_addresses', 'amqp_urls', 'dispatcher'])
+
+class MirosRabbitLan(Factory):
+  time_out_in_minutes = 30
+
+  def __init__(self, name, routing_key, exchange_name, time_out_in_minutes=None, cache_file_path=None):
+    super().__init__(name)
+    self.routing_key = routing_key
+    self.exchange_name = exchange_name
+
+    self.dict = {}
+    self.addresses = None
+    self.amqp_urls = None
+    self.rabbit_helper = RabbitHelper()
+
+  def change_time_out_in_minutes(self, time_out_in_minutes):
+    self.time_out_in_minutes = time_out_in_minutes
+
+  def make_amqp_url(self, ip_address):
+    return self.rabbit_helper.make_amqp_url(ip_address)
+
+class MirosRabbitLanChart(MirosRabbitLan):
+  def __init__(self,
+        routing_key, exchange_name, time_out_in_minutes=None,
+        cache_file_path=None, live_trace=None, live_spy=None):
+
+    if time_out_in_minutes is None:
+      self.time_out_in_minutes = MirosRabbitLan.time_out_in_minutes
+    else:
+      self.time_out_in_minutes = time_out_in_minutes
+
+    if cache_file_path:
+      self.cache_file_path = cache_file_path
+    else:
+      self.cache_file_path = None
+
+    super().__init__("lan_chart",
+        routing_key,
+        exchange_name,
+        self.change_time_out_in_minutes,
+        self.cache_file_path)
+
+    self.read_or_discover_network_details = self.create(state='read_or_discover_network_details'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.rodnd_entry). \
+      catch(signal=signals.connections_discovered, handler=self.rodnd_connection_discovered). \
+      catch(signal=signals.CACHE, handler=self.rodnd_CACHE). \
+      to_method()
+
+    self.discover_network = self.create(state='discover_network'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.dn_entry). \
+      catch(signal=signals.LAN_RECCE_COMPLETE, handler=self.dn_LAN_RECCE_COMPLETE). \
+      to_method()
+
+    self.nest(self.read_or_discover_network_details, parent=None). \
+        nest(self.discover_network, parent=self.read_or_discover_network_details)
+
+    if live_trace is None:
+      live_trace = False
+    else:
+      live_trace = live_trace
+
+    if live_spy is None:
+      live_spy = False
+    else:
+      live_spy = live_spy
+
+    self.live_trace = live_trace
+    self.live_spy = live_spy
+    self.start_at(self.read_or_discover_network_details)
+
+  @staticmethod
+  def rodnd_entry(chart, e):
+    status = return_status.HANDLED
+    if not hasattr(chart, 'cache_file_chart'):
+      if chart.cache_file_path is None:
+        chart.file_path = '.miros_rabbitmq_lan_cache.json'
+      chart.file_name = os.path.basename(chart.file_path)
+      chart.cache_file_chart = CacheFileChart(
+        file_path=chart.file_path,
+        live_trace=True)
+    if not hasattr(chart, 'rabbitmq_lan_recce_chart'):
+      chart.rabbit_lan_reccee_chart = LanRecceChart(chart.routing_key, chart.exchange_name)
+    chart.subscribe(Event(signal=signals.LAN_RECCE_COMPLETE))
+    chart.subscribe(Event(signal=signals.CACHE))
+    chart.publish(Event(signal=signals.CACHE_FILE_READ))
+    return status
+
+  @staticmethod
+  def rodnd_connection_discovered(chart, e):
+    status = return_status.HANDLED
+    payload = ConnectionDiscoveryPayload(
+      ip_addresses=chart.addresses,
+      amqp_urls=chart.amqp_urls,
+      dispatcher=chart.name)
+    chart.publish(Event(signal=signals.CONNECTION_DISCOVERY, payload=payload))
+    return status
+
+  @staticmethod
+  def rodnd_CACHE(chart, e):
+    status = return_status.HANDLED
+    if e.payload.file_name == chart.file_name:
+      if e.payload.expired:
+        status = chart.trans(chart.discover_network)
+      else:
+        chart.addresses = e.payload.dict['addresses']
+        chart.amqp_urls = e.payload.dict['amqp_urls']
+        chart.post_fifo(Event(signal=signals.connections_discovered))
+    return status
+
+  @staticmethod
+  def dn_entry(chart, e):
+    status = return_status.HANDLED
+    chart.publish(Event(signal=signals.RECCE_LAN))
+    return status
+
+  @staticmethod
+  def dn_LAN_RECCE_COMPLETE(chart, e):
+    status = return_status.HANDLED
+    chart.addresses = e.payload.other_addresses
+    chart.amqp_urls = [chart.make_amqp_url(a) for a in chart.addresses]
+    chart.post_fifo(Event(signal=signals.connections_discovered))
+    chart.dict['addresses'] = chart.addresses
+    chart.dict['amqp_urls'] = chart.amqp_urls
+    chart.dict['time_out_in_minutes'] = chart.time_out_in_minutes
+    payload = CacheWritePayload(json=json.dumps(chart.dict, indent=2, sort_keys=True))
+    chart.publish(Event(signal=signals.CACHE_FILE_WRITE, payload=payload))
+    return status
+
+#chart = MirosRabbitLan(routing_key='heya.man', exchange_name='miros.mesh.exchange')
+#
+#read_or_discover_network_details = chart.create(state='read_or_discover_network_details'). \
+#  catch(signal=signals.ENTRY_SIGNAL, handler=rodnd_entry). \
+#  catch(signal=signals.connections_discovered, handler=rodnd_connection_discovered). \
+#  catch(signal=signals.CACHE, handler=rodnd_CACHE). \
+#  to_method()
+#
+#discover_network = chart.create(state='discover_network'). \
+#  catch(signal=signals.ENTRY_SIGNAL, handler=dn_entry). \
+#  catch(signal=signals.LAN_RECCE_COMPLETE, handler=dn_LAN_RECCE_COMPLETE). \
+#  to_method()
+#
+#chart.nest(read_or_discover_network_details, parent=None). \
+#  nest(discover_network, parent=read_or_discover_network_details)
+
 if __name__ == '__main__':
-  cache_chart = CacheFileChart(live_trace=True)
-  time.sleep(2)
-  cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
-  scout1 = RabbitConsumerScoutChart(
-            '192.168.1.69',
-            'heya.man',
-            'miros.mesh.exchange')
+  #cache_chart = CacheFileChart(live_trace=True)
+  #time.sleep(2)
+  #cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
+  #scout1 = RabbitConsumerScoutChart(
+  #          '192.168.1.69',
+  #          'heya.man',
+  #          'miros.mesh.exchange')
+
+  mrl = MirosRabbitLanChart(routing_key='heya.man',
+      exchange_name='miros.mesh.exchange', live_trace = True)
   #scout2 = RabbitConsumerScoutChart(
   #          '192.168.1.77',
   #          'heya.man',
@@ -1035,11 +1247,11 @@ if __name__ == '__main__':
   #          'miros.mesh.exchange',
   #          live_trace = True)
   time.sleep(3)
-  lan_recce = LanRecceChart(
-    routing_key='heya.man',
-    exchange_name='miros.mesh.exchange',
-    live_trace=True)
-  lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
+  #lan_recce = LanRecceChart(
+  #  routing_key='heya.man',
+  #  exchange_name='miros.mesh.exchange',
+  #  live_trace=True)
+  #lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
 
   time.sleep(1)
   time.sleep(10)
