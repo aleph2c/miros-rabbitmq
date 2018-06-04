@@ -3,6 +3,36 @@ How it Works (Design Re-write in Progress)
 
 .. _how_it_works2-the-cache-file-chart:
 
+.. epigraph::
+
+  *You go to war with the army you have, not the army you might want or wish to
+  have at a later time*
+
+  -- Donald Rumsfeld
+
+.. _how_it_works2-slight-extension-to-the-diagramming-rules:
+
+Slight Extension to the Diagramming Rules
+-----------------------------------------
+When building a statechart which publishes events and subscribes to events it is
+important to see these locations on your map.  They are the inputs and outputs
+of your statechart.  These pub/sub events are decoupled calls to software that
+doesn't exist on the page, so I have added two little coloured dots on my
+diagrams to make things easier to see.
+
+* A red dot is placed near an event that is publishing a signal.  A publishing
+  event puts something into a queue which is waiting for attention.  So, it is
+  stopped, like being at a red light.
+  
+* A green dot is placed near an event that has been subscribed to and has been
+  published somewhere else in the software system.  It is green, like a green
+  light; it is time to go, to act on the event.
+
+The payloads of the published and subscribed events act as an interface for this
+asynchronous API.  To keep things clean, all payloads will exist as named
+tuples.  These tuples will be put into 'note' icons near the place that they are
+made (published) or consumed.
+
 The Cache File Chart
 --------------------
 The CacheFileChart is used to read and write the network discovery cache
@@ -124,8 +154,9 @@ will be in the payload of the event in the form of a namedtuple:
 
 ``AMQPConsumerCheckPayload(ip_address, result, routing_key, exchange_name)``:
 
-To get access to this answer within the statechart initiating the search, all it
-would have to do is subscribe to the event:
+To get access to this answer within the statechart initiating the search, it
+would have to be subscribed to the event (usually done in the entry condition of
+the outer state):
 
 .. code-block:: python
 
@@ -193,9 +224,8 @@ to provide it an IP address, a routing key and an exchange name and it is ready
 to perform a search.  A user can provide the ``live_trace`` and ``live_spy``
 arguments if they need to debug the statechart encased within the
 ``RabbitConsumerScoutChart``, but by default this instrumentation is off.  Let's
-turn this instrumentation on and then describe what it is doing.  We will do
-once for an address that doesn't have a RabbitMQ server running on
-it:
+turn this instrumentation on and then describe what it is doing.  We will search
+for an address that doesn't have a RabbitMQ server running on it:
 
 .. code-block:: python
 
@@ -424,4 +454,63 @@ Compare the statechart within the ``LanRecceChart`` class to the sequence diagra
    into the payload of a ``LAN_RECCE_COMPLETE`` event and published to the task
    fabric so that any statechart subscribing to this event will receive the
    results of the reconnaissance of the local network.
+
+.. _how_it_works2-mirosrabbitlanchart:
+
+MirosRabbitLanChart
+-------------------
+The MirosRabbitLanChart is responsible for publishing all of the working RabbitMQ
+consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was designed to:
+
+* be created/started/destroyed within another statechart
+* use cached information if it hasn't expired (to save time)
+* perform a LAN discovery process if the cache is expired, then cache this
+  result for the next run of the program
+* output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
+  event.  This will be used by another chart.
+
+.. image:: _static/miros_rabbitmq_lan_discovery.svg
+    :target: _static/miros_rabbitmq_lan_discovery.pdf
+    :align: center
+
+To build a MirosRabbitLanChart, you will need to know the ``routing_key`` and the
+``exchange_name`` that you are trying to connect to:
+
+.. code-block:: python
+
+  MirosRabbitLanChart(
+    routing_key='heya.man',
+    exchange_name='miros.mesh.exchange',
+    live_trace=True)  # to debug or document
+
+By default it will look for a file called ``.miros_rabbitmq_lan_cache.json`` which
+will look something like this:
+
+.. code-block:: python
+
+  {
+    "addresses": [
+      "192.168.1.75"
+    ],
+    "amqp_urls": [
+      "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
+    ],
+    "time_out_in_minutes": 30
+  }
+
+If the cached file is older than the ``time_out_in_minutes``,
+MirosRabbitLanChart will transition into it's ``discover_network`` state,
+discover the network then write the ``.miros_rabbitmq_lan_cache.json`` file with
+the results.
+
+To change the cache file's time out, add ``time_out_in_minutes`` as a named
+parameter when you are constructing your ``MirosRabbitLanChart`` object.  Here
+is an example of changing the timeout to 60 minutes:
+
+.. code-block:: python
+
+  MirosRabbitLanChart(
+    routing_key='heya.man',
+    exchange_name='miros.mesh.exchange',
+    time_out_in_minutes=60)
 

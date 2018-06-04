@@ -193,7 +193,7 @@ The PikaTopicConsumer provides the decryption and deserialization for each
 network consumer.  
 
 PikaTopicConsumer is a subclass of SimplePikaTopicConsumer, which is heavily
-based upon on the `asynchronous pika consumer example.
+based upon the `asynchronous pika consumer example.
 <http://pika.readthedocs.io/en/0.11.2/examples/asynchronous_consumer_example.html>`_
 
 The PikaTopicConsumer class is different from the `asynchronous pika consumer

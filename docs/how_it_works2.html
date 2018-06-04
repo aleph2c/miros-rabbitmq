@@ -43,8 +43,33 @@
             
   <div class="section" id="how-it-works-design-re-write-in-progress">
 <h1>How it Works (Design Re-write in Progress)<a class="headerlink" href="#how-it-works-design-re-write-in-progress" title="Permalink to this headline">¶</a></h1>
+<blockquote class="epigraph" id="how-it-works2-the-cache-file-chart">
+<div><p><em>You go to war with the army you have, not the army you might want or wish to
+have at a later time</em></p>
+<p class="attribution">&mdash;Donald Rumsfeld</p>
+</div></blockquote>
+<div class="section" id="slight-extension-to-the-diagramming-rules">
+<span id="how-it-works2-slight-extension-to-the-diagramming-rules"></span><h2>Slight Extension to the Diagramming Rules<a class="headerlink" href="#slight-extension-to-the-diagramming-rules" title="Permalink to this headline">¶</a></h2>
+<p>When building a statechart which publishes events and subscribes to events it is
+important to see these locations on your map.  They are the inputs and outputs
+of your statechart.  These pub/sub events are decoupled calls to software that
+doesn’t exist on the page, so I have added two little coloured dots on my
+diagrams to make things easier to see.</p>
+<ul class="simple">
+<li>A red dot is placed near an event that is publishing a signal.  A publishing
+event puts something into a queue which is waiting for attention.  So, it is
+stopped, like being at a red light.</li>
+<li>A green dot is placed near an event that has been subscribed to and has been
+published somewhere else in the software system.  It is green, like a green
+light; it is time to go, to act on the event.</li>
+</ul>
+<p>The payloads of the published and subscribed events act as an interface for this
+asynchronous API.  To keep things clean, all payloads will exist as named
+tuples.  These tuples will be put into ‘note’ icons near the place that they are
+made (published) or consumed.</p>
+</div>
 <div class="section" id="the-cache-file-chart">
-<span id="how-it-works2-the-cache-file-chart"></span><h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
+<h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
 <p>The CacheFileChart is used to read and write the network discovery cache
 information.  It was designed to:</p>
 <ul class="simple">
@@ -143,8 +168,9 @@ the provided information.</p>
 the form of an asynchronous event named <code class="docutils literal"><span class="pre">AMQP_CONSUMER_CHECK</span></code>.  The answer
 will be in the payload of the event in the form of a namedtuple:</p>
 <p><code class="docutils literal"><span class="pre">AMQPConsumerCheckPayload(ip_address,</span> <span class="pre">result,</span> <span class="pre">routing_key,</span> <span class="pre">exchange_name)</span></code>:</p>
-<p>To get access to this answer within the statechart initiating the search, all it
-would have to do is subscribe to the event:</p>
+<p>To get access to this answer within the statechart initiating the search, it
+would have to be subscribed to the event (usually done in the entry condition of
+the outer state):</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">AMQP_CONSUMER_CHECK</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -202,9 +228,8 @@ to provide it an IP address, a routing key and an exchange name and it is ready
 to perform a search.  A user can provide the <code class="docutils literal"><span class="pre">live_trace</span></code> and <code class="docutils literal"><span class="pre">live_spy</span></code>
 arguments if they need to debug the statechart encased within the
 <code class="docutils literal"><span class="pre">RabbitConsumerScoutChart</span></code>, but by default this instrumentation is off.  Let’s
-turn this instrumentation on and then describe what it is doing.  We will do
-once for an address that doesn’t have a RabbitMQ server running on
-it:</p>
+turn this instrumentation on and then describe what it is doing.  We will search
+for an address that doesn’t have a RabbitMQ server running on it:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">scout1</span> <span class="o">=</span> <span class="n">RabbitConsumerScoutChart</span><span class="p">(</span>
   <span class="s1">&#39;192.168.1.77&#39;</span><span class="p">,</span>
   <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -410,6 +435,55 @@ results of the reconnaissance of the local network.</p>
 </li>
 </ol>
 </div>
+<div class="section" id="mirosrabbitlanchart">
+<span id="how-it-works2-mirosrabbitlanchart"></span><h2>MirosRabbitLanChart<a class="headerlink" href="#mirosrabbitlanchart" title="Permalink to this headline">¶</a></h2>
+<p>The MirosRabbitLanChart is responsible for publishing all of the working RabbitMQ
+consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was designed to:</p>
+<ul class="simple">
+<li>be created/started/destroyed within another statechart</li>
+<li>use cached information if it hasn’t expired (to save time)</li>
+<li>perform a LAN discovery process if the cache is expired, then cache this
+result for the next run of the program</li>
+<li>output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
+event.  This will be used by another chart.</li>
+</ul>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_lan_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_lan_discovery.svg" src="_images/miros_rabbitmq_lan_discovery.svg" /></div>
+</a>
+<p>To build a MirosRabbitLanChart, you will need to know the <code class="docutils literal"><span class="pre">routing_key</span></code> and the
+<code class="docutils literal"><span class="pre">exchange_name</span></code> that you are trying to connect to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">MirosRabbitLanChart</span><span class="p">(</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug or document</span>
+</pre></div>
+</div>
+<p>By default it will look for a file called <code class="docutils literal"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> which
+will look something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.75&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;amqp_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.75:5672/</span><span class="si">%2F</span><span class="s2">?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;time_out_in_minutes&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the cached file is older than the <code class="docutils literal"><span class="pre">time_out_in_minutes</span></code>,
+MirosRabbitLanChart will transition into it’s <code class="docutils literal"><span class="pre">discover_network</span></code> state,
+discover the network then write the <code class="docutils literal"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> file with
+the results.</p>
+<p>To change the cache file’s time out, add <code class="docutils literal"><span class="pre">time_out_in_minutes</span></code> as a named
+parameter when you are constructing your <code class="docutils literal"><span class="pre">MirosRabbitLanChart</span></code> object.  Here
+is an example of changing the timeout to 60 minutes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">MirosRabbitLanChart</span><span class="p">(</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">time_out_in_minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -423,9 +497,11 @@ results of the reconnaissance of the local network.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">How it Works (Design Re-write in Progress)</a><ul>
+<li><a class="reference internal" href="#slight-extension-to-the-diagramming-rules">Slight Extension to the Diagramming Rules</a></li>
 <li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
 <li><a class="reference internal" href="#the-rabbit-consumer-scout-chart">The Rabbit Consumer Scout Chart</a></li>
 <li><a class="reference internal" href="#the-lanreccechart">The LanRecceChart</a></li>
+<li><a class="reference internal" href="#mirosrabbitlanchart">MirosRabbitLanChart</a></li>
 </ul>
 </li>
 </ul>

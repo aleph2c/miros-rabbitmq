@@ -791,7 +791,7 @@ class Attribute():
   def __init__(self):
     pass
 
-LanRecceNode = namedtuple('REFACTOR_NODE', ['searched', 'result', 'scout'])
+RecceNode = namedtuple('RecceNode', ['searched', 'result', 'scout'])
 
 class LanRecce(Factory):
   def __init__(self, routing_key, exchange_name, name=None,):
@@ -1044,7 +1044,7 @@ class LanRecceChart(LanRecce):
     for ip_address in lan.my.addresses:
       scout = \
         RabbitConsumerScoutChart(ip_address, lan.routing_key, lan.exchange_name)
-      lan.candidates[ip_address] = LanRecceNode(
+      lan.candidates[ip_address] = RecceNode(
         searched=False,
         result=False,
         scout=scout
@@ -1064,7 +1064,7 @@ class LanRecceChart(LanRecce):
     is_my_exchange_name = e.payload.exchange_name is lan.exchange_name
 
     if is_one_of_my_ip_addresses and is_my_routing_key and is_my_exchange_name:
-      lan.candidates[ip] = LanRecceNode(searched=True, result=result, scout=None)
+      lan.candidates[ip] = RecceNode(searched=True, result=result, scout=None)
 
     search_complete = all([node.searched for node in lan.candidates.values()])
 
@@ -1081,7 +1081,7 @@ class LanRecceChart(LanRecce):
     return status
 
 ConnectionDiscoveryPayload = \
-  namedtuple('ConnectionDiscoveryPayload', ['ip_addresses', 'amqp_urls', 'dispatcher'])
+  namedtuple('ConnectionDiscoveryPayload', ['hosts', 'amqp_urls', 'dispatcher'])
 
 class MirosRabbitLan(Factory):
   time_out_in_minutes = 30
@@ -1172,7 +1172,7 @@ class MirosRabbitLanChart(MirosRabbitLan):
   def rodnd_connection_discovered(chart, e):
     status = return_status.HANDLED
     payload = ConnectionDiscoveryPayload(
-      ip_addresses=chart.addresses,
+      hosts=chart.addresses,
       amqp_urls=chart.amqp_urls,
       dispatcher=chart.name)
     chart.publish(Event(signal=signals.CONNECTION_DISCOVERY, payload=payload))
@@ -1209,6 +1209,169 @@ class MirosRabbitLanChart(MirosRabbitLan):
     chart.publish(Event(signal=signals.CACHE_FILE_WRITE, payload=payload))
     return status
 
+class MirosRabbitManualNetwork(Factory):
+
+  def __init__(self, name, routing_key, exchange_name, file_path=None):
+    super().__init__(name)
+    self.routing_key = routing_key
+    self.exchange_name = exchange_name
+    self.dict = {}
+
+    self.rabbit_helper = RabbitHelper()
+    self.hosts = None
+    self.live_hosts = None
+    self.live_amqp_urls = None
+    self.dead_hosts = None
+    self.dead_amqp_urls = None
+    self.manual_file_path = None
+
+  def make_amqp_url(self, ip_address):
+    return self.rabbit_helper.make_amqp_url(ip_address)
+
+
+class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
+  def __init__(self, routing_key, exchange_name, cache_file_path=None, live_trace=None, live_spy=None):
+    if cache_file_path:
+      self.cache_file_path = cache_file_path
+    else:
+      self.cache_file_path = None
+
+    super().__init__("manual_chart",
+        routing_key,
+        exchange_name,
+        self.cache_file_path)
+
+    self.read_and_evaluate_network_details = \
+      self.create(state='read_and_evaluate_network_details') .\
+        catch(signal=signals.ENTRY_SIGNAL, handler=self.raend_entry). \
+        catch(signal=signals.network_evaluated, handler=self.raend_network_evaluated). \
+        catch(signal=signals.CONNECTION_DISCOVERY, handler=self.raend_CONNECTION_DISCOVERY). \
+        catch(signal=signals.CACHE, handler=self.raend_CACHE). \
+        to_method()
+
+    self.evaluated_network = \
+      self.create(state='evaluated_network'). \
+        catch(signal=signals.ENTRY_SIGNAL, handler=self.en_entry). \
+        catch(signal=signals.AMQP_CONSUMER_CHECK, handler=self.en_AMQP_CONSUMER_CHECK). \
+        to_method()
+
+    self. \
+      nest(self.read_and_evaluate_network_details, parent=None). \
+      nest(self.evaluated_network, parent=self.read_and_evaluate_network_details)
+
+    if live_trace is None:
+      live_trace = False
+    else:
+      live_trace = live_trace
+
+    if live_spy is None:
+      live_spy = False
+    else:
+      live_spy = live_spy
+
+    self.live_trace = live_trace
+    self.live_spy = live_spy
+
+    self.start_at(self.read_and_evaluate_network_details)
+
+  # raend
+  @staticmethod
+  def raend_entry(chart, e):
+    status = return_status.HANDLED
+    if not hasattr(chart, 'manual_file_chart'):
+      chart.file_path = '.miros_rabbitmq_hosts.json'
+      chart.file_name = os.path.basename(chart.file_path)
+      chart.manual_file_chart = CacheFileChart(file_path=chart.file_path)
+    chart.subscribe(Event(signal=signals.CACHE))
+    chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
+    chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
+    chart.publish(Event(signal=signals.CACHE_FILE_READ))
+    return status
+
+  @staticmethod
+  def raend_network_evaluated(chart, e):
+    status = return_status.HANDLED
+    payload = ConnectionDiscoveryPayload(
+      hosts=chart.live_hosts,
+      amqp_urls=chart.live_amqp_urls,
+      dispatcher=chart.name)
+    chart.publish(Event(signal=signals.CONNECTION_DISCOVERY, payload=payload))
+    return status
+
+  @staticmethod
+  def raend_CONNECTION_DISCOVERY(chart, e):
+    status = return_status.HANDLED
+    pp(e.payload)
+    return status
+
+  @staticmethod
+  def raend_CACHE(chart, e):
+    status = return_status.HANDLED
+    if e.payload.file_name == chart.file_name:
+      chart.hosts = e.payload.dict['hosts']
+      chart.live_hosts, chart.live_amqp_urls = [], []
+      status = chart.trans(chart.evaluated_network)
+    return status
+
+  @staticmethod
+  def en_entry(chart, e):
+    status = return_status.HANDLED
+    chart.candidates = {}
+    for host in chart.hosts:
+      # This will cause AMQP_CONSUMER_CHECK events to be published
+      chart.candidates[host] = \
+        RecceNode(
+            searched=False,
+            result=False,
+            scout=RabbitConsumerScoutChart(
+              host,
+              chart.routing_key,
+              chart.exchange_name))
+    return status
+
+  @staticmethod
+  def en_AMQP_CONSUMER_CHECK(chart, e):
+    status = return_status.HANDLED
+    h, result = e.payload.ip_address, e.payload.result
+    is_one_of_my_hosts = h in chart.hosts
+    is_my_routing_key = e.payload.routing_key in chart.routing_key
+    is_my_exchange_name = e.payload.exchange_name in chart.exchange_name
+    if is_one_of_my_hosts and is_my_routing_key and is_my_exchange_name:
+      chart.candidates[h] = RecceNode(searched=True, result=result, scout=None)
+      if result:
+        chart.live_hosts.append(h)
+        chart.live_amqp_urls.append(chart.make_amqp_url(h))
+      else:
+        chart.dead_hosts.append(h)
+        chart.dead_amqp_urls.append(chart.make_amqp_url(h))
+    search_completed = all([node.searched for node in chart.candidates.values()])
+    if search_completed:
+      chart.post_fifo(Event(signal=signals.network_evaluated))
+    return status
+
+#chart = MirosRabbitManualNetwork('miros_rabbit_manual_network',
+#    routing_key='heya.man',
+#    exchange_name='miros.mesh.exchange')
+#
+#read_and_evaluate_network_details = \
+#  chart.create(state='read_and_evaluate_network_details') .\
+#    catch(signal=signals.ENTRY_SIGNAL, handler=raend_entry). \
+#    catch(signal=signals.network_evaluated, handler=raend_network_evaluated). \
+#    catch(signal=signals.CONNECTION_DISCOVERY, handler=raend_CONNECTION_DISCOVERY). \
+#    catch(signal=signals.CACHE, handler=raend_CACHE). \
+#    to_method()
+#
+#evaluated_network = \
+#  chart.create(state='evaluated_network'). \
+#    catch(signal=signals.ENTRY_SIGNAL, handler=en_entry). \
+#    catch(signal=signals.AMQP_CONSUMER_CHECK, handler=en_AMQP_CONSUMER_CHECK). \
+#    to_method()
+#
+#chart. \
+#  nest(read_and_evaluate_network_details, parent=None). \
+#  nest(evaluated_network, parent=read_and_evaluate_network_details)
+
+
 #chart = MirosRabbitLan(routing_key='heya.man', exchange_name='miros.mesh.exchange')
 #
 #read_or_discover_network_details = chart.create(state='read_or_discover_network_details'). \
@@ -1234,8 +1397,15 @@ if __name__ == '__main__':
   #          'heya.man',
   #          'miros.mesh.exchange')
 
-  mrl = MirosRabbitLanChart(routing_key='heya.man',
-      exchange_name='miros.mesh.exchange', live_trace = True)
+  #mrl = MirosRabbitLanChart(routing_key='heya.man',
+  #    exchange_name='miros.mesh.exchange', live_trace = True)
+
+  #chart.live_trace = True
+  #chart.start_at(read_and_evaluate_network_details)
+  MirosRabbitManualNetworkChart(
+      'heya_man',
+      'miros.mesh.exchange'
+      )
   #scout2 = RabbitConsumerScoutChart(
   #          '192.168.1.77',
   #          'heya.man',
@@ -1254,8 +1424,7 @@ if __name__ == '__main__':
   #lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
 
   time.sleep(1)
-  time.sleep(10)
-
+  time.sleep(50)
   #sm = MirosRabbitMQConnections()
   #sm.append_automatic(address='192.168.1.74')
   #sm.append_manual_live(address='192.168.1.74')
