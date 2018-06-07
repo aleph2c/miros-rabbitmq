@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>112</x>
+      <y>490</y>
+      <w>882</w>
+      <h>553</h>
+    </coordinates>
+    <panel_attributes>*producer discovery*
+--
+entry /
+  chart.mesh_producers = []
+  chart.snoop_trace_producers = []
+  chart.snoop_spy_producers = []
+  chart.subscribe(Event(signals.CONNECTION_DISCOVERY))
+  if not hasattr(chart, 'man_net_chart'):
+    chart.manual_chart = ManNetChart(
+      chart.mesh_routing_key, chart.mesh_exchange_name)
+  
+  if not hasattr(chart, 'lan_chart'):
+    chart.lan_chart = LanChart(
+      chart.mesh_routing_key, chart.mesh_exchange_name)
+
+  chart.set_of_ips = set([])
+  
+      
+CONNECTION_DISCOVERY as e /
+   set_of_payload_ips = set([chart.get_ip_for_hostname(host) for host in e.payload.hosts]) 
+   chart.set_of_new_ips = set_of_payload_ips - chart.set_of_ips
+   chart.set_of_ips |= set_of_payload_ips
+
+   if(len(chart.set_of_new_ips) &gt; 0):
+     chart.post_fifo(Event(signals.ips_discovered))
+
+    # let garbage collector remove charts if they have done their work
+    if e.payload.dispatcher == 'man_net_chart':
+      del chart.man_net_chart
+    elif e.payload.dispatcher == 'lan_chart':
+      def chart.lan_chart
+  
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>308</x>
+      <y>651</y>
+      <w>203</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>ConnectionDiscoveryPayload = \
+  namedtuple('ConnectionDiscoveryPayload',
+    ['hosts', 'amqp_urls', 'dispatcher'])</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>378</x>
+      <y>112</y>
+      <w>203</w>
+      <h>231</h>
+    </coordinates>
+    <panel_attributes>*ProducerFactoryAggregator*
+--
+mesh_producers
+snoop_trace_producers
+snoop_spy_producers
+set_of_ips
+ips
+amqp_ip_urls
+lan_discovered
+mannal_discovered
+producers
+--
+
+--
+make_amqp_url(ip_address)
+get_ip_for_hostname()
+make_amqp_url
+make_mesh_producer(ip)
+make_snoop_trace_producer(ip)
+make_snoop_spy_producer(ip)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>336</y>
+      <w>21</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>77</x>
+      <y>385</y>
+      <w>931</w>
+      <h>679</h>
+    </coordinates>
+    <panel_attributes>*ProducerFactoryChart*
+--
+
+
+
+
+
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>147</x>
+      <y>441</y>
+      <w>35</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=[^]-(</panel_attributes>
+    <additional_attributes>20.0;10.0;20.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>154</x>
+      <y>469</y>
+      <w>21</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=()-[v]</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>91</x>
+      <y>413</y>
+      <w>140</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+Event Processor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>378</x>
+      <y>21</y>
+      <w>203</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Note..
+  keeps track of everything as raw IP
+  addresses to avoid sending two messages
+  to the same URL</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>595</x>
+      <y>609</y>
+      <w>371</w>
+      <h>399</h>
+    </coordinates>
+    <panel_attributes>*refactor_producers*
+--
+entry /
+  new_ips = list(chart.set_of_new_ips)
+  new_mesh_producers = \
+    [self.make_mesh_producer(ip) for ip in new_ips]
+  new_snoop_trace_producers = \
+    [self.make_snoop_trace_producer(ip) for ip in new_ips]
+  new_snoop_spy_producers = \
+    [self.make_snoop_spy_producer(ip) for ip in new_ips]
+  chart.mesh_producers.append(new_mesh_producers)
+  chart.snoop_trace_producers.append(new_snoop_trace_producers)
+  chart.snoop_spy_producers.append(new_snoop_spy_producers)
+  chart.producer_discovery_queue.put(
+    ProducerQueue(
+      mesh_producers=chart.mesh_producers,
+   	snoop_trace_producers=chart.snoop_trace_producers,
+   	snoop_spy_producers=chart.snoop_spy_producers))
+  try:
+    chart.producer_queue.put(payload, block=False)
+  except:
+    chart.post_fifo(
+      Event(signals.ips_discovered, 
+        times=1, period=random.uniform(0.1,1), deferred=True)
+  else:
+    chart.post_fifo(Event(signals.ready))
+   
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>896</y>
+      <w>504</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+ips_discovered
+  </panel_attributes>
+    <additional_attributes>10.0;20.0;700.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>945</y>
+      <w>434</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+ready</panel_attributes>
+    <additional_attributes>600.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>133</x>
+      <y>21</y>
+      <w>203</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>*ProducerFactory*
+--
+exchange_name
+routing_key
+publish_tempo_sec
+serialization_function
+amqp_url
+encryption_key (from subsclass)
+--
+make_amqp_url(ip)
+make_producer()
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>140</x>
+      <y>203</y>
+      <w>161</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>*MeshProducerFactory*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>140</x>
+      <y>231</y>
+      <w>161</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>*SnoopTraceProducerFactory*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>140</x>
+      <y>259</y>
+      <w>161</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>*SnoopSpyProducerFactory*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>77</x>
+      <y>147</y>
+      <w>168</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>220.0;10.0;220.0;50.0;10.0;50.0;10.0;130.0;50.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSyncBarVertical</id>
+    <coordinates>
+      <x>105</x>
+      <y>203</y>
+      <w>14</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>template=txt
+title=titletext
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>203</y>
+      <w>49</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>231</y>
+      <w>49</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>259</y>
+      <w>49</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>294</x>
+      <y>203</y>
+      <w>98</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>294</x>
+      <y>231</y>
+      <w>98</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>294</x>
+      <y>259</y>
+      <w>98</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>616</x>
+      <y>938</y>
+      <w>329</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>ProducerQueue = \
+  namedtuple('ProducerQueue',
+    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers'])
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>595</x>
+      <y>21</y>
+      <w>189</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>ProducerDiscovery(
+  producer_discovery_queue,
+  mesh_routing_key,
+  mesh_exchange_name,
+  mesh_serialization_function,
+  snoop_trace_routing_key,
+  snoop_trace_exchange_name,
+  snoop_trace_serialization_function,
+  snoop_spy_routing_key,
+  snoop_spy_exchange_name,
+  snoop_spy_serialization_function)
+  
+  
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>98</x>
+      <y>686</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>581</x>
+      <y>763</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>525</x>
+      <y>525</y>
+      <w>455</w>
+      <h>497</h>
+    </coordinates>
+    <panel_attributes>*post_to_queue*
+--
+CONNECTION_DISCOVERED /
+  chart.defer(e)
+  
+exit /
+  chart.set_of_new_ips = set([])
+  chart.recall()
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>518</x>
+      <y>847</y>
+      <w>91</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+ips_discovered
+  </panel_attributes>
+    <additional_attributes>10.0;20.0;110.0;20.0</additional_attributes>
+  </element>
+</diagram>

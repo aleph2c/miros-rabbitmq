@@ -18,11 +18,19 @@ from miros_rabbitmq.network import PikaTopicPublisher
 from collections import namedtuple
 import ipaddress
 import socket
+import queue
 import subprocess
 import netifaces
+import re
+import pickle
 
 env_path = Path('.') / '.env'
 load_dotenv()
+
+def to_snake(camel_case):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', camel_case)
+    snake = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    return snake
 
 class EnvContractBroken(Exception):
   pass
@@ -113,219 +121,6 @@ class RabbitHelper():
           heartbeat_interval)
     return amqp_url
 
-class JsonCache():
-  default_structure = """{
-  "live" : {
-    "addresses": [],
-    "amqp_urls": []
-  },
-  "dead" : {
-    "addresses": [],
-    "amqp_urls": []
-  },
-  "time_out_in_minutes": 30
-}
-"""
-
-class MirosRabbitMQConnections():
-  default_json_structure = """{
-  "live" : {
-    "addresses": [],
-    "amqp_urls": []
-  },
-  "dead" : {
-    "addresses": [],
-    "amqp_urls": []
-  },
-  "time_out_in_minutes": 30
-}
-"""
-
-  def __init__(self, cache_file_path=None):
-    '''Create a scout memory interface'''
-    LoadEnvironmentalVariables()
-    self.rabbit_user = os.getenv('RABBIT_USER')
-    self.rabbit_password = os.getenv('RABBIT_PASSWORD')
-    self.rabbit_port = os.getenv('RABBIT_PORT')
-    self.rabbit_heartbeat_interval = os.getenv('RABBIT_HEARTBEAT_INTERVAL')
-    self.connection_attempts = os.getenv('CONNECTION_ATTEMPTS')
-
-  def make_amqp_url(self,
-               ip_address,
-               rabbit_user=None,
-               rabbit_password=None,
-               rabbit_port=None,
-               connection_attempts=None,
-               heartbeat_interval=None):
-    '''Make a RabbitMq url.
-
-      **Example**:
-
-      .. code-block:: python
-
-        amqp_url = \\
-          self.make_amqp_url(
-              ip_address=192.168.1.1,    # only mandatory argument
-              rabbit_user='peter',       # if any of the following args not given
-              rabbit_password='rabbit',  # the .env file will be used
-              connection_attempts='3',
-              heartbeat_interval='3600')
-
-        print(amqp_url)  # =>
-          'amqp://bob:dobbs@192.168.1.1:5672/%2F?connection_attempts=3&heartbeat_interval=3600'
-
-    '''
-    if rabbit_port is None:
-      rabbit_port = self.rabbit_port
-    if connection_attempts is None:
-      connection_attempts = self.connection_attempts
-    if heartbeat_interval is None:
-      heartbeat_interval = self.rabbit_heartbeat_interval
-
-    amqp_url = \
-      "amqp://{}:{}@{}:{}/%2F?connection_attempts={}&heartbeat_interval={}".format(
-          rabbit_user,
-          rabbit_password,
-          ip_address,
-          rabbit_port,
-          connection_attempts,
-          heartbeat_interval)
-    return amqp_url
-
-  def addesses_and_amqp_urls_for(self, automatic=None, manual=None, live=None, dead=None):
-    '''Get the addresses and amqp_urls for node
-
-    The contract rules for this method are:
-      automatic and not manual or not automatic and manual
-      if manual then
-        live and not dead or not live and dead
-    '''
-
-    assert((automatic and not manual) or (not automatic and manual))
-    if manual:
-      assert((live and not dead) or(not live and dead))
-
-    if automatic:
-      addresses = self.dict['nodes']['automatic']['addresses']
-      amqp_urls = self.dict['nodes']['automatic']['amqp_urls']
-    elif manual:
-      if live:
-        addresses = self.dict['nodes']['manual']['live']['addresses']
-        amqp_urls = self.dict['nodes']['manual']['live']['amqp_urls']
-      elif dead:
-        addresses = self.dict['nodes']['manual']['dead']['addresses']
-        amqp_urls = self.dict['nodes']['manual']['dead']['amqp_urls']
-    return (addresses, amqp_urls)
-
-  def append(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
-    '''Append an address or amqp_url to a node'''
-
-    changed = False
-    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
-
-    if address is not None and (address in addresses) is False:
-      addresses.append(address)
-      changed |= True
-    if amqp_url is not None and (amqp_url in amqp_urls) is False:
-      amqp_urls.append(amqp_url)
-      changed |= True
-    if changed:
-      self.write()
-
-  def in_cache(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
-    '''Is an address or amqp_url in a given cache?'''
-    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
-    in_cache = False
-
-    if address in addresses:
-      in_cache |= True
-
-    if amqp_url in amqp_urls:
-      in_cache |= True
-
-    return in_cache
-
-  def in_automatic_cache(self, address, amqp_url):
-    '''Is an address or amqp_url in the automatic cache?'''
-    in_cache_fn = functools.partial(self.in_cache, automatic=True)
-    result = in_cache_fn(address, amqp_url)
-    return result
-
-  def in_manual_live_cache(self, address, amqp_url):
-    '''Is an address or amqp_url in the manual live cache?'''
-    in_cache_fn = functools.partial(self.in_cache, manual=True, live=True)
-    result = in_cache_fn(address, amqp_url)
-    return result
-
-  def in_manual_dead_cache(self, address, amqp_url):
-    '''Is an address or amqp_url in the manual dead cache?'''
-    in_cache_fn = functools.partial(self.in_cache, manual=True, dead=True)
-    result = in_cache_fn(address, amqp_url)
-    return result
-
-  def remove(self, address, amqp_url, automatic=None, manual=None, live=None, dead=None):
-    '''Remove an address or amqp_url to a node'''
-    changed = False
-    addresses, amqp_urls = self.addesses_and_amqp_urls_for(automatic, manual, live, dead)
-
-    if address is not None and (address in addresses) is False:
-      addresses.remove(address)
-      changed |= True
-    if amqp_url is not None and (amqp_url in amqp_urls) is False:
-      amqp_urls.remove(amqp_url)
-      changed |= True
-    if changed:
-      self.write()
-
-  def append_automatic(self, address=None, amqp_url=None):
-    '''Append an address or amqp_url to the automatic node'''
-    append = functools.partial(self.append, automatic=True)
-    append(address, amqp_url)
-
-  def append_manual_live(self, address=None, amqp_url=None):
-    '''Append an address or amqp_url to a manual live node
-
-    If this address and or amqp_url exists in the manual dead node, it is
-    removed'''
-    append_to_live = functools.partial(self.append, manual=True, live=True)
-    remove_from_dead = functools.partial(self.remove, manual=True, dead=True)
-    append_to_live(address, amqp_url)
-    remove_from_dead(address, amqp_url)
-
-  def append_manual_dead(self, address=None, amqp_url=None):
-    '''Append an address or amqp_url to a manual dead node
-
-    If this address and or amqp_url exists in the manual live node, it is
-    removed'''
-    append_to_dead = functools.partial(self.append, manual=True, dead=True)
-    remove_from_live = functools.partial(self.remove, manual=True, live=True)
-    append_to_dead(address, amqp_url)
-    remove_from_live(address, amqp_url)
-
-  #def write(self, addresses=None, ampq_urls=None):
-  #  '''Write the cache file to disk'''
-  #  with open(self.cache_file_name, "w") as f:
-  #    f.write(json.dumps(self.dict, sort_keys=True, indent=2))
-
-  def remove_all_automatic(self):
-    '''Remove all automatic addresses and amqp_urls from the automatic node'''
-    automatic_nodes = self.dict['nodes']['automatic']
-    automatic_nodes['addresses'] = []
-    automatic_nodes['amqp_urls'] = []
-    #self.write()
-
-  def remove_all_dead(self):
-    '''Remove all automatic addresses and amqp_urls from the manual dead node'''
-    automatic_nodes = self.dict['nodes']['manual']['dead']
-    automatic_nodes['addresses'] = []
-    automatic_nodes['amqp_urls'] = []
-    #self.write()
-
-  def destroy(self):
-    '''Delete the cache file all addresses and amqp_urls will be destroyed'''
-    self.dict = {}
-    os.remove(self.cache_file_name)
-
 class CacheFile(Factory):
   def __init__(self, name, file_path, system_read_signal_name=None):
     super().__init__(name)
@@ -380,7 +175,6 @@ class CacheFileChart(CacheFile):
       file_path = str(Path('.') / '.miros_rabbitmq_cache.json')
     self.file_name = os.path.basename(file_path)
     super().__init__(self.file_name, file_path=file_path)
-
 
     self.file_access_waiting = self.create(state='file_access_waiting'). \
         catch(signal=signals.ENTRY_SIGNAL, handler=self.faw_entry). \
@@ -529,7 +323,7 @@ class CacheFileChart(CacheFile):
     )
     cache.publish(Event(signal=signals.CACHE, payload=payload))
     cache.post_lifo(Event(signal=signals.read_successful))
-    pp(cache.json)
+    # pp(cache.json)
     return return_status.HANDLED
 
   @staticmethod
@@ -1102,7 +896,7 @@ class MirosRabbitLan(Factory):
   def make_amqp_url(self, ip_address):
     return self.rabbit_helper.make_amqp_url(ip_address)
 
-class MirosRabbitLanChart(MirosRabbitLan):
+class LanChart(MirosRabbitLan):
   def __init__(self,
         routing_key, exchange_name, time_out_in_minutes=None,
         cache_file_path=None, live_trace=None, live_spy=None):
@@ -1117,7 +911,7 @@ class MirosRabbitLanChart(MirosRabbitLan):
     else:
       self.cache_file_path = None
 
-    super().__init__("lan_chart",
+    super().__init__(to_snake(str(self.__class__.__name__)),
         routing_key,
         exchange_name,
         self.change_time_out_in_minutes,
@@ -1229,14 +1023,14 @@ class MirosRabbitManualNetwork(Factory):
     return self.rabbit_helper.make_amqp_url(ip_address)
 
 
-class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
+class ManNetChart(MirosRabbitManualNetwork):
   def __init__(self, routing_key, exchange_name, cache_file_path=None, live_trace=None, live_spy=None):
     if cache_file_path:
       self.cache_file_path = cache_file_path
     else:
       self.cache_file_path = None
 
-    super().__init__("manual_chart",
+    super().__init__(to_snake(str(self.__class__.__name__)),
         routing_key,
         exchange_name,
         self.cache_file_path)
@@ -1253,6 +1047,7 @@ class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
       self.create(state='evaluated_network'). \
         catch(signal=signals.ENTRY_SIGNAL, handler=self.en_entry). \
         catch(signal=signals.AMQP_CONSUMER_CHECK, handler=self.en_AMQP_CONSUMER_CHECK). \
+        catch(signal=signals.CACHE, handler=self.en_CACHE). \
         to_method()
 
     self. \
@@ -1308,7 +1103,7 @@ class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
   def raend_CACHE(chart, e):
     status = return_status.HANDLED
     if e.payload.file_name == chart.file_name:
-      chart.hosts = e.payload.dict['hosts']
+      chart.hosts = e.payload.dict['addresses']
       chart.live_hosts, chart.live_amqp_urls = [], []
       status = chart.trans(chart.evaluated_network)
     return status
@@ -1327,6 +1122,11 @@ class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
               host,
               chart.routing_key,
               chart.exchange_name))
+    return status
+
+  @staticmethod
+  def en_CACHE(chart, e):
+    status = return_status.HANDLED
     return status
 
   @staticmethod
@@ -1385,27 +1185,278 @@ class MirosRabbitManualNetworkChart(MirosRabbitManualNetwork):
 #  catch(signal=signals.LAN_RECCE_COMPLETE, handler=dn_LAN_RECCE_COMPLETE). \
 #  to_method()
 #
-#chart.nest(read_or_discover_network_details, parent=None). \
-#  nest(discover_network, parent=read_or_discover_network_details)
+# chart.nest(read_or_discover_network_details, parent=None). \
+#   nest(discover_network, parent=read_or_discover_network_details)
+
+
+class ProducerFactory():
+  PublishTempoSec = 0.1
+
+  def __init__(self,
+                ip_address,
+                routing_key,
+                exchange_name,
+                serialization_function,
+                publish_tempo_sec=None):
+
+    self.rabbit_helper = RabbitHelper()
+    LoadEnvironmentalVariables()
+    self.exchange_name = exchange_name
+    self.routing_key   = routing_key
+    if publish_tempo_sec is None:
+      self.publish_tempo_sec = ProducerFactory.PublishTempoSec
+    self.serialization_function = serialization_function
+    self.amqp_url = self.rabbit_helper.make_amqp_url(self, ip_address)
+
+  def make_producer(self):
+    return PikaTopicPublisher(
+        amqp_url=self.amqp_url,
+        routing_key=self.routing_key,
+        publish_tempo_sec=self.publish_tempo_sec,
+        exchange_name=self.exchange_name,
+        serialization_function=self.serialization_function,
+        encryption_key=self.encryption_key)
+
+class MeshProducerFactory(ProducerFactory):
+  def __init__(self,
+                ip_address,
+                routing_key,
+                exchange_name,
+                serialization_function):
+    super().__init__(ip_address,
+                      routing_key,
+                      exchange_name,
+                      serialization_function)
+    self.encryption_key = os.getenv('MESH_ENCRYPTION_KEY')
+
+class SnoopTraceProducerFactory(ProducerFactory):
+  def __init__(self,
+                ip_address,
+                routing_key,
+                exchange_name,
+                serialization_function):
+    super().__init__(ip_address,
+                      routing_key,
+                      exchange_name,
+                      serialization_function)
+    self.encryption_key = os.getenv('SNOOP_TRACE_ENCRYPTION_KEY')
+
+class SnoopSpyProducerFactory(ProducerFactory):
+  def __init__(self,
+                ip_address,
+                routing_key,
+                exchange_name,
+                serialization_function):
+    super().__init__(ip_address,
+                      routing_key,
+                      exchange_name,
+                      serialization_function)
+    self.encryption_key = os.getenv('SNOOP_SPY_ENCRYPTION_KEY')
+
+ProducerQueue = \
+  namedtuple('ProducerQueue',
+    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers'])
+
+class ProducerFactoryAggregator(Factory):
+  def __init__(self,
+               producer_queue,
+               mesh_routing_key,
+               mesh_exchange_name,
+               mesh_serialization_function,
+               snoop_trace_routing_key,
+               snoop_trace_exchange_name,
+               snoop_spy_routing_key,
+               snoop_spy_exchange_name):
+
+    super().__init__(to_snake(str(self.__class__.__name__)))
+
+    self.producer_queue = producer_queue
+    self.mesh_routing_key = mesh_routing_key
+    self.mesh_exchange_name = mesh_exchange_name
+    self.mesh_serialization_function = mesh_serialization_function
+    self.mesh_producers = []
+
+    self.snoop_trace_routing_key = snoop_trace_routing_key
+    self.snoop_trace_exchange_name = snoop_trace_exchange_name
+    self.snoop_trace_producers = []
+
+    self.snoop_spy_routing_key = snoop_spy_routing_key
+    self.snoop_spy_exchange_name = snoop_spy_exchange_name
+    self.snoop_spy_producers = []
+
+    self.set_of_ips = set([])
+    self.set_of_new_ips = set([])
+
+  def get_ip_for_hostname(self, host):
+    return socket.gethostbyname(host)
+
+  def make_mesh_producer(self, ip):
+    mesh_producer = \
+      MeshProducerFactory(ip,
+        routing_key=self.mesh_routing_key,
+        exchange_name=self.mesh_exchange_name,
+        serialization_function=self.mesh_serialization_function)
+    return mesh_producer
+
+  def make_snoop_trace_producer(self, ip):
+    snoop_trace_producer = \
+      SnoopTraceProducerFactory(ip,
+        routing_key=self.snoop_trace_routing_key,
+        exchange_name=self.snoop_trace_exchange_name,
+        serialization_function=self.snoop_trace_serialization_function)
+    return snoop_trace_producer
+
+  def make_snoop_spy_producer(self, ip):
+    snoop_spy_producer = \
+      SnoopSpyProducerFactory(ip,
+        routing_key=self.snoop_spy_routing_key,
+        exchange_name=self.snoop_spy_exchange_name,
+        serialization_function=self.snoop_spy_serialization_function)
+    return snoop_spy_producer
+
+def pd_entry(chart, e):
+  status = return_status.HANDLED
+  chart.mesh_producers = []
+  chart.snoop_trace_producers = []
+  chart.snoop_spy_producers = []
+  chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
+  if not hasattr(chart, 'man_net_chart'):
+    chart.man_net_chart = ManNetChart(chart.mesh_routing_key,
+        chart.mesh_exchange_name,
+        live_trace=chart.live_trace,
+        live_spy=chart.live_spy)
+  if not hasattr(chart, 'lan_chart'):
+    chart.lan_chart = LanChart(chart.mesh_routing_key,
+        chart.mesh_exchange_name,
+        live_trace=chart.live_trace,
+        live_spy=chart.live_spy)
+  chart.set_of_ips = set([])
+  return status
+
+def pd_CONNECTION_DISCOVERY(chart, e):
+  status = return_status.HANDLED
+  set_of_payload_ips = set(chart.get_ip_for_hostname(host) for host in e.payload.hosts)
+  chart.set_of_new_ips = set_of_payload_ips - chart.set_of_ips
+  chart.set_of_ips |= set_of_payload_ips
+
+  if(len(chart.set_of_new_ips) > 0):
+    chart.post_fifo(Event(signal=signals.ips_discovered))
+
+  if e.payload.dispatcher == 'man_net_chart':
+    if hasattr(chart, 'man_net_chart'):
+      del chart.man_net_chart
+  elif e.payload.dispatcher == 'lan_chart':
+    if hasattr(chart, 'lan_chart'):
+      del chart.lan_chart
+  return status
+
+def pd_ips_discovered(chart, e):
+  status = chart.trans(refactor_producers)
+  return status
+
+def ptq_CONNECTION_DISCOVERED(chart, e):
+  status = return_status.HANDLED
+  chart.defer(e)
+  return status
+
+def ptq_exit(chart, e):
+  status = return_status.HANDLED
+  chart.set_of_new_ips = set([])
+  chart.recall()
+  return status
+
+def ptq_ips_discovered(chart, e):
+  return chart.trans(refactor_producers)
+
+def ptq_ready(chart, e):
+  return chart.trans(producer_discovery)
+
+def rp_entry(chart, e):
+  status = return_status.HANDLED
+  new_ips = list(chart.set_of_new_ips)
+  new_mesh_producers = \
+    [chart.make_mesh_producer(ip) for ip in new_ips]
+  new_snoop_trace_producers = \
+    [chart.make_mesh_producer(ip) for ip in new_ips]
+  new_snoop_spy_producers = \
+    [chart.make_mesh_producer(ip) for ip in new_ips]
+
+  chart.mesh_producers.append(new_mesh_producers)
+  chart.mesh_producers.append(new_snoop_trace_producers)
+  chart.mesh_producers.append(new_snoop_spy_producers)
+
+  payload = ProducerQueue(
+    mesh_producers=chart.mesh_producers,
+    snoop_trace_producers=chart.snoop_trace_producers,
+    snoop_spy_producers=chart.snoop_spy_producers)
+
+  try:
+    chart.producer_queue.put(payload, block=False)
+  except queue.Full:
+    chart.post_fifo(Event(signal=signals.ips_discovered), times=1, period=1, deferred=True)
+  else:
+    chart.post_fifo(Event(signal=signals.ready))
+
+  return status
+
+q = queue.Queue()
+
+def custom_serializer(obj):
+  if isinstance(obj, Event):
+    obj = Event.dumps(obj)
+  pobj = pickle.dumps(obj)
+  return pobj
+
+chart = ProducerFactoryAggregator(
+         producer_queue=q,
+         mesh_routing_key = 'heya_man',
+         mesh_exchange_name = 'miros.mesh.exchange',
+         mesh_serialization_function=custom_serializer,
+         snoop_trace_routing_key = 'snoop.trace',
+         snoop_trace_exchange_name = 'miros.snoop.trace',
+         snoop_spy_routing_key = 'snoop.spy',
+         snoop_spy_exchange_name = 'miros.snoop.spy',
+       )
+
+producer_discovery = chart.create(state='producer_discovery'). \
+  catch(signal=signals.ENTRY_SIGNAL, handler=pd_entry). \
+  catch(signal=signals.ips_discovered, handler=pd_ips_discovered). \
+  catch(signal=signals.CONNECTION_DISCOVERY, handler=pd_CONNECTION_DISCOVERY). \
+  to_method()
+
+post_to_queue = chart.create(state='post_to_queue'). \
+  catch(signal=signals.CONNECTION_DISCOVERY, handler=ptq_CONNECTION_DISCOVERED). \
+  catch(signal=signals.EXIT_SIGNAL, handler=ptq_exit). \
+  catch(signal=signals.ready, handler=ptq_ready). \
+  catch(signal=signals.ips_discovered, handler=ptq_ips_discovered). \
+  to_method()
+
+refactor_producers = chart.create(state='refactor_producers'). \
+  catch(signal=signals.ENTRY_SIGNAL, handler=rp_entry). \
+  to_method()
+
+chart.nest(producer_discovery, parent=None). \
+  nest(post_to_queue, parent=producer_discovery). \
+  nest(refactor_producers, parent=post_to_queue)
 
 if __name__ == '__main__':
-  #cache_chart = CacheFileChart(live_trace=True)
-  #time.sleep(2)
-  #cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
-  #scout1 = RabbitConsumerScoutChart(
-  #          '192.168.1.69',
-  #          'heya.man',
-  #          'miros.mesh.exchange')
+  # cache_chart = CacheFileChart(live_trace=True)
+  # time.sleep(2)
+  # cache_chart.post_fifo(Event(signal=signals.CACHE_FILE_READ))
+  # scout1 = RabbitConsumerScoutChart(
+  #           '192.168.1.69',
+  #           'heya.man',
+  #           'miros.mesh.exchange')
 
-  #mrl = MirosRabbitLanChart(routing_key='heya.man',
-  #    exchange_name='miros.mesh.exchange', live_trace = True)
+  # mrl = LanChart(routing_key='heya.man',
+  #     exchange_name='miros.mesh.exchange', live_trace = True)
 
-  #chart.live_trace = True
-  #chart.start_at(read_and_evaluate_network_details)
-  MirosRabbitManualNetworkChart(
-      'heya_man',
-      'miros.mesh.exchange'
-      )
+  # chart.live_trace = True
+  # chart.start_at(read_and_evaluate_network_details)
+  #ManNetChart(
+  #  'heya_man',
+  #  'miros.mesh.exchange'
+  #)
   #scout2 = RabbitConsumerScoutChart(
   #          '192.168.1.77',
   #          'heya.man',
@@ -1416,7 +1467,6 @@ if __name__ == '__main__':
   #          'heya.man',
   #          'miros.mesh.exchange',
   #          live_trace = True)
-  time.sleep(3)
   #lan_recce = LanRecceChart(
   #  routing_key='heya.man',
   #  exchange_name='miros.mesh.exchange',
@@ -1424,7 +1474,10 @@ if __name__ == '__main__':
   #lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
 
   time.sleep(1)
-  time.sleep(50)
+  chart.live_trace = True
+  chart.start_at(producer_discovery)
+  time.sleep(500)
+
   #sm = MirosRabbitMQConnections()
   #sm.append_automatic(address='192.168.1.74')
   #sm.append_manual_live(address='192.168.1.74')
