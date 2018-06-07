@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>7</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>112</x>
-      <y>490</y>
-      <w>882</w>
-      <h>553</h>
+      <x>48</x>
+      <y>544</y>
+      <w>1008</w>
+      <h>632</h>
     </coordinates>
     <panel_attributes>*producer discovery*
 --
@@ -49,10 +49,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>308</x>
-      <y>651</y>
-      <w>203</w>
-      <h>42</h>
+      <x>272</x>
+      <y>728</y>
+      <w>232</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>ConnectionDiscoveryPayload = \
   namedtuple('ConnectionDiscoveryPayload',
@@ -62,10 +62,10 @@ valign=top
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>378</x>
+      <x>352</x>
       <y>112</y>
-      <w>203</w>
-      <h>231</h>
+      <w>232</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>*ProducerFactoryAggregator*
 --
@@ -93,10 +93,10 @@ make_snoop_spy_producer(ip)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>462</x>
-      <y>336</y>
-      <w>21</w>
-      <h>63</h>
+      <x>448</x>
+      <y>368</y>
+      <w>24</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
@@ -104,10 +104,10 @@ make_snoop_spy_producer(ip)
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>77</x>
-      <y>385</y>
-      <w>931</w>
-      <h>679</h>
+      <x>8</x>
+      <y>424</y>
+      <w>1064</w>
+      <h>776</h>
     </coordinates>
     <panel_attributes>*ProducerFactoryChart*
 --
@@ -122,10 +122,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>147</x>
-      <y>441</y>
-      <w>35</w>
-      <h>42</h>
+      <x>88</x>
+      <y>488</y>
+      <w>40</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>20.0;10.0;20.0;30.0</additional_attributes>
@@ -133,10 +133,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>154</x>
-      <y>469</y>
-      <w>21</w>
-      <h>42</h>
+      <x>96</x>
+      <y>520</y>
+      <w>24</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -144,10 +144,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>91</x>
-      <y>413</y>
-      <w>140</w>
-      <h>42</h>
+      <x>24</x>
+      <y>456</y>
+      <w>160</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -156,10 +156,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>378</x>
-      <y>21</y>
-      <w>203</w>
-      <h>56</h>
+      <x>352</x>
+      <y>8</y>
+      <w>232</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>Note..
   keeps track of everything as raw IP
@@ -170,10 +170,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>595</x>
-      <y>609</y>
-      <w>371</w>
-      <h>399</h>
+      <x>600</x>
+      <y>680</y>
+      <w>424</w>
+      <h>456</h>
     </coordinates>
     <panel_attributes>*refactor_producers*
 --
@@ -211,10 +211,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>105</x>
-      <y>896</y>
-      <w>504</w>
-      <h>35</h>
+      <x>40</x>
+      <y>1008</y>
+      <w>576</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ips_discovered
@@ -224,10 +224,10 @@ ips_discovered
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>105</x>
-      <y>945</y>
-      <w>434</w>
-      <h>28</h>
+      <x>40</x>
+      <y>1064</y>
+      <w>496</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ready</panel_attributes>
@@ -236,10 +236,10 @@ ready</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>133</x>
-      <y>21</y>
-      <w>203</w>
-      <h>133</h>
+      <x>72</x>
+      <y>8</y>
+      <w>232</w>
+      <h>152</h>
     </coordinates>
     <panel_attributes>*ProducerFactory*
 --
@@ -260,10 +260,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>140</x>
-      <y>203</y>
-      <w>161</w>
-      <h>21</h>
+      <x>80</x>
+      <y>216</y>
+      <w>184</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>*MeshProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -271,10 +271,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>140</x>
-      <y>231</y>
-      <w>161</w>
-      <h>21</h>
+      <x>80</x>
+      <y>248</y>
+      <w>184</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>*SnoopTraceProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -282,10 +282,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>140</x>
-      <y>259</y>
-      <w>161</w>
-      <h>21</h>
+      <x>80</x>
+      <y>280</y>
+      <w>184</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>*SnoopSpyProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -293,10 +293,10 @@ make_producer()
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>77</x>
-      <y>147</y>
-      <w>168</w>
-      <h>105</h>
+      <x>8</x>
+      <y>152</y>
+      <w>192</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>220.0;10.0;220.0;50.0;10.0;50.0;10.0;130.0;50.0;130.0</additional_attributes>
@@ -304,10 +304,10 @@ make_producer()
   <element>
     <id>UMLSyncBarVertical</id>
     <coordinates>
-      <x>105</x>
-      <y>203</y>
-      <w>14</w>
-      <h>77</h>
+      <x>40</x>
+      <y>216</y>
+      <w>16</w>
+      <h>88</h>
     </coordinates>
     <panel_attributes>template=txt
 title=titletext
@@ -317,10 +317,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>105</x>
-      <y>203</y>
-      <w>49</w>
-      <h>21</h>
+      <x>40</x>
+      <y>216</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -328,10 +328,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>105</x>
-      <y>231</y>
-      <w>49</w>
-      <h>21</h>
+      <x>40</x>
+      <y>248</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -339,10 +339,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>105</x>
-      <y>259</y>
-      <w>49</w>
-      <h>21</h>
+      <x>40</x>
+      <y>280</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -350,10 +350,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>294</x>
-      <y>203</y>
-      <w>98</w>
-      <h>21</h>
+      <x>256</x>
+      <y>216</y>
+      <w>112</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -361,10 +361,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>294</x>
-      <y>231</y>
-      <w>98</w>
-      <h>21</h>
+      <x>256</x>
+      <y>248</y>
+      <w>112</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -372,10 +372,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>294</x>
-      <y>259</y>
-      <w>98</w>
-      <h>21</h>
+      <x>256</x>
+      <y>280</y>
+      <w>112</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -383,10 +383,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>616</x>
-      <y>938</y>
-      <w>329</w>
-      <h>49</h>
+      <x>624</x>
+      <y>1056</y>
+      <w>376</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>ProducerQueue = \
   namedtuple('ProducerQueue',
@@ -397,10 +397,10 @@ bg=red</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>595</x>
-      <y>21</y>
-      <w>189</w>
-      <h>147</h>
+      <x>600</x>
+      <y>8</y>
+      <w>216</w>
+      <h>168</h>
     </coordinates>
     <panel_attributes>ProducerDiscovery(
   producer_discovery_queue,
@@ -421,10 +421,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>98</x>
-      <y>686</y>
-      <w>14</w>
-      <h>14</h>
+      <x>32</x>
+      <y>768</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -433,10 +433,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>581</x>
-      <y>763</y>
-      <w>14</w>
-      <h>14</h>
+      <x>584</x>
+      <y>856</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -445,10 +445,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>525</x>
-      <y>525</y>
-      <w>455</w>
-      <h>497</h>
+      <x>520</x>
+      <y>584</y>
+      <w>520</w>
+      <h>568</h>
     </coordinates>
     <panel_attributes>*post_to_queue*
 --
@@ -465,10 +465,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>518</x>
-      <y>847</y>
-      <w>91</w>
-      <h>35</h>
+      <x>512</x>
+      <y>952</y>
+      <w>104</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ips_discovered

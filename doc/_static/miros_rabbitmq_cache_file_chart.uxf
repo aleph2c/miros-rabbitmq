@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>5</zoom_level>
+  <zoom_level>7</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>310</x>
-      <y>130</y>
-      <w>110</w>
-      <h>105</h>
+      <x>119</x>
+      <y>56</y>
+      <w>154</w>
+      <h>147</h>
     </coordinates>
     <panel_attributes>*CacheFile*
 --
@@ -31,10 +31,10 @@ system_read_signal_name
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>350</x>
-      <y>330</y>
-      <w>570</w>
-      <h>445</h>
+      <x>175</x>
+      <y>336</y>
+      <w>798</w>
+      <h>623</h>
     </coordinates>
     <panel_attributes>*file_access_waiting*
 --
@@ -71,10 +71,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>590</x>
-      <y>375</y>
-      <w>255</w>
-      <h>365</h>
+      <x>511</x>
+      <y>399</y>
+      <w>357</w>
+      <h>511</h>
     </coordinates>
     <panel_attributes>*file_accessed*
 --
@@ -91,10 +91,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>345</x>
-      <y>545</y>
-      <w>90</w>
-      <h>20</h>
+      <x>168</x>
+      <y>637</y>
+      <w>126</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 file_read</panel_attributes>
@@ -103,10 +103,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>425</x>
-      <y>545</y>
-      <w>20</w>
-      <h>20</h>
+      <x>280</x>
+      <y>637</y>
+      <w>28</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -114,10 +114,10 @@ file_read</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
-      <y>550</y>
-      <w>185</w>
-      <h>15</h>
+      <x>301</x>
+      <y>644</y>
+      <w>259</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;350.0;10.0</additional_attributes>
@@ -125,10 +125,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>470</x>
-      <y>580</y>
-      <w>10</w>
-      <h>10</h>
+      <x>343</x>
+      <y>686</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>type=flow_final</panel_attributes>
     <additional_attributes/>
@@ -136,10 +136,10 @@ file_read</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>430</x>
-      <y>560</y>
-      <w>50</w>
-      <h>35</h>
+      <x>287</x>
+      <y>658</y>
+      <w>70</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
@@ -147,10 +147,10 @@ file_read</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>615</x>
-      <y>440</y>
-      <w>215</w>
-      <h>140</h>
+      <x>546</x>
+      <y>490</y>
+      <w>301</w>
+      <h>196</h>
     </coordinates>
     <panel_attributes>*file_read*
 --
@@ -176,10 +176,10 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>440</x>
-      <y>540</y>
-      <w>70</w>
-      <h>15</h>
+      <x>301</x>
+      <y>630</y>
+      <w>98</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>[cache.writable()]
 style=wordwrap</panel_attributes>
@@ -188,10 +188,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>370</x>
-      <y>695</y>
-      <w>185</w>
-      <h>45</h>
+      <x>203</x>
+      <y>847</y>
+      <w>259</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>chart.post_fifo(
   Event(signal=signals.file_write, payload=e.payload),
@@ -204,10 +204,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>345</x>
-      <y>660</y>
-      <w>90</w>
-      <h>20</h>
+      <x>168</x>
+      <y>798</y>
+      <w>126</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 file_write</panel_attributes>
@@ -216,10 +216,10 @@ file_write</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>425</x>
-      <y>660</y>
-      <w>20</w>
-      <h>20</h>
+      <x>280</x>
+      <y>798</y>
+      <w>28</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>type=decision</panel_attributes>
     <additional_attributes/>
@@ -227,10 +227,10 @@ file_write</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>470</x>
-      <y>695</y>
-      <w>10</w>
-      <h>10</h>
+      <x>343</x>
+      <y>847</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>type=flow_final</panel_attributes>
     <additional_attributes/>
@@ -238,10 +238,10 @@ file_write</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>430</x>
-      <y>675</y>
-      <w>50</w>
-      <h>35</h>
+      <x>287</x>
+      <y>819</y>
+      <w>70</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0;80.0;50.0</additional_attributes>
@@ -249,10 +249,10 @@ file_write</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
-      <y>665</y>
-      <w>185</w>
-      <h>15</h>
+      <x>301</x>
+      <y>805</y>
+      <w>259</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;350.0;10.0</additional_attributes>
@@ -260,10 +260,10 @@ file_write</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>445</x>
-      <y>660</y>
-      <w>65</w>
-      <h>15</h>
+      <x>308</x>
+      <y>798</y>
+      <w>91</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>[cache.writable()]
 style=wordwrap</panel_attributes>
@@ -272,10 +272,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>360</x>
-      <y>580</y>
-      <w>165</w>
-      <h>45</h>
+      <x>189</x>
+      <y>686</y>
+      <w>231</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>chart.post_fifo(
   Event(signal=signals.file_read),
@@ -288,10 +288,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>615</x>
-      <y>590</y>
-      <w>215</w>
-      <h>125</h>
+      <x>546</x>
+      <y>700</y>
+      <w>301</w>
+      <h>175</h>
     </coordinates>
     <panel_attributes>*file_write*
 --
@@ -313,10 +313,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>825</x>
-      <y>470</y>
-      <w>180</w>
-      <h>15</h>
+      <x>840</x>
+      <y>532</y>
+      <w>252</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;340.0;10.0</additional_attributes>
@@ -324,10 +324,10 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>845</x>
-      <y>460</y>
-      <w>160</w>
-      <h>20</h>
+      <x>868</x>
+      <y>518</y>
+      <w>224</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>&lt;system_read_signal_name(CACHE)&gt; (json)
 style=wordwrap</panel_attributes>
@@ -336,10 +336,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>825</x>
-      <y>505</y>
-      <w>105</w>
-      <h>20</h>
+      <x>840</x>
+      <y>581</y>
+      <w>147</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 read_successful</panel_attributes>
@@ -348,10 +348,10 @@ read_successful</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>825</x>
-      <y>650</y>
-      <w>105</w>
-      <h>20</h>
+      <x>840</x>
+      <y>784</y>
+      <w>147</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 write_successful</panel_attributes>
@@ -360,10 +360,10 @@ write_successful</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>665</x>
-      <y>220</y>
-      <w>170</w>
-      <h>25</h>
+      <x>616</x>
+      <y>182</y>
+      <w>238</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>cache_chart = CacheFileChart(live_trace=True)
  
@@ -373,10 +373,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>665</x>
-      <y>205</y>
-      <w>170</w>
-      <h>40</h>
+      <x>616</x>
+      <y>161</y>
+      <w>238</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>To create cache file chart object:
 fg=blue</panel_attributes>
@@ -385,10 +385,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>570</x>
-      <y>225</y>
-      <w>105</w>
-      <h>35</h>
+      <x>483</x>
+      <y>189</y>
+      <w>147</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;50.0;190.0;10.0</additional_attributes>
@@ -396,10 +396,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>350</x>
-      <y>270</y>
-      <w>100</w>
-      <h>30</h>
+      <x>175</x>
+      <y>252</y>
+      <w>140</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -408,10 +408,10 @@ Event Processor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>355</x>
-      <y>230</y>
-      <w>15</w>
-      <h>30</h>
+      <x>182</x>
+      <y>196</y>
+      <w>21</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -419,10 +419,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>310</x>
-      <y>250</y>
-      <w>640</w>
-      <h>545</h>
+      <x>119</x>
+      <y>224</y>
+      <w>896</w>
+      <h>763</h>
     </coordinates>
     <panel_attributes>*CacheFileChart*
 --
@@ -437,10 +437,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>320</x>
-      <y>375</y>
-      <w>10</w>
-      <h>10</h>
+      <x>133</x>
+      <y>399</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -448,10 +448,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>325</x>
-      <y>375</y>
-      <w>35</w>
-      <h>15</h>
+      <x>140</x>
+      <y>399</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -459,10 +459,10 @@ fg=blue</panel_attributes>
   <element>
     <id>PlotGrid</id>
     <coordinates>
-      <x>450</x>
-      <y>605</y>
-      <w>145</w>
-      <h>55</h>
+      <x>315</x>
+      <y>721</y>
+      <w>203</w>
+      <h>77</h>
     </coordinates>
     <panel_attributes>// datasets can have optional names set (in this case "first_name")
 data first_name
@@ -484,10 +484,10 @@ plot</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>505</x>
-      <y>600</y>
-      <w>35</w>
-      <h>15</h>
+      <x>392</x>
+      <y>714</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>timeout:
 style=wordwrap</panel_attributes>
@@ -496,10 +496,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>310</x>
-      <y>105</y>
-      <w>50</w>
-      <h>15</h>
+      <x>119</x>
+      <y>21</y>
+      <w>70</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>Factory</panel_attributes>
     <additional_attributes/>
@@ -507,10 +507,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>330</x>
-      <y>115</y>
-      <w>15</w>
-      <h>25</h>
+      <x>147</x>
+      <y>35</y>
+      <w>21</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
@@ -518,10 +518,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>390</x>
-      <y>290</y>
-      <w>45</w>
-      <h>35</h>
+      <x>231</x>
+      <y>280</y>
+      <w>63</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0;60.0;40.0</additional_attributes>
@@ -529,10 +529,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>425</x>
-      <y>305</y>
-      <w>15</w>
-      <h>40</h>
+      <x>280</x>
+      <y>301</y>
+      <w>21</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -540,10 +540,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>340</x>
-      <y>500</y>
-      <w>10</w>
-      <h>10</h>
+      <x>161</x>
+      <y>574</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -552,10 +552,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>830</x>
-      <y>465</y>
-      <w>10</w>
-      <h>10</h>
+      <x>847</x>
+      <y>525</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -564,10 +564,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>340</x>
-      <y>465</y>
-      <w>10</w>
-      <h>10</h>
+      <x>161</x>
+      <y>525</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -576,10 +576,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>340</x>
-      <y>410</y>
-      <w>10</w>
-      <h>10</h>
+      <x>161</x>
+      <y>448</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -588,10 +588,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>865</x>
-      <y>305</y>
-      <w>80</w>
-      <h>160</h>
+      <x>896</x>
+      <y>301</y>
+      <w>112</w>
+      <h>224</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0;140.0;30.0;140.0;300.0</additional_attributes>
@@ -599,10 +599,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>730</x>
-      <y>275</y>
-      <w>185</w>
-      <h>35</h>
+      <x>707</x>
+      <y>259</y>
+      <w>259</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>CacheReadPayload = \
   namedtuple('CacheReadPayload',
@@ -612,10 +612,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>460</x>
-      <y>735</y>
-      <w>130</w>
-      <h>35</h>
+      <x>329</x>
+      <y>903</y>
+      <w>182</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>CacheWritePayload = \
   namedtuple('CacheWritePayload',
@@ -625,10 +625,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>510</x>
-      <y>710</y>
-      <w>15</w>
-      <h>35</h>
+      <x>399</x>
+      <y>868</y>
+      <w>21</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>

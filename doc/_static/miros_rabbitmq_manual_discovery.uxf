@@ -4,8 +4,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>64</x>
-      <y>72</y>
+      <x>112</x>
+      <y>104</y>
       <w>232</w>
       <h>200</h>
     </coordinates>
@@ -35,8 +35,8 @@ manual_file_chart
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>112</x>
-      <y>416</y>
+      <x>160</x>
+      <y>448</y>
       <w>936</w>
       <h>480</h>
     </coordinates>
@@ -65,8 +65,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>176</x>
-      <y>392</y>
+      <x>224</x>
+      <y>424</y>
       <w>24</w>
       <h>48</h>
     </coordinates>
@@ -76,8 +76,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>360</y>
+      <x>216</x>
+      <y>392</y>
       <w>40</w>
       <h>48</h>
     </coordinates>
@@ -87,8 +87,8 @@ valign=top
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>104</x>
-      <y>328</y>
+      <x>152</x>
+      <y>360</y>
       <w>160</w>
       <h>48</h>
     </coordinates>
@@ -99,8 +99,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>232</x>
-      <y>792</y>
+      <x>280</x>
+      <y>824</y>
       <w>240</w>
       <h>56</h>
     </coordinates>
@@ -112,8 +112,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>112</x>
-      <y>744</y>
+      <x>160</x>
+      <y>776</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -124,8 +124,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>168</x>
-      <y>656</y>
+      <x>216</x>
+      <y>688</y>
       <w>320</w>
       <h>56</h>
     </coordinates>
@@ -137,14 +137,14 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>128</x>
-      <y>712</y>
+      <x>176</x>
+      <y>744</y>
       <w>328</w>
       <h>64</h>
     </coordinates>
     <panel_attributes>CACHE as e: \
   [e.payload.file_name == chart.file_name]
-  chart.hosts = e.payload.dict['addresses']
+  chart.hosts = e.payload.dict['hosts']
 
     
   
@@ -154,8 +154,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>104</x>
-      <y>744</y>
+      <x>152</x>
+      <y>776</y>
       <w>408</w>
       <h>32</h>
     </coordinates>
@@ -166,8 +166,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>496</x>
-      <y>456</y>
+      <x>544</x>
+      <y>488</y>
       <w>536</w>
       <h>416</h>
     </coordinates>
@@ -211,8 +211,8 @@ valign=top
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>96</x>
-      <y>616</y>
+      <x>144</x>
+      <y>648</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -223,8 +223,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>512</x>
-      <y>888</y>
+      <x>560</x>
+      <y>920</y>
       <w>600</w>
       <h>48</h>
     </coordinates>
@@ -234,8 +234,8 @@ bg=red</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>528</x>
-      <y>896</y>
+      <x>576</x>
+      <y>928</y>
       <w>352</w>
       <h>24</h>
     </coordinates>
@@ -246,8 +246,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>64</x>
-      <y>288</y>
+      <x>112</x>
+      <y>320</y>
       <w>1008</w>
       <h>656</h>
     </coordinates>
@@ -264,8 +264,8 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>160</x>
-      <y>264</y>
+      <x>208</x>
+      <y>296</y>
       <w>24</w>
       <h>40</h>
     </coordinates>
@@ -275,8 +275,8 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>96</x>
-      <y>520</y>
+      <x>144</x>
+      <y>552</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -287,8 +287,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>800</x>
-      <y>704</y>
+      <x>848</x>
+      <y>736</y>
       <w>224</w>
       <h>56</h>
     </coordinates>
@@ -301,8 +301,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>480</x>
-      <y>592</y>
+      <x>528</x>
+      <y>624</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -313,8 +313,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>816</x>
-      <y>504</y>
+      <x>864</x>
+      <y>536</y>
       <w>208</w>
       <h>56</h>
     </coordinates>
@@ -327,8 +327,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>704</x>
-      <y>544</y>
+      <x>752</x>
+      <y>576</y>
       <w>128</w>
       <h>32</h>
     </coordinates>
@@ -338,8 +338,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>880</x>
-      <y>552</y>
+      <x>928</x>
+      <y>584</y>
       <w>80</w>
       <h>144</h>
     </coordinates>
@@ -349,8 +349,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>136</x>
-      <y>888</y>
+      <x>184</x>
+      <y>920</y>
       <w>216</w>
       <h>48</h>
     </coordinates>
@@ -361,8 +361,8 @@ EVALUATE_HOSTS_FILE</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>144</x>
-      <y>896</y>
+      <x>192</x>
+      <y>928</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -373,8 +373,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>72</x>
-      <y>480</y>
+      <x>120</x>
+      <y>512</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -384,8 +384,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>72</x>
-      <y>480</y>
+      <x>120</x>
+      <y>512</y>
       <w>56</w>
       <h>24</h>
     </coordinates>

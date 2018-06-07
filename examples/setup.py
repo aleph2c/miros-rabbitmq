@@ -167,7 +167,7 @@ CacheReadPayload = \
     ['dict', 'last_modified', 'created_at', 'expired', 'file_name'])
 
 CacheWritePayload = \
-  namedtuple('CacheWritePayload', ['json'])
+  namedtuple('CacheWritePayload', ['json', 'file_name'])
 
 class CacheFileChart(CacheFile):
   def __init__(self, file_path=None, live_trace=None, live_spy=None):
@@ -247,10 +247,11 @@ class CacheFileChart(CacheFile):
   @staticmethod
   def faw_CACHE_FILE_WRITE(cache, e):
     '''The file_access_waiting state global CACHE_FILE_WRITE event handler'''
-    cache.json = e.payload.json  # kept for debugging
-    cache.dict = json.load(open(cache.file_path, 'r'))
-    assert('time_out_in_minutes' in cache.dict)
-    cache.post_fifo(Event(signal=signals.cache_file_write, payload={'times': 0, 'dict': cache.dict}))
+    if e.payload.file_name == cache.file_name:
+      cache.json = e.payload.json  # kept for debugging
+      cache.dict = json.load(open(cache.file_path, 'r'))
+      assert('time_out_in_minutes' in cache.dict)
+      cache.post_fifo(Event(signal=signals.cache_file_write, payload={'times': 0, 'dict': cache.dict}))
     return return_status.HANDLED
 
   @staticmethod
@@ -258,8 +259,11 @@ class CacheFileChart(CacheFile):
     '''The file_access_waiting state global faw_CACHE_DESTROY event handler'''
     # write empty cache with a timeout of 0 to meet our contract, yet to cause a
     # timeout
-    cache.post_fifo(Event(signal=signals.cache_file_write),
-        payload=CacheWritePayload(json=json.dumps({'time_out_in_minutes': 0})))
+    payload = \
+      CacheWritePayload(
+        json=json.dumps({'time_out_in_minutes': 0}),
+        file_name=cache.file_name)
+    cache.post_fifo(Event(signal=signals.cache_file_write), payload=payload)
     return return_status.HANDLED
 
   @staticmethod
@@ -952,11 +956,18 @@ class LanChart(MirosRabbitLan):
       if chart.cache_file_path is None:
         chart.file_path = '.miros_rabbitmq_lan_cache.json'
       chart.file_name = os.path.basename(chart.file_path)
-      chart.cache_file_chart = CacheFileChart(
-        file_path=chart.file_path,
-        live_trace=True)
+      chart.cache_file_chart = \
+        CacheFileChart(
+          file_path=chart.file_path,
+          live_trace=chart.live_trace,
+          live_spy=chart.live_spy
+        )
     if not hasattr(chart, 'rabbitmq_lan_recce_chart'):
-      chart.rabbit_lan_reccee_chart = LanRecceChart(chart.routing_key, chart.exchange_name)
+      chart.rabbit_lan_reccee_chart = LanRecceChart(
+        chart.routing_key,
+        chart.exchange_name,
+        live_trace=chart.live_trace,
+        live_spy=chart.live_spy)
     chart.subscribe(Event(signal=signals.LAN_RECCE_COMPLETE))
     chart.subscribe(Event(signal=signals.CACHE))
     chart.publish(Event(signal=signals.CACHE_FILE_READ))
@@ -999,7 +1010,10 @@ class LanChart(MirosRabbitLan):
     chart.dict['addresses'] = chart.addresses
     chart.dict['amqp_urls'] = chart.amqp_urls
     chart.dict['time_out_in_minutes'] = chart.time_out_in_minutes
-    payload = CacheWritePayload(json=json.dumps(chart.dict, indent=2, sort_keys=True))
+    payload = \
+      CacheWritePayload(
+        json=json.dumps(chart.dict, indent=2, sort_keys=True),
+        file_name=chart.file_name)
     chart.publish(Event(signal=signals.CACHE_FILE_WRITE, payload=payload))
     return status
 
@@ -1076,7 +1090,12 @@ class ManNetChart(MirosRabbitManualNetwork):
     if not hasattr(chart, 'manual_file_chart'):
       chart.file_path = '.miros_rabbitmq_hosts.json'
       chart.file_name = os.path.basename(chart.file_path)
-      chart.manual_file_chart = CacheFileChart(file_path=chart.file_path)
+      chart.manual_file_chart = \
+        CacheFileChart(
+          file_path=chart.file_path,
+          live_trace=chart.live_trace,
+          live_spy=chart.live_spy
+        )
     chart.subscribe(Event(signal=signals.CACHE))
     chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
     chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
@@ -1103,7 +1122,7 @@ class ManNetChart(MirosRabbitManualNetwork):
   def raend_CACHE(chart, e):
     status = return_status.HANDLED
     if e.payload.file_name == chart.file_name:
-      chart.hosts = e.payload.dict['addresses']
+      chart.hosts = e.payload.dict['hosts']
       chart.live_hosts, chart.live_amqp_urls = [], []
       status = chart.trans(chart.evaluated_network)
     return status
