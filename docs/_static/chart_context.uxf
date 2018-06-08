@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>10</zoom_level>
+  <zoom_level>9</zoom_level>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>220</x>
-      <y>620</y>
-      <w>190</w>
-      <h>30</h>
+      <x>882</x>
+      <y>585</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>LAN_RECCE_COMPLETE
 style=wordwrap</panel_attributes>
@@ -16,10 +16,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>390</x>
-      <y>570</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1035</x>
+      <y>540</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -28,10 +28,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>390</x>
-      <y>590</y>
-      <w>30</w>
-      <h>90</h>
+      <x>1035</x>
+      <y>558</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -39,22 +39,22 @@ bg=green</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>380</x>
-      <y>470</y>
-      <w>390</w>
-      <h>130</h>
+      <x>1026</x>
+      <y>450</y>
+      <w>351</w>
+      <h>117</h>
     </coordinates>
-    <panel_attributes>MirosRabbitLanChart
+    <panel_attributes>LanChart
 symbol=substate</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>430</x>
-      <y>850</y>
-      <w>30</w>
-      <h>90</h>
+      <x>270</x>
+      <y>567</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -62,10 +62,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>440</x>
-      <y>880</y>
-      <w>80</w>
-      <h>30</h>
+      <x>279</x>
+      <y>594</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CACHE
 style=wordwrap</panel_attributes>
@@ -74,34 +74,34 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>550</y>
-      <w>230</w>
-      <h>40</h>
+      <x>1368</x>
+      <y>504</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 CACHE_FILE_READ</panel_attributes>
-    <additional_attributes>10.0;20.0;210.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>520</y>
-      <w>230</w>
-      <h>40</h>
+      <x>1368</x>
+      <y>477</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 RECCE_LAN</panel_attributes>
-    <additional_attributes>10.0;20.0;210.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>640</x>
-      <y>510</y>
-      <w>150</w>
-      <h>30</h>
+      <x>1260</x>
+      <y>486</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>
 style=wordwrap</panel_attributes>
@@ -110,10 +110,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>740</x>
-      <y>480</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1350</x>
+      <y>459</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -122,34 +122,34 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>490</y>
-      <w>230</w>
-      <h>40</h>
+      <x>1368</x>
+      <y>450</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 CONNECTION_DISCOVERY</panel_attributes>
-    <additional_attributes>10.0;20.0;210.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>390</x>
-      <y>730</y>
-      <w>380</w>
-      <h>130</h>
+      <x>234</x>
+      <y>459</y>
+      <w>342</w>
+      <h>117</h>
     </coordinates>
-    <panel_attributes>MirosRabbitManualNetworkChart
+    <panel_attributes>ManNetChart
 symbol=substate</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>740</x>
-      <y>740</y>
-      <w>20</w>
-      <h>20</h>
+      <x>549</x>
+      <y>468</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -158,34 +158,34 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>770</y>
-      <w>240</w>
-      <h>40</h>
+      <x>567</x>
+      <y>495</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 CACHE_FILE_READ</panel_attributes>
-    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>740</y>
-      <w>240</w>
-      <h>40</h>
+      <x>567</x>
+      <y>468</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 CONNECTION_DISCOVERY</panel_attributes>
-    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
-      <y>850</y>
-      <w>30</w>
-      <h>90</h>
+      <x>243</x>
+      <y>567</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -193,10 +193,10 @@ CONNECTION_DISCOVERY</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>210</x>
-      <y>880</y>
-      <w>210</w>
-      <h>30</h>
+      <x>72</x>
+      <y>594</y>
+      <w>189</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>AMQP_CONSUMER_CHECK
 style=wordwrap</panel_attributes>
@@ -205,10 +205,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>400</x>
-      <y>830</y>
-      <w>20</w>
-      <h>20</h>
+      <x>243</x>
+      <y>549</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -217,10 +217,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>510</x>
-      <y>850</y>
-      <w>30</w>
-      <h>90</h>
+      <x>342</x>
+      <y>567</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -228,10 +228,10 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>520</x>
-      <y>880</y>
-      <w>210</w>
-      <h>30</h>
+      <x>351</x>
+      <y>594</y>
+      <w>189</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>EVALUATE_HOSTS_FILE
 style=wordwrap</panel_attributes>
@@ -240,10 +240,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>440</x>
-      <y>620</y>
-      <w>80</w>
-      <h>30</h>
+      <x>1080</x>
+      <y>585</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CACHE
 style=wordwrap</panel_attributes>
@@ -252,10 +252,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>430</x>
-      <y>590</y>
-      <w>30</w>
-      <h>90</h>
+      <x>1071</x>
+      <y>558</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -263,10 +263,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>390</x>
-      <y>970</y>
-      <w>390</w>
-      <h>130</h>
+      <x>234</x>
+      <y>900</y>
+      <w>351</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>CacheFileChart
 symbol=substate</panel_attributes>
@@ -275,10 +275,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>750</x>
-      <y>980</y>
-      <w>20</w>
-      <h>20</h>
+      <x>558</x>
+      <y>909</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -287,22 +287,22 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>770</x>
-      <y>980</y>
-      <w>240</w>
-      <h>40</h>
+      <x>576</x>
+      <y>909</y>
+      <w>198</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 CACHE</panel_attributes>
-    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>400</x>
-      <y>1070</y>
-      <w>20</w>
-      <h>20</h>
+      <x>243</x>
+      <y>990</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -311,10 +311,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
-      <y>1090</y>
-      <w>30</w>
-      <h>90</h>
+      <x>243</x>
+      <y>1008</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -322,10 +322,10 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>440</x>
-      <y>1120</y>
-      <w>150</w>
-      <h>30</h>
+      <x>279</x>
+      <y>1035</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CACHE_FILE_READ
 style=wordwrap</panel_attributes>
@@ -334,10 +334,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>430</x>
-      <y>1090</y>
-      <w>30</w>
-      <h>90</h>
+      <x>270</x>
+      <y>1008</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -345,10 +345,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>260</x>
-      <y>1120</y>
-      <w>160</w>
-      <h>30</h>
+      <x>117</x>
+      <y>1035</y>
+      <w>144</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CACHE_FILE_WRITE
 style=wordwrap</panel_attributes>
@@ -357,10 +357,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>600</x>
-      <y>1120</y>
-      <w>190</w>
-      <h>30</h>
+      <x>423</x>
+      <y>1035</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CACHE_FILE_DESTROY
 style=wordwrap</panel_attributes>
@@ -369,10 +369,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>590</x>
-      <y>1090</y>
-      <w>30</w>
-      <h>90</h>
+      <x>414</x>
+      <y>1008</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -380,10 +380,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>390</x>
-      <y>1440</y>
-      <w>390</w>
-      <h>130</h>
+      <x>1017</x>
+      <y>900</y>
+      <w>351</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>RabbitConsumerScout
 symbol=substate</panel_attributes>
@@ -392,10 +392,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>750</x>
-      <y>1450</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1341</x>
+      <y>909</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -404,10 +404,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>400</x>
-      <y>1540</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1026</x>
+      <y>990</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -416,22 +416,22 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>770</x>
-      <y>1450</y>
-      <w>240</w>
-      <h>40</h>
+      <x>1359</x>
+      <y>909</y>
+      <w>207</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 AMQP_CONSUMER_CHECK</panel_attributes>
-    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;210.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>410</x>
-      <y>1560</y>
-      <w>30</w>
-      <h>90</h>
+      <x>1035</x>
+      <y>1008</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -439,10 +439,10 @@ AMQP_CONSUMER_CHECK</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>260</x>
-      <y>1590</y>
-      <w>160</w>
-      <h>30</h>
+      <x>900</x>
+      <y>1035</y>
+      <w>144</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>REFACTOR_SEARCH
 style=wordwrap</panel_attributes>
@@ -451,10 +451,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>300</x>
-      <y>490</y>
-      <w>100</w>
-      <h>30</h>
+      <x>954</x>
+      <y>468</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
@@ -462,10 +462,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>310</x>
-      <y>750</y>
-      <w>100</w>
-      <h>30</h>
+      <x>162</x>
+      <y>477</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
@@ -473,10 +473,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>120</x>
-      <y>490</y>
-      <w>190</w>
-      <h>30</h>
+      <x>792</x>
+      <y>468</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CacheFileChart</panel_attributes>
     <additional_attributes/>
@@ -484,10 +484,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>390</x>
-      <y>1210</y>
-      <w>390</w>
-      <h>130</h>
+      <x>1017</x>
+      <y>675</y>
+      <w>351</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>LanRecceChart
 symbol=substate</panel_attributes>
@@ -496,10 +496,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>410</x>
-      <y>1330</y>
-      <w>30</w>
-      <h>90</h>
+      <x>1035</x>
+      <y>783</y>
+      <w>27</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
@@ -507,10 +507,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>320</x>
-      <y>1350</y>
-      <w>100</w>
-      <h>30</h>
+      <x>954</x>
+      <y>801</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>RECCE_LAN
 style=wordwrap</panel_attributes>
@@ -519,10 +519,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>400</x>
-      <y>1310</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1026</x>
+      <y>765</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -531,10 +531,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>770</x>
-      <y>1220</y>
-      <w>240</w>
-      <h>40</h>
+      <x>1359</x>
+      <y>684</y>
+      <w>216</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 LAN_RECCE_COMPLETE</panel_attributes>
@@ -543,10 +543,10 @@ LAN_RECCE_COMPLETE</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>750</x>
-      <y>1220</y>
-      <w>20</w>
-      <h>20</h>
+      <x>1341</x>
+      <y>684</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -555,10 +555,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>120</x>
-      <y>530</y>
-      <w>190</w>
-      <h>30</h>
+      <x>792</x>
+      <y>504</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>LanRecceChart</panel_attributes>
     <additional_attributes/>
@@ -566,10 +566,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>300</x>
-      <y>540</y>
-      <w>100</w>
-      <h>30</h>
+      <x>954</x>
+      <y>513</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
@@ -577,10 +577,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>130</x>
-      <y>750</y>
-      <w>190</w>
-      <h>30</h>
+      <x>0</x>
+      <y>477</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CacheFileChart</panel_attributes>
     <additional_attributes/>
@@ -588,10 +588,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>130</x>
-      <y>800</y>
-      <w>190</w>
-      <h>30</h>
+      <x>0</x>
+      <y>522</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>RabbitConsumerChart</panel_attributes>
     <additional_attributes/>
@@ -599,10 +599,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>310</x>
-      <y>800</y>
-      <w>100</w>
-      <h>30</h>
+      <x>162</x>
+      <y>522</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
@@ -610,10 +610,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>130</x>
-      <y>1260</y>
-      <w>190</w>
-      <h>30</h>
+      <x>783</x>
+      <y>720</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>RabbitConsumerChart</panel_attributes>
     <additional_attributes/>
@@ -621,10 +621,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>310</x>
-      <y>1260</y>
-      <w>100</w>
-      <h>30</h>
+      <x>945</x>
+      <y>720</y>
+      <w>90</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
@@ -632,10 +632,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>260</x>
-      <y>380</y>
-      <w>190</w>
-      <h>30</h>
+      <x>504</x>
+      <y>171</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>CacheFileChart</panel_attributes>
     <additional_attributes/>
@@ -643,10 +643,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>500</x>
-      <y>380</y>
-      <w>190</w>
-      <h>30</h>
+      <x>720</x>
+      <y>171</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>RabbitConsumerChart</panel_attributes>
     <additional_attributes/>
@@ -654,10 +654,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>500</x>
-      <y>320</y>
-      <w>190</w>
-      <h>30</h>
+      <x>720</x>
+      <y>117</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>LanRecceChart</panel_attributes>
     <additional_attributes/>
@@ -665,10 +665,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>580</x>
-      <y>340</y>
-      <w>30</w>
-      <h>60</h>
+      <x>792</x>
+      <y>135</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
@@ -676,32 +676,32 @@ bg=red</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>220</x>
-      <y>260</y>
-      <w>240</w>
-      <h>30</h>
+      <x>468</x>
+      <y>63</y>
+      <w>216</w>
+      <h>27</h>
     </coordinates>
-    <panel_attributes>MirosRabbitManualNetworkChart</panel_attributes>
+    <panel_attributes>ManNetChart</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>500</x>
-      <y>260</y>
-      <w>240</w>
-      <h>30</h>
+      <x>720</x>
+      <y>63</y>
+      <w>216</w>
+      <h>27</h>
     </coordinates>
-    <panel_attributes>MirosRabbitLanChart</panel_attributes>
+    <panel_attributes>LanChart</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>580</x>
-      <y>280</y>
-      <w>30</w>
-      <h>60</h>
+      <x>792</x>
+      <y>81</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
@@ -709,10 +709,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>410</x>
-      <y>280</y>
-      <w>110</w>
-      <h>120</h>
+      <x>639</x>
+      <y>81</y>
+      <w>99</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;100.0;90.0;10.0</additional_attributes>
@@ -720,10 +720,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>340</x>
-      <y>280</y>
-      <w>30</w>
-      <h>120</h>
+      <x>576</x>
+      <y>81</y>
+      <w>27</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
@@ -731,12 +731,198 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>340</x>
-      <y>280</y>
-      <w>180</w>
-      <h>120</h>
+      <x>576</x>
+      <y>81</y>
+      <w>162</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>160.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>594</x>
+      <y>0</y>
+      <w>216</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>ProducerFactoryChart</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>450</x>
+      <y>387</y>
+      <w>180</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>CONNECTION_DISCOVERY
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>621</x>
+      <y>342</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>621</x>
+      <y>360</y>
+      <w>27</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>612</x>
+      <y>252</y>
+      <w>351</w>
+      <h>117</h>
+    </coordinates>
+    <panel_attributes>ProducerFactoryChart
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>846</x>
+      <y>288</y>
+      <w>135</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>936</x>
+      <y>261</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>270</y>
+      <w>90</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>378</x>
+      <y>270</y>
+      <w>171</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>ManNetChart</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>378</x>
+      <y>306</y>
+      <w>171</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>LanChart</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>315</y>
+      <w>90</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>729</x>
+      <y>18</y>
+      <w>90</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>80.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>18</y>
+      <w>126</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;50.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>972</x>
+      <y>252</y>
+      <w>234</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>Note..
+  Puts discovered producers in a queue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1368</x>
+      <y>531</y>
+      <w>198</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+CACHE_FILE_WRITE</panel_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>972</x>
+      <y>324</y>
+      <w>423</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>ProducerQueue = \
+  namedtuple('ProducerQueue',
+    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers'])
+</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

@@ -1168,45 +1168,6 @@ class ManNetChart(MirosRabbitManualNetwork):
       chart.post_fifo(Event(signal=signals.network_evaluated))
     return status
 
-#chart = MirosRabbitManualNetwork('miros_rabbit_manual_network',
-#    routing_key='heya.man',
-#    exchange_name='miros.mesh.exchange')
-#
-#read_and_evaluate_network_details = \
-#  chart.create(state='read_and_evaluate_network_details') .\
-#    catch(signal=signals.ENTRY_SIGNAL, handler=raend_entry). \
-#    catch(signal=signals.network_evaluated, handler=raend_network_evaluated). \
-#    catch(signal=signals.CONNECTION_DISCOVERY, handler=raend_CONNECTION_DISCOVERY). \
-#    catch(signal=signals.CACHE, handler=raend_CACHE). \
-#    to_method()
-#
-#evaluated_network = \
-#  chart.create(state='evaluated_network'). \
-#    catch(signal=signals.ENTRY_SIGNAL, handler=en_entry). \
-#    catch(signal=signals.AMQP_CONSUMER_CHECK, handler=en_AMQP_CONSUMER_CHECK). \
-#    to_method()
-#
-#chart. \
-#  nest(read_and_evaluate_network_details, parent=None). \
-#  nest(evaluated_network, parent=read_and_evaluate_network_details)
-
-
-#chart = MirosRabbitLan(routing_key='heya.man', exchange_name='miros.mesh.exchange')
-#
-#read_or_discover_network_details = chart.create(state='read_or_discover_network_details'). \
-#  catch(signal=signals.ENTRY_SIGNAL, handler=rodnd_entry). \
-#  catch(signal=signals.connections_discovered, handler=rodnd_connection_discovered). \
-#  catch(signal=signals.CACHE, handler=rodnd_CACHE). \
-#  to_method()
-#
-#discover_network = chart.create(state='discover_network'). \
-#  catch(signal=signals.ENTRY_SIGNAL, handler=dn_entry). \
-#  catch(signal=signals.LAN_RECCE_COMPLETE, handler=dn_LAN_RECCE_COMPLETE). \
-#  to_method()
-#
-# chart.nest(read_or_discover_network_details, parent=None). \
-#   nest(discover_network, parent=read_or_discover_network_details)
-
 
 class ProducerFactory():
   PublishTempoSec = 0.1
@@ -1278,6 +1239,7 @@ ProducerQueue = \
 
 class ProducerFactoryAggregator(Factory):
   def __init__(self,
+               name,
                producer_queue,
                mesh_routing_key,
                mesh_exchange_name,
@@ -1287,7 +1249,7 @@ class ProducerFactoryAggregator(Factory):
                snoop_spy_routing_key,
                snoop_spy_exchange_name):
 
-    super().__init__(to_snake(str(self.__class__.__name__)))
+    super().__init__(name)
 
     self.producer_queue = producer_queue
     self.mesh_routing_key = mesh_routing_key
@@ -1333,130 +1295,164 @@ class ProducerFactoryAggregator(Factory):
         serialization_function=self.snoop_spy_serialization_function)
     return snoop_spy_producer
 
-def pd_entry(chart, e):
-  status = return_status.HANDLED
-  chart.mesh_producers = []
-  chart.snoop_trace_producers = []
-  chart.snoop_spy_producers = []
-  chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
-  if not hasattr(chart, 'man_net_chart'):
-    chart.man_net_chart = ManNetChart(chart.mesh_routing_key,
+
+class ProducerFactoryChart(ProducerFactoryAggregator):
+  def __init__(self,
+               producer_queue,
+               mesh_routing_key,
+               mesh_exchange_name,
+               mesh_serialization_function,
+               snoop_trace_routing_key,
+               snoop_trace_exchange_name,
+               snoop_spy_routing_key,
+               snoop_spy_exchange_name,
+               live_trace=None,
+               live_spy=None):
+
+    chart_name = to_snake(str(self.__class__.__name__))
+    super().__init__(
+      chart_name,
+      producer_queue,
+      mesh_routing_key,
+      mesh_exchange_name,
+      mesh_serialization_function,
+      snoop_trace_routing_key,
+      snoop_trace_exchange_name,
+      snoop_spy_routing_key,
+      snoop_spy_exchange_name)
+
+    self.producer_discovery = self.create(state='producer_discovery'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.pd_entry). \
+      catch(signal=signals.ips_discovered, handler=self.pd_ips_discovered). \
+      catch(signal=signals.CONNECTION_DISCOVERY, handler=self.pd_CONNECTION_DISCOVERY). \
+      to_method()
+
+    self.post_to_queue = self.create(state='post_to_queue'). \
+      catch(signal=signals.CONNECTION_DISCOVERY, handler=self.ptq_CONNECTION_DISCOVERED). \
+      catch(signal=signals.EXIT_SIGNAL, handler=self.ptq_exit). \
+      catch(signal=signals.ready, handler=self.ptq_ready). \
+      catch(signal=signals.ips_discovered, handler=self.ptq_ips_discovered). \
+      to_method()
+
+    self.refactor_producers = self.create(state='refactor_producers'). \
+      catch(signal=signals.ENTRY_SIGNAL, handler=self.rp_entry). \
+      to_method()
+
+    self.nest(self.producer_discovery, parent=None). \
+      nest(self.post_to_queue, parent=self.producer_discovery). \
+      nest(self.refactor_producers, parent=self.post_to_queue)
+
+
+    if live_trace is None:
+      live_trace = False
+    else:
+      live_trace = live_trace
+
+    if live_spy is None:
+      live_spy = False
+    else:
+      live_spy = live_spy
+
+    self.live_trace = live_trace
+    self.live_spy = live_spy
+
+    self.start_at(self.producer_discovery)
+
+  @staticmethod
+  def pd_entry(chart, e):
+    status = return_status.HANDLED
+    chart.mesh_producers = []
+    chart.snoop_trace_producers = []
+    chart.snoop_spy_producers = []
+    chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
+
+    if not hasattr(chart, 'man_net_chart'):
+      chart.man_net_chart = ManNetChart(chart.mesh_routing_key,
         chart.mesh_exchange_name,
         live_trace=chart.live_trace,
         live_spy=chart.live_spy)
-  if not hasattr(chart, 'lan_chart'):
-    chart.lan_chart = LanChart(chart.mesh_routing_key,
+
+    if not hasattr(chart, 'lan_chart'):
+      chart.lan_chart = LanChart(chart.mesh_routing_key,
         chart.mesh_exchange_name,
         live_trace=chart.live_trace,
         live_spy=chart.live_spy)
-  chart.set_of_ips = set([])
-  return status
 
-def pd_CONNECTION_DISCOVERY(chart, e):
-  status = return_status.HANDLED
-  set_of_payload_ips = set(chart.get_ip_for_hostname(host) for host in e.payload.hosts)
-  chart.set_of_new_ips = set_of_payload_ips - chart.set_of_ips
-  chart.set_of_ips |= set_of_payload_ips
+    chart.set_of_ips = set([])
+    return status
 
-  if(len(chart.set_of_new_ips) > 0):
-    chart.post_fifo(Event(signal=signals.ips_discovered))
+  @staticmethod
+  def pd_CONNECTION_DISCOVERY(chart, e):
+    status = return_status.HANDLED
+    set_of_payload_ips = set(chart.get_ip_for_hostname(host) for host in e.payload.hosts)
+    chart.set_of_new_ips = set_of_payload_ips - chart.set_of_ips
+    chart.set_of_ips |= set_of_payload_ips
 
-  if e.payload.dispatcher == 'man_net_chart':
-    if hasattr(chart, 'man_net_chart'):
-      del chart.man_net_chart
-  elif e.payload.dispatcher == 'lan_chart':
-    if hasattr(chart, 'lan_chart'):
-      del chart.lan_chart
-  return status
+    if(len(chart.set_of_new_ips) > 0):
+      chart.post_fifo(Event(signal=signals.ips_discovered))
 
-def pd_ips_discovered(chart, e):
-  status = chart.trans(refactor_producers)
-  return status
+    if e.payload.dispatcher == 'man_net_chart':
+      if hasattr(chart, 'man_net_chart'):
+        del chart.man_net_chart
+    elif e.payload.dispatcher == 'lan_chart':
+      if hasattr(chart, 'lan_chart'):
+        del chart.lan_chart
+    return status
 
-def ptq_CONNECTION_DISCOVERED(chart, e):
-  status = return_status.HANDLED
-  chart.defer(e)
-  return status
+  @staticmethod
+  def pd_ips_discovered(chart, e):
+    status = chart.trans(chart.refactor_producers)
+    return status
 
-def ptq_exit(chart, e):
-  status = return_status.HANDLED
-  chart.set_of_new_ips = set([])
-  chart.recall()
-  return status
+  @staticmethod
+  def ptq_CONNECTION_DISCOVERED(chart, e):
+    status = return_status.HANDLED
+    chart.defer(e)
+    return status
 
-def ptq_ips_discovered(chart, e):
-  return chart.trans(refactor_producers)
+  @staticmethod
+  def ptq_exit(chart, e):
+    status = return_status.HANDLED
+    chart.set_of_new_ips = set([])
+    chart.recall()
+    return status
 
-def ptq_ready(chart, e):
-  return chart.trans(producer_discovery)
+  @staticmethod
+  def ptq_ips_discovered(chart, e):
+    return chart.trans(chart.refactor_producers)
 
-def rp_entry(chart, e):
-  status = return_status.HANDLED
-  new_ips = list(chart.set_of_new_ips)
-  new_mesh_producers = \
-    [chart.make_mesh_producer(ip) for ip in new_ips]
-  new_snoop_trace_producers = \
-    [chart.make_mesh_producer(ip) for ip in new_ips]
-  new_snoop_spy_producers = \
-    [chart.make_mesh_producer(ip) for ip in new_ips]
+  @staticmethod
+  def ptq_ready(chart, e):
+    return chart.trans(chart.producer_discovery)
 
-  chart.mesh_producers.append(new_mesh_producers)
-  chart.mesh_producers.append(new_snoop_trace_producers)
-  chart.mesh_producers.append(new_snoop_spy_producers)
+  @staticmethod
+  def rp_entry(chart, e):
+    status = return_status.HANDLED
+    new_ips = list(chart.set_of_new_ips)
 
-  payload = ProducerQueue(
-    mesh_producers=chart.mesh_producers,
-    snoop_trace_producers=chart.snoop_trace_producers,
-    snoop_spy_producers=chart.snoop_spy_producers)
+    new_mesh_producers = \
+      [chart.make_mesh_producer(ip) for ip in new_ips]
+    new_snoop_trace_producers = \
+      [chart.make_mesh_producer(ip) for ip in new_ips]
+    new_snoop_spy_producers = \
+      [chart.make_mesh_producer(ip) for ip in new_ips]
 
-  try:
-    chart.producer_queue.put(payload, block=False)
-  except queue.Full:
-    chart.post_fifo(Event(signal=signals.ips_discovered), times=1, period=1, deferred=True)
-  else:
-    chart.post_fifo(Event(signal=signals.ready))
+    chart.mesh_producers.append(new_mesh_producers)
+    chart.mesh_producers.append(new_snoop_trace_producers)
+    chart.mesh_producers.append(new_snoop_spy_producers)
 
-  return status
+    payload = ProducerQueue(
+      mesh_producers=chart.mesh_producers,
+      snoop_trace_producers=chart.snoop_trace_producers,
+      snoop_spy_producers=chart.snoop_spy_producers)
 
-q = queue.Queue()
-
-def custom_serializer(obj):
-  if isinstance(obj, Event):
-    obj = Event.dumps(obj)
-  pobj = pickle.dumps(obj)
-  return pobj
-
-chart = ProducerFactoryAggregator(
-         producer_queue=q,
-         mesh_routing_key = 'heya_man',
-         mesh_exchange_name = 'miros.mesh.exchange',
-         mesh_serialization_function=custom_serializer,
-         snoop_trace_routing_key = 'snoop.trace',
-         snoop_trace_exchange_name = 'miros.snoop.trace',
-         snoop_spy_routing_key = 'snoop.spy',
-         snoop_spy_exchange_name = 'miros.snoop.spy',
-       )
-
-producer_discovery = chart.create(state='producer_discovery'). \
-  catch(signal=signals.ENTRY_SIGNAL, handler=pd_entry). \
-  catch(signal=signals.ips_discovered, handler=pd_ips_discovered). \
-  catch(signal=signals.CONNECTION_DISCOVERY, handler=pd_CONNECTION_DISCOVERY). \
-  to_method()
-
-post_to_queue = chart.create(state='post_to_queue'). \
-  catch(signal=signals.CONNECTION_DISCOVERY, handler=ptq_CONNECTION_DISCOVERED). \
-  catch(signal=signals.EXIT_SIGNAL, handler=ptq_exit). \
-  catch(signal=signals.ready, handler=ptq_ready). \
-  catch(signal=signals.ips_discovered, handler=ptq_ips_discovered). \
-  to_method()
-
-refactor_producers = chart.create(state='refactor_producers'). \
-  catch(signal=signals.ENTRY_SIGNAL, handler=rp_entry). \
-  to_method()
-
-chart.nest(producer_discovery, parent=None). \
-  nest(post_to_queue, parent=producer_discovery). \
-  nest(refactor_producers, parent=post_to_queue)
+    try:
+      chart.producer_queue.put(payload, block=False)
+    except queue.Full:
+      chart.post_fifo(Event(signal=signals.ips_discovered), times=1, period=1, deferred=True)
+    else:
+      chart.post_fifo(Event(signal=signals.ready))
+    return status
 
 if __name__ == '__main__':
   # cache_chart = CacheFileChart(live_trace=True)
@@ -1492,9 +1488,25 @@ if __name__ == '__main__':
   #  live_trace=True)
   #lan_recce.post_fifo(Event(signal=signals.RECCE_LAN))
 
+  def custom_serializer(obj):
+    if isinstance(obj, Event):
+      obj = Event.dumps(obj)
+    pobj = pickle.dumps(obj)
+    return pobj
+
+  q = queue.Queue()
   time.sleep(1)
-  chart.live_trace = True
-  chart.start_at(producer_discovery)
+  producer_refactory = ProducerFactoryChart(
+     producer_queue=q,
+     mesh_routing_key = 'heya_man',
+     mesh_exchange_name = 'miros.mesh.exchange',
+     mesh_serialization_function=custom_serializer,
+     snoop_trace_routing_key = 'snoop.trace',
+     snoop_trace_exchange_name = 'miros.snoop.trace',
+     snoop_spy_routing_key = 'snoop.spy',
+     snoop_spy_exchange_name = 'miros.snoop.spy',
+     live_trace=True
+  )
   time.sleep(500)
 
   #sm = MirosRabbitMQConnections()

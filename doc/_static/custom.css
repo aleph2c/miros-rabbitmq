@@ -68,7 +68,12 @@ p.attribution {
   margin: -15px 25px 25px 25px;
   font-family: sans-serif;
 }
-
+p {
+  /*font-family: "Merriweather", sans-serif;*/
+  /*line-height: 1.75rem;*/
+  /*font-size: 1.8rem;*/
+  /*color: #3A4145;*/
+}
 iframe {
   margin: 25px 0;
 }

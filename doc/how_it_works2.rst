@@ -457,9 +457,9 @@ Compare the statechart within the ``LanRecceChart`` class to the sequence diagra
 
 .. _how_it_works2-mirosrabbitlanchart:
 
-MirosRabbitLanChart
+LanChart
 -------------------
-The MirosRabbitLanChart is responsible for publishing all of the working RabbitMQ
+The LanChart is responsible for publishing all of the working RabbitMQ
 consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was designed to:
 
 * be created/started/destroyed within another statechart
@@ -473,12 +473,12 @@ consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was de
     :target: _static/miros_rabbitmq_lan_discovery.pdf
     :align: center
 
-To build a MirosRabbitLanChart, you will need to know the ``routing_key`` and the
+To build a LanChart, you will need to know the ``routing_key`` and the
 ``exchange_name`` that you are trying to connect to:
 
 .. code-block:: python
 
-  MirosRabbitLanChart(
+  LanChart(
     routing_key='heya.man',
     exchange_name='miros.mesh.exchange',
     live_trace=True)  # to debug or document
@@ -499,18 +499,215 @@ will look something like this:
   }
 
 If the cached file is older than the ``time_out_in_minutes``,
-MirosRabbitLanChart will transition into it's ``discover_network`` state,
+LanChart will transition into it's ``discover_network`` state,
 discover the network then write the ``.miros_rabbitmq_lan_cache.json`` file with
 the results.
 
 To change the cache file's time out, add ``time_out_in_minutes`` as a named
-parameter when you are constructing your ``MirosRabbitLanChart`` object.  Here
+parameter when you are constructing your ``LanChart`` object.  Here
 is an example of changing the timeout to 60 minutes:
 
 .. code-block:: python
 
-  MirosRabbitLanChart(
+  LanChart(
     routing_key='heya.man',
     exchange_name='miros.mesh.exchange',
     time_out_in_minutes=60)
+
+.. _how_it_works2-manual-netword-chart:
+
+Manual Network Chart
+--------------------
+
+.. image:: _static/small_context_man_net_chart.svg
+    :target: _static/small_context_man_net_chart.pdf
+    :align: center
+
+.. image:: _static/medium_context_man_net_chart.svg
+    :target: _static/medium_context_man_net_chart.pdf
+    :align: center
+
+.. image:: _static/miros_rabbitmq_manual_discovery.svg
+    :target: _static/miros_rabbitmq_manual_discovery.pdf
+    :align: center
+
+.. _how_it_works2-the-producer-factory-chart:
+
+The Producer Factory Chart
+--------------------------
+The ``ProducerFactoryChart`` is used to build RabbitMQ producers as they are
+discovered by the miros-rabbitmq library.
+
+Before you can build a producer, you need to know what other RabbitMQ server it
+is aimed at on the network.  Then you have to provide its constructor with all
+of the RabbitMQ credentials, encryption keys and other parameters so that it is
+build up properly.  Furthermore, the miros-rabbitmq library needs three
+producers per target in the network, one for the mesh network and two for the
+different instrumentation channels.  The ``ProducerFactoryChart`` tries to hide
+all of this complexity from the user.  It was design to:
+
+* Initiate a search for other RabbitMQ servers on the LAN, using the :ref:`LanChart <how_it_works2-the-lanreccechart>`
+* Initiate a search based on the user's manual network settings, using the :ref:`ManNetChart<how_it_works2-manual-netword-chart>`
+* React to the discovery of servers running RabbitMQ instances with the correct
+  encryption and RabbitMQ credentials by building up instances of three
+  different producers per discovery: a mesh producer and a snoop trace and snoop
+  spy producer.
+* Serve up it's constructed list of producers to another thread, using a queue.
+
+To understand the point of the ``ProducerFactoryChart`` we need to look at the
+RabbitMQ architectural diagram used by the miros-rabbitmq plugin:
+
+.. image:: _static/miros_rabbitmq_network_0.svg
+    :target: _static/miros_rabbitmq_network_0.pdf
+    :align: center
+
+The hard part about setting up the above diagram is building the producer
+collections.
+
+The three different networks each have their own producer objects which are
+pre-loaded with the destination information of the servers that they want to
+communicate with.  The members of the producer collection can change as new
+servers are discovered, or removed from the network.  It is the job of the
+``ProducerFactoryChart`` to keep these lists up to date for the other parts of
+the program that need them.
+
+The ``ProducerFactoryChart`` actually works by orchestrating a number of
+different state charts.  It builds the ``ManNetChart`` and the ``LanChart``,
+which in turn build the statecharts that they need.
+
+.. image:: _static/small_context_producer_factory.svg
+    :target: _static/small_context_producer_factory.pdf
+    :align: center
+
+From a very high level the ``ProducerFactoryChart``, consumes
+``CONNECTION_DISCOVERY`` events and puts its newly constructed producers into a
+queue using the ``ProducerQueue`` namedtuple:
+
+.. image:: _static/medium_context_producer_factory.svg
+    :target: _static/medium_context_producer_factory.pdf
+    :align: center
+
+The thread which consumes this queue doesn't have to deal with any of the
+producer construction complexity.  It will just check to see if a new item was
+added to the queue, if so, it will update it's producers with the information in
+this new item.
+
+The actual architectural diagram of the ``ProducerFactoryChart`` can be seen
+here:
+
+.. image:: _static/miros_rabbitmq_producer_discovery.svg
+    :target: _static/miros_rabbitmq_producer_discovery.pdf
+    :align: center
+
+The class which makes a factory is called the ``ProducerFactory``, it is
+subclassed as the ``MeshProducerFactory``, ``SnoopTraceProducerFactory`` and
+``SnoopSpyProducerFactory``.  The ``ProducerFactoryAggregator`` class is a
+subclass of the miros ``Factory``, its purpose is to contain all of the worker
+methods that are custom to the ``ProducerFactoryChart``.
+
+The ``ProducerFactoryChart`` inherits from the ``ProducerFactoryAggregator``, so
+that it has access to all of its needed worker methods and the event processor
+from the ``miros`` ``Factory`` class.
+
+To build a ``ProducerFactoryChart``, you will first need to provide a custom
+serializer function for dealing with miros Event objects and you will need a
+queue where it will place it's results, then you provide the routing_key and
+exchange information:
+
+.. code-block:: python
+
+  import queue
+  def custom_serializer(obj):
+    if isinstance(obj, Event):
+      obj = Event.dumps(obj)
+    pobj = pickle.dumps(obj)
+    return pobj
+
+  q = queue.Queue()
+
+  producer_refactory = ProducerFactoryChart(
+     producer_queue=q,
+     mesh_routing_key = 'heya_man',
+     mesh_exchange_name = 'miros.mesh.exchange',
+     mesh_serialization_function=custom_serializer,
+     snoop_trace_routing_key = 'snoop.trace',
+     snoop_trace_exchange_name = 'miros.snoop.trace',
+     snoop_spy_routing_key = 'snoop.spy',
+     snoop_spy_exchange_name = 'miros.snoop.spy',
+     live_trace=True
+  )
+
+In the above listing I also enabled the trace.  This is useful for debugging and
+documenting how the ``ProducerFactoryChart`` state machine works.
+
+Look at the state machine part of this diagram:
+
+.. image:: _static/miros_rabbitmq_producer_discovery.svg
+    :target: _static/miros_rabbitmq_producer_discovery.pdf
+    :align: center
+
+We see that in the ``ProducerFactoryChart`` that there are three states, the
+``producer_discovery``, the ``post_to_queue`` and the ``refactor_producers``
+states.  When the ``ProducerFactoryChart`` is constructed, it immediately
+transitions into the ``producer_discovery`` state.
+
+The ``producer_discovery`` creates the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` upon entry.  It subscribes to
+the ``CONNECTION_DISCOVERY`` event and stops.  The ``ProducerFactoryChart``
+doesn't know or care how connections are discovered, it is up to the other
+charts to do this work.  All it does is convert new IP information into working
+producers which can be used by the thread pending on it's output queue.  This
+new IP information is delivered to it in ``CONNECTION_DISCOVERY`` events.
+
+Upon receiving a ``CONNECTION_DISCOVERY`` event from either the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` object or the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` object, it determines if any
+new IP addresses were discovered.
+
+The first time a ``CONNECTION_DISCOVERY`` event is received this will
+undoubtedly be true.  It determines what the new IP addresses are and what all
+of the IP addresses are.  If there is new information it will post a
+``ips_discovered`` event to itself.  Then it tries to destroy which ever chart
+delivered the message.  The actual destruction of the object will be done by the
+Python garbage collector, the ``producer_discovery`` state just stops
+referencing the object so that the garbage collector will see that it is no
+longer being used.
+
+The purpose of the ``post_to_queue`` state is to defer any
+``CONNECTION_DISCOVERY`` events from occurring while the state chart is dealing
+with an exception from posting to the ``producer_queue``.  This is an example of
+the `deferred event
+<https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_
+statechart pattern.  By using this pattern, we are modifying the sequence of
+events.  To make sense of this, place your eyes on the
+``chart.producer_queue.put`` syntax in the ``refactor_producers`` part of the
+statechart.  If there is an exception here, like if the queue is full because
+the other part of the program hasn't cleared it yet, we need to try posting to
+the queue again in the future.  So, we start a one_shot timer with a time
+between 0.1 and 1 second.  We pick a random time so as to avoid any issues with
+other parts of the program trying to do the same thing.  Now suppose we are
+waiting to try posting to our queue again and another ``CONNECTION_DISCOVERY``
+event comes in?  What do we do?  Well, we deferred the event into the deferred
+event queue, only releasing it back to the statechart upon exiting the
+``post_to_queue`` state.  Sometime in the future
+the ``ips_discovered`` event is fired and captured by the ``post_to_queue``
+state so that it can try to post the queue again.  If it succeeds, a ``ready``
+event will fire, which will cause the ``exit`` event of the ``post_to_queue``
+state to fire.  This will recall the ``CONNECTION_DISCOVERY`` event that was
+salted away and the whole discovery process can be started again.
+
+The ``refactor_producers`` state entry condition creates a set of new producers
+using the ``make_mesh_producers``, ``make_snoop_trace_producers`` and the
+``make_snoop_spy_producers`` worker functions defined within the
+``ProducerFactoryAggregator`` class.  The new producers are appended into their
+appropriate collections, then these collections are organized into the
+``ProducerQueue`` namedtuple.  This namedtuple object is place into the queue.
+If there is a problem with this process, the activity described in the previous
+paragraph is followed.  If there are no problems, the thread pending on this
+queue can extract the new producer information as it sees fit.  
+
+After successfully putting the new producer information into the queue, the
+statechart posts a ``ready`` signal to itself.  This will allow it to process
+any pending ``CONNECTION_DISCOVERY`` events.
 
