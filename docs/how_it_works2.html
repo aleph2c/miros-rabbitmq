@@ -59,73 +59,346 @@ asynchronous API.  To keep things clean, all payloads will exist as named
 tuples.  These tuples will be put into ‘note’ icons near the place that they are
 made (published) or consumed.</p>
 </div>
-<div class="section" id="the-cache-file-chart">
-<h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
-<p>The CacheFileChart is used to read and write the network discovery cache
-information.  It was designed to:</p>
+<div class="section" id="the-producer-factory-chart">
+<span id="how-it-works2-the-producer-factory-chart"></span><h2>The Producer Factory Chart<a class="headerlink" href="#the-producer-factory-chart" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> is used to build RabbitMQ producers as they are
+discovered by the miros-rabbitmq library.</p>
+<p>Before you can build a producer, you need to know what other RabbitMQ server it
+is aimed at on the network.  Then you have to provide its constructor with all
+of the RabbitMQ credentials, encryption keys and other parameters so that it is
+build up properly.  Furthermore, the miros-rabbitmq library needs three
+producers per target in the network, one for the mesh network and two for the
+different instrumentation channels.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> tries to hide
+all of this complexity from the user.  It was designed to:</p>
 <ul class="simple">
-<li>be created/started/destroyed within another statechart</li>
-<li>allow one cache file to be readable and writable from thousands of different
-programs running at the same time.</li>
-<li>hide the complexity of a concurrent file read into JSON from the user</li>
-<li>hide the complexity of a file write from JSON from the user</li>
-<li>have a stochastic-exponential-timeout mechanism for pending read/write waits</li>
-<li>Write a file based on an asynchronous event published from another statechart</li>
-<li>Convert a file read into an asynchronous event which can be subscribed to
-by another statechart</li>
-<li>be easy to debug/document</li>
+<li>Initiate a search for other RabbitMQ servers on the LAN, using the <a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanChart</span></a></li>
+<li>Initiate a search based on the user’s manual network settings, using the <a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a></li>
+<li>React to the discovery of servers running RabbitMQ instances with the correct
+encryption and RabbitMQ credentials by building up instances of three
+different producers per discovery: a mesh producer and a snoop trace and snoop
+spy producer.</li>
+<li>Serve up it’s constructed list of producers to another thread, using a queue.</li>
 </ul>
-<p>The network discovery process is expensive, so we will cache its results to a
-JSON file.</p>
-<p>The cache will persist beyond the life of the program that wrote it.  When the
-next program runs, it will read the cache, determine if it is young enough to be
-useful, and if so, it will skip the expensive network discovery process.</p>
-<p>We use the JSON format since we will be transmitting this cache to other hosts
-and JSON has become the standard format for transmitting data.</p>
-<p>There could be thousands of processes trying to read and write to this cache
-file at the same time.  To address this concern, we wrap this file access into
-an active object which will check if the file is writable before trying to read
-or write from it.  If the file is writable, the statechart will determine that
-no other program is using the file.</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_cache_file_chart.svg" src="_images/miros_rabbitmq_cache_file_chart.svg" /></div>
+<p>To understand the point of the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> we need to look at the
+RabbitMQ architectural diagram used by the miros-rabbitmq plugin:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_network_0.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_network_0.svg" src="_images/miros_rabbitmq_network_0.svg" /></div>
 </a>
-<p>To construct the <code class="docutils literal notranslate"><span class="pre">CacheFileChart</span></code> with a live trace, for debugging:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">CacheFileChart</span><span class="p">(</span><span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<p>The hard part about setting up the above diagram is building the producer
+collections.</p>
+<p>The three different networks each have their own producer objects which are
+pre-loaded with the destination information of the servers that they want to
+communicate with.  The members of the producer collection can change as new
+servers are discovered, or removed from the network.  It is the job of the
+<code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> to keep these lists up to date for the other parts of
+the program that need them.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> actually works by orchestrating a number of
+different state charts.  It builds the
+<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> and the <a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanChart</span></a>, which in turn build the statecharts that
+they need.</p>
+<a class="reference external image-reference" href="_static/small_context_producer_factory.pdf"><div align="center" class="align-center"><img alt="_images/small_context_producer_factory.svg" src="_images/small_context_producer_factory.svg" /></div>
+</a>
+<p>From a very high level the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>, consumes
+<code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events and puts its newly constructed producers into a
+queue using the <code class="docutils literal notranslate"><span class="pre">ProducerQueue</span></code> namedtuple:</p>
+<a class="reference external image-reference" href="_static/medium_context_producer_factory.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_producer_factory.svg" src="_images/medium_context_producer_factory.svg" /></div>
+</a>
+<p>The thread which consumes this queue doesn’t have to deal with any of the
+producer construction complexity.  It will just check to see if a new item was
+added to the queue, if so, it will update it’s producers with the information in
+this new item.</p>
+<p>The actual architectural diagram of the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> can be seen
+here:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_producer_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_producer_discovery.svg" src="_images/miros_rabbitmq_producer_discovery.svg" /></div>
+</a>
+<p>The class which makes a RabbitMQ producer is called the <code class="docutils literal notranslate"><span class="pre">ProducerFactory</span></code>, it is
+subclassed as the <code class="docutils literal notranslate"><span class="pre">MeshProducerFactory</span></code>, <code class="docutils literal notranslate"><span class="pre">SnoopTraceProducerFactory</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SnoopSpyProducerFactory</span></code>.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code> class is a
+subclass of the miros <code class="docutils literal notranslate"><span class="pre">Factory</span></code>, its purpose is to contain all of the worker
+methods that are custom to the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> inherits from the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code>, so
+that it has access to all of its needed worker methods and the event processor
+from the <code class="docutils literal notranslate"><span class="pre">miros</span></code> <code class="docutils literal notranslate"><span class="pre">Factory</span></code> class.</p>
+<p>To build a <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>, you will first need to provide a custom
+serializer function for dealing with miros Event objects and you will need a
+queue where it will place it’s results, then you provide the routing_key and
+exchange information:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">queue</span>
+<span class="k">def</span> <span class="nf">custom_serializer</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Event</span><span class="p">):</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+  <span class="n">pobj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">pobj</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+<span class="n">producer_refactory</span> <span class="o">=</span> <span class="n">ProducerFactoryChart</span><span class="p">(</span>
+   <span class="n">producer_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+   <span class="n">mesh_routing_key</span> <span class="o">=</span> <span class="s1">&#39;heya_man&#39;</span><span class="p">,</span>
+   <span class="n">mesh_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+   <span class="n">mesh_serialization_function</span><span class="o">=</span><span class="n">custom_serializer</span><span class="p">,</span>
+   <span class="n">snoop_trace_routing_key</span> <span class="o">=</span> <span class="s1">&#39;snoop.trace&#39;</span><span class="p">,</span>
+   <span class="n">snoop_trace_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.snoop.trace&#39;</span><span class="p">,</span>
+   <span class="n">snoop_spy_routing_key</span> <span class="o">=</span> <span class="s1">&#39;snoop.spy&#39;</span><span class="p">,</span>
+   <span class="n">snoop_spy_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.snoop.spy&#39;</span><span class="p">,</span>
+   <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>To read the file, subscribe to the <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event, then publish a
-<code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> event to the active fabric and wait for a <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event to
-come back.  This <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event will contain a dictionary version of the JSON
-cache file.</p>
-<p>Here is a bit about how it works:</p>
-<p>The design was intended to be built within another statechart and to start
-itself upon being constructed.  The CacheFileChart subscribes to the
-<code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code> and the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> events.  If any other part of the
-program wants to see what is in the cache, they would post a <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code>.
-The CacheFileChart will send a <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event with the contents of the cache and
-whether the cache has been expired.</p>
-<p>If any other statechart would like to write the cache, they would place the
-contents of the write into a dict as the payload of the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code>.</p>
-<p>Internally the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> and <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code> public events are turned
-into the <code class="docutils literal notranslate"><span class="pre">file_read</span></code> and <code class="docutils literal notranslate"><span class="pre">file_write</span></code> events.  When the state chart sees that such
-an event is posted it will try to enter the file_read or file_write states.
-Such transitions can be blocked if the file is not writable (set by the OS).  In
-the case that the event is blocked, the statechart re-posts the same event to
-itself at a future time, then stops running.  The re-posting time is a random
-number between 0.001 and a timeout.  This timeout parameter increases for each
-re-posting failure, to a maximum value of 5 seconds.</p>
-<p>If a <code class="docutils literal notranslate"><span class="pre">file_read</span></code> or <code class="docutils literal notranslate"><span class="pre">file_write</span></code> event succeeds to transition past the file access
-state, it will lock the file by making it un-writable.  This global state, put
-onto the file by the operating system will make the file exclusive to this
-program.  When the file is read or written, the CacheFileChart will post either
-a read_successful or write_successful event to itself.  This will cause an exit
-signal to occur on the file_accessed state, which will make the file writable.
-Other programs will now have the ability to access the same file when their
-deferred <code class="docutils literal notranslate"><span class="pre">file_read</span></code> or <code class="docutils literal notranslate"><span class="pre">file_write</span></code> events fire.</p>
-<p>The internal code within the file_read and file_write states was taken from
-various stack overflow articles describing how to safely read and write a file
-in a very short period of time, in an environment where many other programs are
-trying to do the same thing.</p>
+<p>In the above listing I also enabled the trace.  This is useful for debugging and
+documenting how the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> state machine works.</p>
+<p>Look at the state machine part of this diagram:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_producer_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_producer_discovery.svg" src="_images/miros_rabbitmq_producer_discovery.svg" /></div>
+</a>
+<p>We see that in the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> that there are three states, the
+<code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code>, the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> and the <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code>
+states.  When the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> is constructed, it immediately
+transitions into the <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> state.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> creates the
+<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> and the
+<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a> upon entry.  It subscribes to
+the <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event and stops.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>
+doesn’t know or care how connections are discovered, it is up to the other
+charts to do this work.  All it does is convert new IP information into working
+producers which can be used by the thread pending on it’s output queue.  This
+new IP information is delivered to it in <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
+<p>Upon receiving a <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event from either the
+<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> object or the
+<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a> object, it determines if any
+new IP addresses were discovered.</p>
+<p>The first time a <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event is received this will
+undoubtedly be true.  It determines what the new IP addresses are and what all
+of the IP addresses are.  If there is new information it will post a
+<code class="docutils literal notranslate"><span class="pre">ips_discovered</span></code> event to itself.  Then it tries to destroy which ever chart
+delivered the message.  The actual destruction of the object will be done by the
+Python garbage collector, the <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> state just stops
+referencing the object so that the garbage collector will see that it is no
+longer being used.</p>
+<p>The purpose of the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> state is to defer any
+<code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events from occurring while the state chart is dealing
+with an exception from posting to the <code class="docutils literal notranslate"><span class="pre">producer_queue</span></code>.  This is an example of
+the <a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event">deferred event</a>
+statechart pattern.  By using this pattern, we are modifying the sequence of
+events.  To make sense of this, place your eyes on the
+<code class="docutils literal notranslate"><span class="pre">chart.producer_queue.put</span></code> syntax in the <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code> part of the
+statechart.  If there is an exception here, like if the queue is full because
+the other part of the program hasn’t cleared it yet, we need to try posting to
+the queue again in the future.  So, we start a one_shot timer with a time
+between 0.1 and 1 second.  We pick a random time so as to avoid any issues with
+other parts of the program trying to do the same thing.  Now suppose we are
+waiting to try posting to our queue again and another <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code>
+event comes in?  What do we do?  Well, we deferred the event into the deferred
+event queue, only releasing it back to the statechart upon exiting the
+<code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> state.  Sometime in the future
+the <code class="docutils literal notranslate"><span class="pre">ips_discovered</span></code> event is fired and captured by the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code>
+state so that it can try to post the queue again.  If it succeeds, a <code class="docutils literal notranslate"><span class="pre">ready</span></code>
+event will fire, which will cause the <code class="docutils literal notranslate"><span class="pre">exit</span></code> event of the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code>
+state to fire.  This will recall the <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event that was
+salted away and the whole discovery process can be started again.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code> state entry condition creates a set of new producers
+using the <code class="docutils literal notranslate"><span class="pre">make_mesh_producers</span></code>, <code class="docutils literal notranslate"><span class="pre">make_snoop_trace_producers</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">make_snoop_spy_producers</span></code> worker functions defined within the
+<code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code> class.  The new producers are appended into their
+appropriate collections, then these collections are organized into the
+<code class="docutils literal notranslate"><span class="pre">ProducerQueue</span></code> namedtuple.  This namedtuple object is place into the queue.
+If there is a problem with this process, the activity described in the previous
+paragraph is followed.  If there are no problems, the thread pending on this
+queue can extract the new producer information as it sees fit.</p>
+<p>After successfully putting the new producer information into the queue, the
+statechart posts a <code class="docutils literal notranslate"><span class="pre">ready</span></code> signal to itself.  This will allow it to process
+any pending <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
+</div>
+<div class="section" id="lanchart">
+<span id="how-it-works2-mirosrabbitlanchart"></span><h2>LanChart<a class="headerlink" href="#lanchart" title="Permalink to this headline">¶</a></h2>
+<p>The LanChart is responsible for finding other RabbitMQ servers on your Local
+Area Network.  It publishes its results into a CONNECTION_DISCOVERY event.  It was
+designed to:</p>
+<ul class="simple">
+<li>be created/started/destroyed within another statechart</li>
+<li>use cached information if it hasn’t expired (to save time)</li>
+<li>perform a LAN discovery process if the cache is expired, then cache this
+result for the next run of the program</li>
+<li>output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
+event.</li>
+</ul>
+<p>The LanChart is built by the <a class="reference internal" href="#how-it-works2-the-producer-factory-chart"><span class="std std-ref">ProducerFactoryChart</span></a>.  The LanChart doesn’t search the LAN or reference the cache directly, it gets this information from a <a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanRecceChart</span></a> and a <a class="reference internal" href="#cfc"><span class="std std-ref">CacheFileChart</span></a> object:</p>
+<a class="reference external image-reference" href="_static/small_context_lan_chart.pdf"><div align="center" class="align-center"><img alt="_images/small_context_lan_chart.svg" src="_images/small_context_lan_chart.svg" /></div>
+</a>
+<p>From a high level, the LanChart subscribes to 2 events and publishes 4 events:</p>
+<a class="reference external image-reference" href="_static/medium_context_lan_chart.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_lan_chart.svg" src="_images/medium_context_lan_chart.svg" /></div>
+</a>
+<p>Here is the architectural diagram for this statechart:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_lan_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_lan_discovery.svg" src="_images/miros_rabbitmq_lan_discovery.svg" /></div>
+</a>
+<p>To construct a LanChart use the <code class="docutils literal notranslate"><span class="pre">routing_key</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">exchange_name</span></code> of the RabbitMQ servers you are trying to connect to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LanChart</span><span class="p">(</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug or document</span>
+</pre></div>
+</div>
+<p>By default it will look for a file called <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> which
+will look something like this:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.75&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;amqp_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;time_out_in_minutes&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the cached file is older than the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code>,
+LanChart will transition into it’s <code class="docutils literal notranslate"><span class="pre">discover_network</span></code> state,
+discover the network then write the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> file with
+the results.</p>
+<p>To change the cache file’s time out, add <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code> as a named
+parameter when you are constructing your <code class="docutils literal notranslate"><span class="pre">LanChart</span></code> object.  Here
+is an example of changing the timeout to 60 minutes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LanChart</span><span class="p">(</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+  <span class="n">time_out_in_minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-lanreccechart">
+<span id="how-it-works2-the-lanreccechart"></span><h2>The LanRecceChart<a class="headerlink" href="#the-lanreccechart" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The word Recce is the Canadian/British way of saying recon.  Recon, is the
+short form of the word reconnaissance.  I didn’t know this before I googled
+recon, but being a good Canadian I decided to use <code class="docutils literal notranslate"><span class="pre">recce</span></code> to name the
+objects and classes in the part of the design, instead of the word recon (we
+all have to do our parts to resist American cultural hegemony).</p>
+<p class="last">Being new to the word I had to figure out how to say it, recce is pronounced
+like ‘wreck-ee’. (I learned this from an American)</p>
+</div>
+<p>The LanRecceChart performs multiple scouting missions of your local area network
+for compatible RabbitMQ consumers.  The LanRecceChart was designed to:</p>
+<ul class="simple">
+<li>be created/started/destroyed within another statechart</li>
+<li>hide the complexity of the local area networking search details</li>
+<li>build a set of search criterion based on it’s LAN discovery process</li>
+<li>rely on the RabbitConsumerScoutChart specialists to perform the individual
+scouting missions for compatible RabbitMQ consumers.</li>
+<li>perform all of it’s scouting missions in parallel</li>
+<li>work in Linux and on the Windows Linux Subsystem</li>
+<li>provide it’s result in the form of asynchronous events to which other
+statecharts can subscribe.</li>
+<li>be easy to debug/document</li>
+</ul>
+<p>The LanRecceChart is build by the
+<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a> object and it builds many
+different <a class="reference internal" href="#how-it-works2-producescoutchart"><span class="std std-ref">RabbitConsumerScoutChart</span></a>
+objects:</p>
+<a class="reference external image-reference" href="_static/small_context_lan_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/small_context_lan_recce_chart.svg" src="_images/small_context_lan_recce_chart.svg" /></div>
+</a>
+<p>From a high level, the LanRecceChart subscribes the <code class="docutils literal notranslate"><span class="pre">RECCEN_LAN</span></code> event and
+publishes the <code class="docutils literal notranslate"><span class="pre">LAN_RECCE_COMPLETE</span></code> event.</p>
+<a class="reference external image-reference" href="_static/medium_context_lan_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_lan_recce_chart.svg" src="_images/medium_context_lan_recce_chart.svg" /></div>
+</a>
+<p>Here is the design diagram for the LanRecceChart, if it is too small, click on
+the picture to download a pdf of the diagram:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+</a>
+<p>The LanRecce class, inherited by the LanRecceChart contains all of the methods
+required to search your local area network and your local machine for the IP
+addresses needed to begin a search for compatible RabbitMQ consumers.  The three
+main methods used by the LanRecceChart during the dynamic portion of it’s life
+are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">LanRecce.get_working_ip_address</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ping_to_fill_arp_table</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">candidiate_ip_addresses</span></code></li>
+</ul>
+</div></blockquote>
+<p>The rest of the methods help these main methods perform their required tasks.</p>
+<p>To build a CacheFileChart with a live_trace:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lan_recce</span> <span class="o">=</span> <span class="n">LanRecceChart</span><span class="p">(</span>
+    <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+    <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
+    <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The LanRecceChart does not start itself.  The statechart that wants to start the
+network reconnaissance will have to publish a <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event or use the
+<code class="docutils literal notranslate"><span class="pre">post_fifo</span></code> method on the <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> object with the <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code>
+event.  Let’s just post to it directly using the <code class="docutils literal notranslate"><span class="pre">post_fifo</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lan_recce</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">RECCE_LAN</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now let’s look at the trace:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372046</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">private_search</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372522</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">recce_lan</span><span class="p">()</span> <span class="n">private_search</span><span class="o">-&gt;</span><span class="n">fill_arp_table</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.386858</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">arp_time_out</span><span class="p">()</span> <span class="n">fill_arp_table</span><span class="o">-&gt;</span><span class="n">identify_all_ip_addresses</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.454212</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">ip_addresses_found</span><span class="p">()</span> <span class="n">identify_all_ip_addresses</span><span class="o">-&gt;</span><span class="n">recce_rabbit_consumers</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mf">00.048376</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">lan_recce_complete</span><span class="p">()</span> <span class="n">recce_rabbit_consumers</span><span class="o">-&gt;</span><span class="n">private_search</span>
+</pre></div>
+</div>
+<p>Compare this trace with it’s statechart:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+</a>
+<p>Compare the statechart within the <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> class to the sequence diagram with a description:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="n">lan_recce_chart</span><span class="p">]</span>
+           <span class="n">top</span>     <span class="n">private_search</span>  <span class="n">fill_arp_table</span>  <span class="n">identify_all_ip_addresses</span>  <span class="n">recce_rabbit_consumers</span>
+            <span class="o">+-</span><span class="n">start_at</span><span class="p">()</span><span class="o">-&gt;|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>    <span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">+-</span><span class="n">recce_lan</span><span class="p">()</span><span class="o">-&gt;|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>    <span class="p">(</span><span class="mi">2</span><span class="p">)</span>       <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">+----</span><span class="n">arp_time_out</span><span class="p">()</span><span class="o">---&gt;|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>         <span class="p">(</span><span class="mi">3</span><span class="p">)</span>          <span class="o">|</span>                        <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">+--</span><span class="n">ip_addresses_found</span><span class="p">()</span><span class="o">-&gt;|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">4</span><span class="p">)</span>           <span class="o">|</span>
+            <span class="o">|</span>             <span class="o">+&lt;-------------+----------------------+--</span><span class="n">lan_recce_complete</span><span class="p">()</span><span class="o">--|</span>
+            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">5</span><span class="p">)</span>           <span class="o">|</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> starts itself in the <code class="docutils literal notranslate"><span class="pre">private_search</span></code> state.
+Immediately upon entering the <code class="docutils literal notranslate"><span class="pre">private_search</span></code> state the state machine
+subscribes to the <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> and <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events.  The
+<code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event will be used by some outside statechart to begin a search
+of the local network and the <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events will be initiated
+within the <code class="docutils literal notranslate"><span class="pre">recce_rabbit_consumers</span></code> state, talked about in step 4.</p>
+<p>After subscribing to the public events it uses the <code class="docutils literal notranslate"><span class="pre">get_working_ip_address</span></code>
+static to get it’s working IP address.</p>
+</li>
+<li><p class="first">In response to our posted <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event the chart posts a private
+<code class="docutils literal notranslate"><span class="pre">recce_lan</span></code> event and begins a search of the local area network.  Notice
+that while the state machine is within the <code class="docutils literal notranslate"><span class="pre">lan_recce</span></code> state, all
+additional <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> events will be deferred until the state is exited.
+This is an example of the <a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event">deferred event pattern</a>.</p>
+<p>After the event processor enters the <code class="docutils literal notranslate"><span class="pre">lan_recce</span></code> state, it’s initialization
+signal causes a transition into the <code class="docutils literal notranslate"><span class="pre">fill_arp_table</span></code>.  Upon entering the
+<code class="docutils literal notranslate"><span class="pre">file_arp_table</span></code> the state machine pings the broadcast address of the local
+network to fill the arp table and triggers a one shot event called
+<code class="docutils literal notranslate"><span class="pre">ARP_FILL_TIME_OUT</span></code> to fire in <code class="docutils literal notranslate"><span class="pre">lan.arp_time_sec</span></code>.  This value can be
+passed into the LanRecceChart as an optional parameter, by default it is set
+to 2 seconds.</p>
+</li>
+<li><p class="first">2 seconds after step 2, the <code class="docutils literal notranslate"><span class="pre">ARP_FILL_TIME_OUT</span></code> one shot is fired, causing
+a transition into the <code class="docutils literal notranslate"><span class="pre">identify_all_ip_addresses</span></code> state.  Upon entering
+this state the state machine determines what the network addresses are by
+reading the arp table within a call to the <code class="docutils literal notranslate"><span class="pre">candidiate_ip_addresses</span></code>
+method.  It then posts the <code class="docutils literal notranslate"><span class="pre">ip_address_found</span></code> event to itself.</p>
+</li>
+<li><p class="first">At this stage, each of the discovered IP addresses is used to begin a
+scouting mission.  The missions run in parallel using their own
+<code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> instance.  When a mission is completed, the
+result is published by the <code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> within the payload of
+the <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event and caught and handled within the
+<code class="docutils literal notranslate"><span class="pre">recce_rabbit_consumers</span></code> state.</p>
+<p>When all of the searches have returned their respect <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code>
+the IP addresses that have been confirmed to have a RabbitMQ consumer are put
+into the payload of a <code class="docutils literal notranslate"><span class="pre">LAN_RECCE_COMPLETE</span></code> event and published to the task
+fabric so that any statechart subscribing to this event will receive the
+results of the reconnaissance of the local network.</p>
+</li>
+</ol>
 </div>
 <div class="section" id="the-rabbit-consumer-scout-chart">
 <span id="how-it-works2-producescoutchart"></span><h2>The Rabbit Consumer Scout Chart<a class="headerlink" href="#the-rabbit-consumer-scout-chart" title="Permalink to this headline">¶</a></h2>
@@ -143,6 +416,16 @@ designed to:</p>
 statecharts can subscribe.</li>
 <li>be easy to debug/document</li>
 </ul>
+<p>The RabbitConsumerScoutChart is built by
+<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> and the
+<a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanRecceChart</span></a> objects:</p>
+<a class="reference external image-reference" href="_static/small_context_rabbit_consumer_scout_chart.pdf"><div align="center" class="align-center"><img alt="_images/small_context_rabbit_consumer_scout_chart.svg" src="_images/small_context_rabbit_consumer_scout_chart.svg" /></div>
+</a>
+<p>From a high level, the RabbitConsumerScoutChart sends a message after it has
+been constructed with the required RabbitMQ credentials.  It’s search can also
+be refactored with the REFACTOR_SEARCH event:</p>
+<a class="reference external image-reference" href="_static/medium_context_rabbit_consumer_scout_chart.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_rabbit_consumer_scout_chart.svg" src="_images/medium_context_rabbit_consumer_scout_chart.svg" /></div>
+</a>
 <p>To perform a scouting mission for a given IP address, you will need the
 routing_key and an exchange_name that you want to connect to, then do something
 like this:</p>
@@ -300,336 +583,180 @@ topic key and exchange name.</p>
 </li>
 </ol>
 </div>
-<div class="section" id="the-lanreccechart">
-<span id="how-it-works2-the-lanreccechart"></span><h2>The LanRecceChart<a class="headerlink" href="#the-lanreccechart" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>The word Recce is the Canadian/British way of saying recon.  Recon, is the
-short form of the word reconnaissance.  I didn’t know this before I googled
-recon, but being a good Canadian I decided to use <code class="docutils literal notranslate"><span class="pre">recce</span></code> to name the
-objects and classes in the part of the design, instead of the word recon (we
-all have to do our parts to resist American cultural hegemony).</p>
-<p class="last">Being new to the word I had to figure out how to say it, recce is pronounced
-like ‘wreck-ee’.</p>
-</div>
-<p>The LanRecceChart performs multiple scouting missions of your local area network
-for compatible RabbitMQ consumers.  The LanRecceChart was designed to:</p>
+<div class="section" id="the-cache-file-chart">
+<span id="cfc"></span><h2>The Cache File Chart<a class="headerlink" href="#the-cache-file-chart" title="Permalink to this headline">¶</a></h2>
+<p>The CacheFileChart is used to read and write the network discovery cache
+information.  It was designed to:</p>
 <ul class="simple">
 <li>be created/started/destroyed within another statechart</li>
-<li>hide the complexity of the local area networking search details</li>
-<li>build a set of search criterion based on it’s LAN discovery process</li>
-<li>rely on the RabbitConsumerScoutChart specialists to perform the individual
-scouting missions for compatible RabbitMQ consumers.</li>
-<li>perform all of it’s scouting missions in parallel</li>
-<li>work in Linux and on the Windows Linux Subsystem</li>
-<li>provide it’s result in the form of asynchronous events to which other
-statecharts can subscribe.</li>
+<li>allow one cache file to be readable and writable from thousands of different
+programs running at the same time.</li>
+<li>hide the complexity of concurrent file reads from the user</li>
+<li>hide the complexity of concurrent file writes from the user</li>
+<li>have a stochastic-exponential-timeout mechanism for pending read/write waits</li>
+<li>Write a file based on an asynchronous event published from another statechart</li>
+<li>Convert a file read into an asynchronous event which can be subscribed to
+by another statechart</li>
 <li>be easy to debug/document</li>
 </ul>
-<p>Here is the design diagram for the LanRecceChart, if it is too small, click on
-the picture to download a pdf of the diagram:</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+<p>The network discovery process is expensive, so we will cache its results to a
+JSON file.</p>
+<p>The cache will persist beyond the life of the program that wrote it.  When the
+next program runs, it will read the cache, determine if it is young enough to be
+useful, and if so, it will skip the expensive network discovery process.</p>
+<p>We use the JSON format since we will be transmitting this cache to other hosts
+and JSON has become the standard format for transmitting data.</p>
+<p>There could be thousands of processes trying to read and write to this cache
+file at the same time.  To address this concern, we wrap this file access into
+an active object which will check if the file is writable before trying to read
+from it or write to it.  If the file is writable, the statechart will determine
+that no other program is using the file.  The statechart that manages this file
+access is called the CacheFileChart.</p>
+<p>The CacheFileChart is build by the
+<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> and the
+<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a>.</p>
+<a class="reference external image-reference" href="_static/small_context_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/small_context_cache_file_chart.svg" src="_images/small_context_cache_file_chart.svg" /></div>
 </a>
-<p>The LanRecce class, inherited by the LanRecceChart contains all of the methods
-required to search your local area network and your local machine for the IP
-addresses needed to begin a search for compatible RabbitMQ consumers.  The three
-main methods used by the LanRecceChart during the dynamic portion of it’s life
-are:</p>
-<blockquote>
-<div><ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">LanRecce.get_working_ip_address</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">ping_to_fill_arp_table</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">candidiate_ip_addresses</span></code></li>
-</ul>
-</div></blockquote>
-<p>The rest of the methods help these main methods perform their required tasks.</p>
-<p>To build a CacheFileChart with a live_trace:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lan_recce</span> <span class="o">=</span> <span class="n">LanRecceChart</span><span class="p">(</span>
-    <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
-    <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
-    <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The LanRecceChart does not start itself.  The statechart that wants to start the
-network reconnaissance will have to publish a <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event or use the
-<code class="docutils literal notranslate"><span class="pre">post_fifo</span></code> method on the <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> object with the <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code>
-event.  Let’s just post to it directly using the <code class="docutils literal notranslate"><span class="pre">post_fifo</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lan_recce</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">RECCE_LAN</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>Now let’s look at the trace:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372046</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">private_search</span>
-<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">54.372522</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">recce_lan</span><span class="p">()</span> <span class="n">private_search</span><span class="o">-&gt;</span><span class="n">fill_arp_table</span>
-<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.386858</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">arp_time_out</span><span class="p">()</span> <span class="n">fill_arp_table</span><span class="o">-&gt;</span><span class="n">identify_all_ip_addresses</span>
-<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mf">58.454212</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">ip_addresses_found</span><span class="p">()</span> <span class="n">identify_all_ip_addresses</span><span class="o">-&gt;</span><span class="n">recce_rabbit_consumers</span>
-<span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">27</span> <span class="mi">09</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mf">00.048376</span><span class="p">]</span> <span class="p">[</span><span class="n">lan_recce_chart</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">lan_recce_complete</span><span class="p">()</span> <span class="n">recce_rabbit_consumers</span><span class="o">-&gt;</span><span class="n">private_search</span>
-</pre></div>
-</div>
-<p>Compare this trace with it’s statechart:</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_recce_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_recce_chart.svg" src="_images/miros_rabbitmq_recce_chart.svg" /></div>
+<p>From a high level, the CacheFileChart responds to three messages and delivers
+one:</p>
+<a class="reference external image-reference" href="_static/medium_context_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_cache_file_chart.svg" src="_images/medium_context_cache_file_chart.svg" /></div>
 </a>
-<p>Compare the statechart within the <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> class to the sequence diagram with a description:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="n">lan_recce_chart</span><span class="p">]</span>
-           <span class="n">top</span>     <span class="n">private_search</span>  <span class="n">fill_arp_table</span>  <span class="n">identify_all_ip_addresses</span>  <span class="n">recce_rabbit_consumers</span>
-            <span class="o">+-</span><span class="n">start_at</span><span class="p">()</span><span class="o">-&gt;|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
-            <span class="o">|</span>    <span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">+-</span><span class="n">recce_lan</span><span class="p">()</span><span class="o">-&gt;|</span>                      <span class="o">|</span>                        <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">|</span>    <span class="p">(</span><span class="mi">2</span><span class="p">)</span>       <span class="o">|</span>                      <span class="o">|</span>                        <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">|</span>              <span class="o">+----</span><span class="n">arp_time_out</span><span class="p">()</span><span class="o">---&gt;|</span>                        <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>         <span class="p">(</span><span class="mi">3</span><span class="p">)</span>          <span class="o">|</span>                        <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">+--</span><span class="n">ip_addresses_found</span><span class="p">()</span><span class="o">-&gt;|</span>
-            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">4</span><span class="p">)</span>           <span class="o">|</span>
-            <span class="o">|</span>             <span class="o">+&lt;-------------+----------------------+--</span><span class="n">lan_recce_complete</span><span class="p">()</span><span class="o">--|</span>
-            <span class="o">|</span>             <span class="o">|</span>              <span class="o">|</span>                      <span class="o">|</span>          <span class="p">(</span><span class="mi">5</span><span class="p">)</span>           <span class="o">|</span>
-</pre></div>
-</div>
-<ol class="arabic">
-<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">LanRecceChart</span></code> starts itself in the <code class="docutils literal notranslate"><span class="pre">private_search</span></code> state.
-Immediately upon entering the <code class="docutils literal notranslate"><span class="pre">private_search</span></code> state the state machine
-subscribes to the <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> and <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events.  The
-<code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event will be used by some outside statechart to begin a search
-of the local network and the <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> events will be initiated
-within the <code class="docutils literal notranslate"><span class="pre">recce_rabbit_consumers</span></code> state, talked about in step 4.</p>
-<p>After subscribing to the public events it uses the <code class="docutils literal notranslate"><span class="pre">get_working_ip_address</span></code>
-static to get it’s working IP address.</p>
-</li>
-<li><p class="first">In response to our posted <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> event the chart posts a private
-<code class="docutils literal notranslate"><span class="pre">recce_lan</span></code> event and begins a search of the local area network.  Notice
-that while the state machine is within the <code class="docutils literal notranslate"><span class="pre">lan_recce</span></code> state, all
-additional <code class="docutils literal notranslate"><span class="pre">RECCE_LAN</span></code> events will be deferred until the state is exited.
-This is an example of the <a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event">deferred event pattern</a>.</p>
-<p>After the event processor enters the <code class="docutils literal notranslate"><span class="pre">lan_recce</span></code> state, it’s initialization
-signal causes a transition into the <code class="docutils literal notranslate"><span class="pre">fill_arp_table</span></code>.  Upon entering the
-<code class="docutils literal notranslate"><span class="pre">file_arp_table</span></code> the state machine pings the broadcast address of the local
-network to fill the arp table and triggers a one shot event called
-<code class="docutils literal notranslate"><span class="pre">ARP_FILL_TIME_OUT</span></code> to fire in <code class="docutils literal notranslate"><span class="pre">lan.arp_time_sec</span></code>.  This value can be
-passed into the LanRecceChart as an optional parameter, by default it is set
-to 2 seconds.</p>
-</li>
-<li><p class="first">2 seconds after step 2, the <code class="docutils literal notranslate"><span class="pre">ARP_FILL_TIME_OUT</span></code> one shot is fired, causing
-a transition into the <code class="docutils literal notranslate"><span class="pre">identify_all_ip_addresses</span></code> state.  Upon entering
-this state the state machine determines what the network addresses are by
-reading the arp table within a call to the <code class="docutils literal notranslate"><span class="pre">candidiate_ip_addresses</span></code>
-method.  It then posts the <code class="docutils literal notranslate"><span class="pre">ip_address_found</span></code> event to itself.</p>
-</li>
-<li><p class="first">At this stage, each of the discovered IP addresses is used to begin a
-scouting mission.  The missions run in parallel using their own
-<code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> instance.  When a mission is completed, the
-result is published by the <code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> within the payload of
-the <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event and caught and handled within the
-<code class="docutils literal notranslate"><span class="pre">recce_rabbit_consumers</span></code> state.</p>
-<p>When all of the searches have returned their respect <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code>
-the IP addresses that have been confirmed to have a RabbitMQ consumer are put
-into the payload of a <code class="docutils literal notranslate"><span class="pre">LAN_RECCE_COMPLETE</span></code> event and published to the task
-fabric so that any statechart subscribing to this event will receive the
-results of the reconnaissance of the local network.</p>
-</li>
-</ol>
-</div>
-<div class="section" id="lanchart">
-<span id="how-it-works2-mirosrabbitlanchart"></span><h2>LanChart<a class="headerlink" href="#lanchart" title="Permalink to this headline">¶</a></h2>
-<p>The LanChart is responsible for publishing all of the working RabbitMQ
-consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was designed to:</p>
-<ul class="simple">
-<li>be created/started/destroyed within another statechart</li>
-<li>use cached information if it hasn’t expired (to save time)</li>
-<li>perform a LAN discovery process if the cache is expired, then cache this
-result for the next run of the program</li>
-<li>output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
-event.  This will be used by another chart.</li>
-</ul>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_lan_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_lan_discovery.svg" src="_images/miros_rabbitmq_lan_discovery.svg" /></div>
+<p>The architectural diagram for the CacheFileChart is here:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_cache_file_chart.svg" src="_images/miros_rabbitmq_cache_file_chart.svg" /></div>
 </a>
-<p>To build a LanChart, you will need to know the <code class="docutils literal notranslate"><span class="pre">routing_key</span></code> and the
-<code class="docutils literal notranslate"><span class="pre">exchange_name</span></code> that you are trying to connect to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LanChart</span><span class="p">(</span>
-  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
-  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
-  <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># to debug or document</span>
+<p>To construct the <code class="docutils literal notranslate"><span class="pre">CacheFileChart</span></code> with a live trace, for debugging:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">CacheFileChart</span><span class="p">(</span><span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default it will look for a file called <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> which
-will look something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s2">&quot;192.168.1.75&quot;</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;amqp_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.75:5672/</span><span class="si">%2F</span><span class="s2">?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;time_out_in_minutes&quot;</span><span class="p">:</span> <span class="mi">30</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>If the cached file is older than the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code>,
-LanChart will transition into it’s <code class="docutils literal notranslate"><span class="pre">discover_network</span></code> state,
-discover the network then write the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_lan_cache.json</span></code> file with
-the results.</p>
-<p>To change the cache file’s time out, add <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code> as a named
-parameter when you are constructing your <code class="docutils literal notranslate"><span class="pre">LanChart</span></code> object.  Here
-is an example of changing the timeout to 60 minutes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LanChart</span><span class="p">(</span>
-  <span class="n">routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
-  <span class="n">exchange_name</span><span class="o">=</span><span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
-  <span class="n">time_out_in_minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
-</pre></div>
+<p>To read the file, subscribe to the <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event, then publish a
+<code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> event to the active fabric and wait for a <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event to
+come back.  This <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event will contain a dictionary version of the JSON
+cache file.</p>
+<p>Here is a bit about how it works:</p>
+<p>The design was intended to be built within another statechart and to start
+itself upon being constructed.  The CacheFileChart subscribes to the
+<code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code> and the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> events.  If any other part of the
+program wants to see what is in the cache, they would post a <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code>.
+The CacheFileChart will send a <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event with the contents of the cache and
+whether the cache has been expired.</p>
+<p>If any other statechart would like to write the cache, they would place the
+contents of the write into a dict as the payload of the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code>.</p>
+<p>Internally the <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> and <code class="docutils literal notranslate"><span class="pre">CACHE_FILE_WRITE</span></code> public events are turned
+into the <code class="docutils literal notranslate"><span class="pre">file_read</span></code> and <code class="docutils literal notranslate"><span class="pre">file_write</span></code> events.  When the state chart sees that such
+an event is posted it will try to enter the file_read or file_write states.
+Such transitions can be blocked if the file is not writable (set by the OS).  In
+the case that the event is blocked, the statechart re-posts the same event to
+itself at a future time, then stops running.  The re-posting time is a random
+number between 0.001 and a timeout.  This timeout parameter increases for each
+re-posting failure, to a maximum value of 5 seconds.</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">file_read</span></code> or <code class="docutils literal notranslate"><span class="pre">file_write</span></code> event succeeds to transition past the file access
+state, it will lock the file by making it un-writable.  This global state, put
+onto the file by the operating system will make the file exclusive to this
+program.  When the file is read or written, the CacheFileChart will post either
+a read_successful or write_successful event to itself.  This will cause an exit
+signal to occur on the file_accessed state, which will make the file writable.
+Other programs will now have the ability to access the same file when their
+deferred <code class="docutils literal notranslate"><span class="pre">file_read</span></code> or <code class="docutils literal notranslate"><span class="pre">file_write</span></code> events fire.</p>
+<p>The internal code within the file_read and file_write states was taken from
+various stack overflow articles describing how to safely read and write a file
+in a very short period of time, in an environment where many other programs are
+trying to do the same thing.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The CacheFileChart was designed to work within the limited POSIX file features
+offered by the Windows Linux Subsystem.  So, it should run on Windows, Linux
+and the various Apple operating systems.</p>
 </div>
 </div>
 <div class="section" id="manual-network-chart">
 <span id="how-it-works2-manual-netword-chart"></span><h2>Manual Network Chart<a class="headerlink" href="#manual-network-chart" title="Permalink to this headline">¶</a></h2>
+<p>The ManNetChart lets a user to specify the addresses they
+want to use in their network. It was designed to:</p>
+<ul class="simple">
+<li>Reference a simple JSON file for it’s information</li>
+<li>By default this file is called <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_hosts.json</span></code>, but this can be
+overridden by setting a path in the ManNetChart constructor.</li>
+<li>This JSON file will contain host information in the form of an IP address or
+as a standard URL (not the complicated AMQP URL)</li>
+<li>Test all manual addresses prior delivering them to the ProducerFactoryChart.</li>
+<li>Re-evaluate the hosts file to see if any connections that were listed that
+didn’t work, are working.</li>
+</ul>
+<p>The ManNetChart is built by the <a class="reference internal" href="#how-it-works2-the-producer-factory-chart"><span class="std std-ref">ProducerFactoryChart</span></a>.  The ManNetChart makes one
+<a class="reference internal" href="#cfc"><span class="std std-ref">CacheFileChart</span></a> object and many different <a class="reference internal" href="#how-it-works2-producescoutchart"><span class="std std-ref">RabbitConsumerScoutChart</span></a> objects:</p>
 <a class="reference external image-reference" href="_static/small_context_man_net_chart.pdf"><div align="center" class="align-center"><img alt="_images/small_context_man_net_chart.svg" src="_images/small_context_man_net_chart.svg" /></div>
 </a>
+<p>The ManNetChart subscribes to 3 events and publishes 2 events.</p>
 <a class="reference external image-reference" href="_static/medium_context_man_net_chart.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_man_net_chart.svg" src="_images/medium_context_man_net_chart.svg" /></div>
 </a>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_manual_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_manual_discovery.svg" src="_images/miros_rabbitmq_manual_discovery.svg" /></div>
-</a>
-</div>
-<div class="section" id="the-producer-factory-chart">
-<span id="how-it-works2-the-producer-factory-chart"></span><h2>The Producer Factory Chart<a class="headerlink" href="#the-producer-factory-chart" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> is used to build RabbitMQ producers as they are
-discovered by the miros-rabbitmq library.</p>
-<p>Before you can build a producer, you need to know what other RabbitMQ server it
-is aimed at on the network.  Then you have to provide its constructor with all
-of the RabbitMQ credentials, encryption keys and other parameters so that it is
-build up properly.  Furthermore, the miros-rabbitmq library needs three
-producers per target in the network, one for the mesh network and two for the
-different instrumentation channels.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> tries to hide
-all of this complexity from the user.  It was design to:</p>
-<ul class="simple">
-<li>Initiate a search for other RabbitMQ servers on the LAN, using the <a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanChart</span></a></li>
-<li>Initiate a search based on the user’s manual network settings, using the <a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a></li>
-<li>React to the discovery of servers running RabbitMQ instances with the correct
-encryption and RabbitMQ credentials by building up instances of three
-different producers per discovery: a mesh producer and a snoop trace and snoop
-spy producer.</li>
-<li>Serve up it’s constructed list of producers to another thread, using a queue.</li>
-</ul>
-<p>To understand the point of the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> we need to look at the
-RabbitMQ architectural diagram used by the miros-rabbitmq plugin:</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_network_0.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_network_0.svg" src="_images/miros_rabbitmq_network_0.svg" /></div>
-</a>
-<p>The hard part about setting up the above diagram is building the producer
-collections.</p>
-<p>The three different networks each have their own producer objects which are
-pre-loaded with the destination information of the servers that they want to
-communicate with.  The members of the producer collection can change as new
-servers are discovered, or removed from the network.  It is the job of the
-<code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> to keep these lists up to date for the other parts of
-the program that need them.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> actually works by orchestrating a number of
-different state charts.  It builds the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code> and the <code class="docutils literal notranslate"><span class="pre">LanChart</span></code>,
-which in turn build the statecharts that they need.</p>
-<a class="reference external image-reference" href="_static/small_context_producer_factory.pdf"><div align="center" class="align-center"><img alt="_images/small_context_producer_factory.svg" src="_images/small_context_producer_factory.svg" /></div>
-</a>
-<p>From a very high level the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>, consumes
-<code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events and puts its newly constructed producers into a
-queue using the <code class="docutils literal notranslate"><span class="pre">ProducerQueue</span></code> namedtuple:</p>
-<a class="reference external image-reference" href="_static/medium_context_producer_factory.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_producer_factory.svg" src="_images/medium_context_producer_factory.svg" /></div>
-</a>
-<p>The thread which consumes this queue doesn’t have to deal with any of the
-producer construction complexity.  It will just check to see if a new item was
-added to the queue, if so, it will update it’s producers with the information in
-this new item.</p>
-<p>The actual architectural diagram of the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> can be seen
-here:</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_producer_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_producer_discovery.svg" src="_images/miros_rabbitmq_producer_discovery.svg" /></div>
-</a>
-<p>The class which makes a factory is called the <code class="docutils literal notranslate"><span class="pre">ProducerFactory</span></code>, it is
-subclassed as the <code class="docutils literal notranslate"><span class="pre">MeshProducerFactory</span></code>, <code class="docutils literal notranslate"><span class="pre">SnoopTraceProducerFactory</span></code> and
-<code class="docutils literal notranslate"><span class="pre">SnoopSpyProducerFactory</span></code>.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code> class is a
-subclass of the miros <code class="docutils literal notranslate"><span class="pre">Factory</span></code>, its purpose is to contain all of the worker
-methods that are custom to the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> inherits from the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code>, so
-that it has access to all of its needed worker methods and the event processor
-from the <code class="docutils literal notranslate"><span class="pre">miros</span></code> <code class="docutils literal notranslate"><span class="pre">Factory</span></code> class.</p>
-<p>To build a <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>, you will first need to provide a custom
-serializer function for dealing with miros Event objects and you will need a
-queue where it will place it’s results, then you provide the routing_key and
-exchange information:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">queue</span>
-<span class="k">def</span> <span class="nf">custom_serializer</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Event</span><span class="p">):</span>
-    <span class="n">obj</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-  <span class="n">pobj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-  <span class="k">return</span> <span class="n">pobj</span>
-
-<span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-
-<span class="n">producer_refactory</span> <span class="o">=</span> <span class="n">ProducerFactoryChart</span><span class="p">(</span>
-   <span class="n">producer_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-   <span class="n">mesh_routing_key</span> <span class="o">=</span> <span class="s1">&#39;heya_man&#39;</span><span class="p">,</span>
-   <span class="n">mesh_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.mesh.exchange&#39;</span><span class="p">,</span>
-   <span class="n">mesh_serialization_function</span><span class="o">=</span><span class="n">custom_serializer</span><span class="p">,</span>
-   <span class="n">snoop_trace_routing_key</span> <span class="o">=</span> <span class="s1">&#39;snoop.trace&#39;</span><span class="p">,</span>
-   <span class="n">snoop_trace_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.snoop.trace&#39;</span><span class="p">,</span>
-   <span class="n">snoop_spy_routing_key</span> <span class="o">=</span> <span class="s1">&#39;snoop.spy&#39;</span><span class="p">,</span>
-   <span class="n">snoop_spy_exchange_name</span> <span class="o">=</span> <span class="s1">&#39;miros.snoop.spy&#39;</span><span class="p">,</span>
-   <span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span>
-<span class="p">)</span>
+<p>The file that the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code> uses defaults to
+<code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_hosts.json</span></code>.  It is just a JSON file listing the hosts that
+you want in your networks:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.75&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;my_host_as_a_url.com&quot;</span>
+  <span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>In the above listing I also enabled the trace.  This is useful for debugging and
-documenting how the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> state machine works.</p>
-<p>Look at the state machine part of this diagram:</p>
-<a class="reference external image-reference" href="_static/miros_rabbitmq_producer_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_producer_discovery.svg" src="_images/miros_rabbitmq_producer_discovery.svg" /></div>
+<p>You would specify the path to the file in the constructor, along with the mesh
+routing key, the mesh exchange name and, if you want instrumentation turned on:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">man_net_chart</span> <span class="o">=</span> <span class="n">ManNetChart</span><span class="p">(</span>
+  <span class="n">routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+  <span class="n">exchange_name</span><span class="o">=</span><span class="s2">&quot;sex_change&quot;</span><span class="p">,</span>
+  <span class="n">cache_file_path</span><span class="o">=</span><span class="s2">&quot;.miros_rabbitmq_hosts.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The cache_file_path is an optional parameter, if you don’t set it, it will
+default to using the .miros_rabbitmq_cache_file_chart in the current directory.
+Likewise the <code class="docutils literal notranslate"><span class="pre">live_trace</span></code> and <code class="docutils literal notranslate"><span class="pre">live_spy</span></code> are default parameters, they default
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>The ManNetChart architectural diagram can be seen here:</p>
+<a class="reference external image-reference" href="_static/miros_rabbitmq_manual_discovery.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_manual_discovery.svg" src="_images/miros_rabbitmq_manual_discovery.svg" /></div>
 </a>
-<p>We see that in the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> that there are three states, the
-<code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code>, the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> and the <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code>
-states.  When the <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code> is constructed, it immediately
-transitions into the <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> state.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> creates the
-<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> and the
-<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a> upon entry.  It subscribes to
-the <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event and stops.  The <code class="docutils literal notranslate"><span class="pre">ProducerFactoryChart</span></code>
-doesn’t know or care how connections are discovered, it is up to the other
-charts to do this work.  All it does is convert new IP information into working
-producers which can be used by the thread pending on it’s output queue.  This
-new IP information is delivered to it in <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
-<p>Upon receiving a <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event from either the
-<a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a> object or the
-<a class="reference internal" href="#how-it-works2-mirosrabbitlanchart"><span class="std std-ref">LanChart</span></a> object, it determines if any
-new IP addresses were discovered.</p>
-<p>The first time a <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event is received this will
-undoubtedly be true.  It determines what the new IP addresses are and what all
-of the IP addresses are.  If there is new information it will post a
-<code class="docutils literal notranslate"><span class="pre">ips_discovered</span></code> event to itself.  Then it tries to destroy which ever chart
-delivered the message.  The actual destruction of the object will be done by the
-Python garbage collector, the <code class="docutils literal notranslate"><span class="pre">producer_discovery</span></code> state just stops
-referencing the object so that the garbage collector will see that it is no
-longer being used.</p>
-<p>The purpose of the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> state is to defer any
-<code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events from occurring while the state chart is dealing
-with an exception from posting to the <code class="docutils literal notranslate"><span class="pre">producer_queue</span></code>.  This is an example of
-the <a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event">deferred event</a>
-statechart pattern.  By using this pattern, we are modifying the sequence of
-events.  To make sense of this, place your eyes on the
-<code class="docutils literal notranslate"><span class="pre">chart.producer_queue.put</span></code> syntax in the <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code> part of the
-statechart.  If there is an exception here, like if the queue is full because
-the other part of the program hasn’t cleared it yet, we need to try posting to
-the queue again in the future.  So, we start a one_shot timer with a time
-between 0.1 and 1 second.  We pick a random time so as to avoid any issues with
-other parts of the program trying to do the same thing.  Now suppose we are
-waiting to try posting to our queue again and another <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code>
-event comes in?  What do we do?  Well, we deferred the event into the deferred
-event queue, only releasing it back to the statechart upon exiting the
-<code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code> state.  Sometime in the future
-the <code class="docutils literal notranslate"><span class="pre">ips_discovered</span></code> event is fired and captured by the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code>
-state so that it can try to post the queue again.  If it succeeds, a <code class="docutils literal notranslate"><span class="pre">ready</span></code>
-event will fire, which will cause the <code class="docutils literal notranslate"><span class="pre">exit</span></code> event of the <code class="docutils literal notranslate"><span class="pre">post_to_queue</span></code>
-state to fire.  This will recall the <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event that was
-salted away and the whole discovery process can be started again.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">refactor_producers</span></code> state entry condition creates a set of new producers
-using the <code class="docutils literal notranslate"><span class="pre">make_mesh_producers</span></code>, <code class="docutils literal notranslate"><span class="pre">make_snoop_trace_producers</span></code> and the
-<code class="docutils literal notranslate"><span class="pre">make_snoop_spy_producers</span></code> worker functions defined within the
-<code class="docutils literal notranslate"><span class="pre">ProducerFactoryAggregator</span></code> class.  The new producers are appended into their
-appropriate collections, then these collections are organized into the
-<code class="docutils literal notranslate"><span class="pre">ProducerQueue</span></code> namedtuple.  This namedtuple object is place into the queue.
-If there is a problem with this process, the activity described in the previous
-paragraph is followed.  If there are no problems, the thread pending on this
-queue can extract the new producer information as it sees fit.</p>
-<p>After successfully putting the new producer information into the queue, the
-statechart posts a <code class="docutils literal notranslate"><span class="pre">ready</span></code> signal to itself.  This will allow it to process
-any pending <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MirosRabbitManualNetwork</span></code> class inherits from the miros <code class="docutils literal notranslate"><span class="pre">Factory</span></code>
+class, so it has the event processor and all of the other required state chart
+features provided by the miros library.  It also contains all of the worker
+functions and useful attribute names that are needed by the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code>
+class.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code> is created it immediately starts in the
+<code class="docutils literal notranslate"><span class="pre">read_and_evaluate_network_details</span></code> state.  It subscribes to the
+<code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event.  It constructs a
+<code class="docutils literal notranslate"><span class="pre">CacheFileChart</span></code>, subscribes to this chart’s <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event then publishes a
+<code class="docutils literal notranslate"><span class="pre">CACHE_FILE_READ</span></code> to it and stops processing.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event is heard, if the <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event contains a file name
+that matches to one provided to the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code> constructor, it assigns it
+to the hosts attribute and transitions to the <code class="docutils literal notranslate"><span class="pre">evaluate_network</span></code> state.</p>
+<p>Upon entering the <code class="docutils literal notranslate"><span class="pre">evaluate_network</span></code> state, a RecceNode named tuple is made
+for each host address that was listed in the hosts file.  Within this RecceNode
+named tuple is a <a class="reference internal" href="#how-it-works2-producescoutchart"><span class="std std-ref">RabbitConsumerScoutChart</span></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> will start itself and determine if the address
+provided to it has another miros-rabbitmq program running on it with the same
+encryption keys and RabbitMQ credentials.  It finishes it search by sending out
+the <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> event with the results in its payload.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">AMQP_CONSUMER_CHECK</span></code> could be coming at this chart from another part of
+the system, so we confirm that its results are something that we care about then
+process it:</p>
+<ul class="simple">
+<li>setting the scout attribute of the RecceNode named tuple to None so that the
+Python garbage collector will remove the <code class="docutils literal notranslate"><span class="pre">RabbitConsumerScoutChart</span></code> that was
+used to conduct the search</li>
+<li>assigning the <code class="docutils literal notranslate"><span class="pre">live_hosts</span></code>, <code class="docutils literal notranslate"><span class="pre">list_amqp_urls</span></code>, <code class="docutils literal notranslate"><span class="pre">dead_hosts</span></code> and
+<code class="docutils literal notranslate"><span class="pre">dead_amqp_urls</span></code> attributes.</li>
+<li>determining if our search is complete by looking at the <code class="docutils literal notranslate"><span class="pre">searched</span></code> attribute all
+of our candidate RecceNodes.</li>
+</ul>
+<p>If the search is complete, we post a <code class="docutils literal notranslate"><span class="pre">network_evaluated</span></code> event, which is
+caught by a hook in the outer state.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">network_evaluated</span></code> hooks publishes the <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event
+with the <code class="docutils literal notranslate"><span class="pre">live_hosts</span></code> and the <code class="docutils literal notranslate"><span class="pre">live_amqp_urls</span></code> tabulated during the
+<code class="docutils literal notranslate"><span class="pre">evaluate_network</span></code>.</p>
+<p>Notice that the <code class="docutils literal notranslate"><span class="pre">ManNetChart</span></code> stays in the <code class="docutils literal notranslate"><span class="pre">evaluate_network</span></code> state upon
+completing a search.  If another search is required, the <code class="docutils literal notranslate"><span class="pre">EVALUATE_HOSTS_FILE</span></code>
+event can be sent to the chart.  It might makes sense to send such an event
+periodically if you would like to see if any of the dead hosts have become
+responsive.</p>
 </div>
 </div>
 
@@ -645,12 +772,12 @@ any pending <code class="docutils literal notranslate"><span class="pre">CONNECT
   <ul>
 <li><a class="reference internal" href="#">How it Works (Design Re-write in Progress)</a><ul>
 <li><a class="reference internal" href="#slight-extension-to-the-diagramming-rules">Slight Extension to the Diagramming Rules</a></li>
-<li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
-<li><a class="reference internal" href="#the-rabbit-consumer-scout-chart">The Rabbit Consumer Scout Chart</a></li>
-<li><a class="reference internal" href="#the-lanreccechart">The LanRecceChart</a></li>
-<li><a class="reference internal" href="#lanchart">LanChart</a></li>
-<li><a class="reference internal" href="#manual-network-chart">Manual Network Chart</a></li>
 <li><a class="reference internal" href="#the-producer-factory-chart">The Producer Factory Chart</a></li>
+<li><a class="reference internal" href="#lanchart">LanChart</a></li>
+<li><a class="reference internal" href="#the-lanreccechart">The LanRecceChart</a></li>
+<li><a class="reference internal" href="#the-rabbit-consumer-scout-chart">The Rabbit Consumer Scout Chart</a></li>
+<li><a class="reference internal" href="#the-cache-file-chart">The Cache File Chart</a></li>
+<li><a class="reference internal" href="#manual-network-chart">Manual Network Chart</a></li>
 </ul>
 </li>
 </ul>

@@ -90,18 +90,6 @@ valign=top
     <additional_attributes>10.0;10.0;100.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>266</x>
-      <y>938</y>
-      <w>336</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;
-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;100.0;460.0;100.0;460.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLState</id>
     <coordinates>
       <x>469</x>
@@ -288,7 +276,7 @@ style=wordwrap</panel_attributes>
       <x>91</x>
       <y>238</y>
       <w>938</w>
-      <h>784</h>
+      <h>721</h>
     </coordinates>
     <panel_attributes>*RabbitConsumerScoutChart*
 --
@@ -391,23 +379,6 @@ style=wordwrap</panel_attributes>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Text</id>
-    <coordinates>
-      <x>273</x>
-      <y>945</y>
-      <w>336</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>REFACTOR_SEARCH as e /
- if 'ip_address' in e.payload and scout.name is e.payload['ip_address']:
-   for item in ['routing_key', 'exchange_name']:
-     if item in payload:
-       setattr(scout, item, payload['item'])
-     
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
@@ -549,29 +520,16 @@ encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
   <element>
-    <id>Text</id>
-    <coordinates>
-      <x>392</x>
-      <y>280</y>
-      <w>273</w>
-      <h>49</h>
-    </coordinates>
-    <panel_attributes>AMQPConsumerCheckPayload = \
-  namedtuple('AMQPConsumerCheckPayload',
-    ['ip_address', 'result', 'routing_key', 'exchange_name'])
-
-style=wordwrap</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>UMLNote</id>
     <coordinates>
       <x>392</x>
       <y>266</y>
       <w>259</w>
-      <h>56</h>
+      <h>49</h>
     </coordinates>
-    <panel_attributes>Note..</panel_attributes>
+    <panel_attributes>AMQPConsumerCheckPayload = \
+  namedtuple('AMQPConsumerCheckPayload',
+    ['ip_address', 'result', 'routing_key', 'exchange_name'])</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -648,18 +606,6 @@ bg=red</panel_attributes>
     <coordinates>
       <x>140</x>
       <y>462</y>
-      <w>14</w>
-      <h>14</h>
-    </coordinates>
-    <panel_attributes>
-bg=green</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLUseCase</id>
-    <coordinates>
-      <x>259</x>
-      <y>945</y>
       <w>14</w>
       <h>14</h>
     </coordinates>

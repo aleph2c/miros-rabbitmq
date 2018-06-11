@@ -33,87 +33,419 @@ asynchronous API.  To keep things clean, all payloads will exist as named
 tuples.  These tuples will be put into 'note' icons near the place that they are
 made (published) or consumed.
 
-The Cache File Chart
---------------------
-The CacheFileChart is used to read and write the network discovery cache
-information.  It was designed to:
+.. _how_it_works2-the-producer-factory-chart:
 
-* be created/started/destroyed within another statechart
-* allow one cache file to be readable and writable from thousands of different
-  programs running at the same time.
-* hide the complexity of a concurrent file read into JSON from the user
-* hide the complexity of a file write from JSON from the user
-* have a stochastic-exponential-timeout mechanism for pending read/write waits 
-* Write a file based on an asynchronous event published from another statechart
-* Convert a file read into an asynchronous event which can be subscribed to
-  by another statechart
-* be easy to debug/document
+The Producer Factory Chart
+--------------------------
+The ``ProducerFactoryChart`` is used to build RabbitMQ producers as they are
+discovered by the miros-rabbitmq library.
 
-The network discovery process is expensive, so we will cache its results to a
-JSON file.
+Before you can build a producer, you need to know what other RabbitMQ server it
+is aimed at on the network.  Then you have to provide its constructor with all
+of the RabbitMQ credentials, encryption keys and other parameters so that it is
+build up properly.  Furthermore, the miros-rabbitmq library needs three
+producers per target in the network, one for the mesh network and two for the
+different instrumentation channels.  The ``ProducerFactoryChart`` tries to hide
+all of this complexity from the user.  It was designed to:
 
-The cache will persist beyond the life of the program that wrote it.  When the
-next program runs, it will read the cache, determine if it is young enough to be
-useful, and if so, it will skip the expensive network discovery process.
+* Initiate a search for other RabbitMQ servers on the LAN, using the :ref:`LanChart <how_it_works2-the-lanreccechart>`
+* Initiate a search based on the user's manual network settings, using the :ref:`ManNetChart<how_it_works2-manual-netword-chart>`
+* React to the discovery of servers running RabbitMQ instances with the correct
+  encryption and RabbitMQ credentials by building up instances of three
+  different producers per discovery: a mesh producer and a snoop trace and snoop
+  spy producer.
+* Serve up it's constructed list of producers to another thread, using a queue.
 
-We use the JSON format since we will be transmitting this cache to other hosts
-and JSON has become the standard format for transmitting data.
+To understand the point of the ``ProducerFactoryChart`` we need to look at the
+RabbitMQ architectural diagram used by the miros-rabbitmq plugin:
 
-There could be thousands of processes trying to read and write to this cache
-file at the same time.  To address this concern, we wrap this file access into
-an active object which will check if the file is writable before trying to read
-or write from it.  If the file is writable, the statechart will determine that
-no other program is using the file.
-
-.. image:: _static/miros_rabbitmq_cache_file_chart.svg
-    :target: _static/miros_rabbitmq_cache_file_chart.pdf
+.. image:: _static/miros_rabbitmq_network_0.svg
+    :target: _static/miros_rabbitmq_network_0.pdf
     :align: center
 
-To construct the ``CacheFileChart`` with a live trace, for debugging:
+The hard part about setting up the above diagram is building the producer
+collections.
+
+The three different networks each have their own producer objects which are
+pre-loaded with the destination information of the servers that they want to
+communicate with.  The members of the producer collection can change as new
+servers are discovered, or removed from the network.  It is the job of the
+``ProducerFactoryChart`` to keep these lists up to date for the other parts of
+the program that need them.
+
+The ``ProducerFactoryChart`` actually works by orchestrating a number of
+different state charts.  It builds the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the :ref:`LanChart
+<how_it_works2-the-lanreccechart>`, which in turn build the statecharts that
+they need.
+
+.. image:: _static/small_context_producer_factory.svg
+    :target: _static/small_context_producer_factory.pdf
+    :align: center
+
+From a very high level the ``ProducerFactoryChart``, consumes
+``CONNECTION_DISCOVERY`` events and puts its newly constructed producers into a
+queue using the ``ProducerQueue`` namedtuple:
+
+.. image:: _static/medium_context_producer_factory.svg
+    :target: _static/medium_context_producer_factory.pdf
+    :align: center
+
+The thread which consumes this queue doesn't have to deal with any of the
+producer construction complexity.  It will just check to see if a new item was
+added to the queue, if so, it will update it's producers with the information in
+this new item.
+
+The actual architectural diagram of the ``ProducerFactoryChart`` can be seen
+here:
+
+.. image:: _static/miros_rabbitmq_producer_discovery.svg
+    :target: _static/miros_rabbitmq_producer_discovery.pdf
+    :align: center
+
+The class which makes a RabbitMQ producer is called the ``ProducerFactory``, it is
+subclassed as the ``MeshProducerFactory``, ``SnoopTraceProducerFactory`` and
+``SnoopSpyProducerFactory``.  The ``ProducerFactoryAggregator`` class is a
+subclass of the miros ``Factory``, its purpose is to contain all of the worker
+methods that are custom to the ``ProducerFactoryChart``.
+
+The ``ProducerFactoryChart`` inherits from the ``ProducerFactoryAggregator``, so
+that it has access to all of its needed worker methods and the event processor
+from the ``miros`` ``Factory`` class.
+
+To build a ``ProducerFactoryChart``, you will first need to provide a custom
+serializer function for dealing with miros Event objects and you will need a
+queue where it will place it's results, then you provide the routing_key and
+exchange information:
 
 .. code-block:: python
 
-  cache_file = CacheFileChart(live_trace=True)
+  import queue
+  def custom_serializer(obj):
+    if isinstance(obj, Event):
+      obj = Event.dumps(obj)
+    pobj = pickle.dumps(obj)
+    return pobj
 
-To read the file, subscribe to the ``CACHE`` event, then publish a
-``CACHE_FILE_READ`` event to the active fabric and wait for a ``CACHE`` event to
-come back.  This ``CACHE`` event will contain a dictionary version of the JSON
-cache file.
+  q = queue.Queue()
 
-Here is a bit about how it works:
+  producer_refactory = ProducerFactoryChart(
+     producer_queue=q,
+     mesh_routing_key = 'heya_man',
+     mesh_exchange_name = 'miros.mesh.exchange',
+     mesh_serialization_function=custom_serializer,
+     snoop_trace_routing_key = 'snoop.trace',
+     snoop_trace_exchange_name = 'miros.snoop.trace',
+     snoop_spy_routing_key = 'snoop.spy',
+     snoop_spy_exchange_name = 'miros.snoop.spy',
+     live_trace=True
+  )
 
-The design was intended to be built within another statechart and to start
-itself upon being constructed.  The CacheFileChart subscribes to the
-``CACHE_FILE_WRITE`` and the ``CACHE_FILE_READ`` events.  If any other part of the
-program wants to see what is in the cache, they would post a ``CACHE_FILE_READ``.
-The CacheFileChart will send a ``CACHE`` event with the contents of the cache and
-whether the cache has been expired.
+In the above listing I also enabled the trace.  This is useful for debugging and
+documenting how the ``ProducerFactoryChart`` state machine works.
 
-If any other statechart would like to write the cache, they would place the
-contents of the write into a dict as the payload of the ``CACHE_FILE_WRITE``.
+Look at the state machine part of this diagram:
 
-Internally the ``CACHE_FILE_READ`` and ``CACHE_FILE_WRITE`` public events are turned
-into the ``file_read`` and ``file_write`` events.  When the state chart sees that such
-an event is posted it will try to enter the file_read or file_write states.
-Such transitions can be blocked if the file is not writable (set by the OS).  In
-the case that the event is blocked, the statechart re-posts the same event to
-itself at a future time, then stops running.  The re-posting time is a random
-number between 0.001 and a timeout.  This timeout parameter increases for each
-re-posting failure, to a maximum value of 5 seconds.
+.. image:: _static/miros_rabbitmq_producer_discovery.svg
+    :target: _static/miros_rabbitmq_producer_discovery.pdf
+    :align: center
 
-If a ``file_read`` or ``file_write`` event succeeds to transition past the file access
-state, it will lock the file by making it un-writable.  This global state, put
-onto the file by the operating system will make the file exclusive to this
-program.  When the file is read or written, the CacheFileChart will post either
-a read_successful or write_successful event to itself.  This will cause an exit
-signal to occur on the file_accessed state, which will make the file writable.
-Other programs will now have the ability to access the same file when their
-deferred ``file_read`` or ``file_write`` events fire.
+We see that in the ``ProducerFactoryChart`` that there are three states, the
+``producer_discovery``, the ``post_to_queue`` and the ``refactor_producers``
+states.  When the ``ProducerFactoryChart`` is constructed, it immediately
+transitions into the ``producer_discovery`` state.
 
-The internal code within the file_read and file_write states was taken from
-various stack overflow articles describing how to safely read and write a file
-in a very short period of time, in an environment where many other programs are
-trying to do the same thing.
+The ``producer_discovery`` creates the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` upon entry.  It subscribes to
+the ``CONNECTION_DISCOVERY`` event and stops.  The ``ProducerFactoryChart``
+doesn't know or care how connections are discovered, it is up to the other
+charts to do this work.  All it does is convert new IP information into working
+producers which can be used by the thread pending on it's output queue.  This
+new IP information is delivered to it in ``CONNECTION_DISCOVERY`` events.
+
+Upon receiving a ``CONNECTION_DISCOVERY`` event from either the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` object or the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` object, it determines if any
+new IP addresses were discovered.
+
+The first time a ``CONNECTION_DISCOVERY`` event is received this will
+undoubtedly be true.  It determines what the new IP addresses are and what all
+of the IP addresses are.  If there is new information it will post a
+``ips_discovered`` event to itself.  Then it tries to destroy which ever chart
+delivered the message.  The actual destruction of the object will be done by the
+Python garbage collector, the ``producer_discovery`` state just stops
+referencing the object so that the garbage collector will see that it is no
+longer being used.
+
+The purpose of the ``post_to_queue`` state is to defer any
+``CONNECTION_DISCOVERY`` events from occurring while the state chart is dealing
+with an exception from posting to the ``producer_queue``.  This is an example of
+the `deferred event
+<https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_
+statechart pattern.  By using this pattern, we are modifying the sequence of
+events.  To make sense of this, place your eyes on the
+``chart.producer_queue.put`` syntax in the ``refactor_producers`` part of the
+statechart.  If there is an exception here, like if the queue is full because
+the other part of the program hasn't cleared it yet, we need to try posting to
+the queue again in the future.  So, we start a one_shot timer with a time
+between 0.1 and 1 second.  We pick a random time so as to avoid any issues with
+other parts of the program trying to do the same thing.  Now suppose we are
+waiting to try posting to our queue again and another ``CONNECTION_DISCOVERY``
+event comes in?  What do we do?  Well, we deferred the event into the deferred
+event queue, only releasing it back to the statechart upon exiting the
+``post_to_queue`` state.  Sometime in the future
+the ``ips_discovered`` event is fired and captured by the ``post_to_queue``
+state so that it can try to post the queue again.  If it succeeds, a ``ready``
+event will fire, which will cause the ``exit`` event of the ``post_to_queue``
+state to fire.  This will recall the ``CONNECTION_DISCOVERY`` event that was
+salted away and the whole discovery process can be started again.
+
+The ``refactor_producers`` state entry condition creates a set of new producers
+using the ``make_mesh_producers``, ``make_snoop_trace_producers`` and the
+``make_snoop_spy_producers`` worker functions defined within the
+``ProducerFactoryAggregator`` class.  The new producers are appended into their
+appropriate collections, then these collections are organized into the
+``ProducerQueue`` namedtuple.  This namedtuple object is place into the queue.
+If there is a problem with this process, the activity described in the previous
+paragraph is followed.  If there are no problems, the thread pending on this
+queue can extract the new producer information as it sees fit.  
+
+After successfully putting the new producer information into the queue, the
+statechart posts a ``ready`` signal to itself.  This will allow it to process
+any pending ``CONNECTION_DISCOVERY`` events.
+
+.. _how_it_works2-mirosrabbitlanchart:
+
+LanChart
+--------
+The LanChart is responsible for finding other RabbitMQ servers on your Local
+Area Network.  It publishes its results into a CONNECTION_DISCOVERY event.  It was
+designed to:
+
+* be created/started/destroyed within another statechart
+* use cached information if it hasn't expired (to save time)
+* perform a LAN discovery process if the cache is expired, then cache this
+  result for the next run of the program
+* output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
+  event.
+
+The LanChart is built by the :ref:`ProducerFactoryChart<how_it_works2-the-producer-factory-chart>`.  The LanChart doesn't search the LAN or reference the cache directly, it gets this information from a :ref:`LanRecceChart<how_it_works2-the-lanreccechart>` and a :ref:`CacheFileChart<cfc>` object:
+
+.. image:: _static/small_context_lan_chart.svg
+    :target: _static/small_context_lan_chart.pdf
+    :align: center
+
+From a high level, the LanChart subscribes to 2 events and publishes 4 events:
+
+.. image:: _static/medium_context_lan_chart.svg
+    :target: _static/medium_context_lan_chart.pdf
+    :align: center
+
+Here is the architectural diagram for this statechart:
+
+.. image:: _static/miros_rabbitmq_lan_discovery.svg
+    :target: _static/miros_rabbitmq_lan_discovery.pdf
+    :align: center
+
+To construct a LanChart use the ``routing_key`` and the
+``exchange_name`` of the RabbitMQ servers you are trying to connect to:
+
+.. code-block:: python
+
+  LanChart(
+    routing_key='heya.man',
+    exchange_name='miros.mesh.exchange',
+    live_trace=True)  # to debug or document
+
+By default it will look for a file called ``.miros_rabbitmq_lan_cache.json`` which
+will look something like this:
+
+.. code-block:: JSON
+
+  {
+    "addresses": [
+      "192.168.1.75"
+    ],
+    "amqp_urls": [
+      "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
+    ],
+    "time_out_in_minutes": 30
+  }
+
+If the cached file is older than the ``time_out_in_minutes``,
+LanChart will transition into it's ``discover_network`` state,
+discover the network then write the ``.miros_rabbitmq_lan_cache.json`` file with
+the results.
+
+To change the cache file's time out, add ``time_out_in_minutes`` as a named
+parameter when you are constructing your ``LanChart`` object.  Here
+is an example of changing the timeout to 60 minutes:
+
+.. code-block:: python
+
+  LanChart(
+    routing_key='heya.man',
+    exchange_name='miros.mesh.exchange',
+    time_out_in_minutes=60)
+
+.. _how_it_works2-the-lanreccechart:
+
+The LanRecceChart
+-----------------
+.. note::
+
+  The word Recce is the Canadian/British way of saying recon.  Recon, is the
+  short form of the word reconnaissance.  I didn't know this before I googled
+  recon, but being a good Canadian I decided to use ``recce`` to name the
+  objects and classes in the part of the design, instead of the word recon (we
+  all have to do our parts to resist American cultural hegemony).
+
+  Being new to the word I had to figure out how to say it, recce is pronounced
+  like 'wreck-ee'. (I learned this from an American)
+
+The LanRecceChart performs multiple scouting missions of your local area network
+for compatible RabbitMQ consumers.  The LanRecceChart was designed to:
+
+* be created/started/destroyed within another statechart
+* hide the complexity of the local area networking search details
+* build a set of search criterion based on it's LAN discovery process
+* rely on the RabbitConsumerScoutChart specialists to perform the individual
+  scouting missions for compatible RabbitMQ consumers.
+* perform all of it's scouting missions in parallel
+* work in Linux and on the Windows Linux Subsystem
+* provide it's result in the form of asynchronous events to which other
+  statecharts can subscribe.
+* be easy to debug/document
+
+The LanRecceChart is build by the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` object and it builds many
+different :ref:`RabbitConsumerScoutChart<how_it_works2-producescoutchart>`
+objects:
+
+.. image:: _static/small_context_lan_recce_chart.svg
+    :target: _static/small_context_lan_recce_chart.pdf
+    :align: center
+
+From a high level, the LanRecceChart subscribes the ``RECCEN_LAN`` event and
+publishes the ``LAN_RECCE_COMPLETE`` event.
+
+.. image:: _static/medium_context_lan_recce_chart.svg
+    :target: _static/medium_context_lan_recce_chart.pdf
+    :align: center
+
+Here is the design diagram for the LanRecceChart, if it is too small, click on
+the picture to download a pdf of the diagram:
+
+.. image:: _static/miros_rabbitmq_recce_chart.svg
+    :target: _static/miros_rabbitmq_recce_chart.pdf
+    :align: center
+
+The LanRecce class, inherited by the LanRecceChart contains all of the methods
+required to search your local area network and your local machine for the IP
+addresses needed to begin a search for compatible RabbitMQ consumers.  The three
+main methods used by the LanRecceChart during the dynamic portion of it's life
+are:
+
+  * ``LanRecce.get_working_ip_address``
+  * ``ping_to_fill_arp_table``
+  * ``candidiate_ip_addresses``
+
+The rest of the methods help these main methods perform their required tasks.
+
+To build a CacheFileChart with a live_trace:
+
+.. code-block:: python
+
+  lan_recce = LanRecceChart(
+      routing_key='heya.man',
+      exchange_name='miros.mesh.exchange',
+      live_trace=True)
+
+The LanRecceChart does not start itself.  The statechart that wants to start the
+network reconnaissance will have to publish a ``RECCE_LAN`` event or use the
+``post_fifo`` method on the ``LanRecceChart`` object with the ``RECCE_LAN``
+event.  Let's just post to it directly using the ``post_fifo`` method:
+
+.. code-block:: python
+
+  lan_recce.post_fifo(Event(signals.RECCE_LAN))
+
+Now let's look at the trace:
+
+.. code-block:: python
+
+  [2018-05-27 09:56:54.372046] [lan_recce_chart] e->start_at() top->private_search
+  [2018-05-27 09:56:54.372522] [lan_recce_chart] e->recce_lan() private_search->fill_arp_table
+  [2018-05-27 09:56:58.386858] [lan_recce_chart] e->arp_time_out() fill_arp_table->identify_all_ip_addresses
+  [2018-05-27 09:56:58.454212] [lan_recce_chart] e->ip_addresses_found() identify_all_ip_addresses->recce_rabbit_consumers
+  [2018-05-27 09:57:00.048376] [lan_recce_chart] e->lan_recce_complete() recce_rabbit_consumers->private_search
+
+Compare this trace with it's statechart:
+
+.. image:: _static/miros_rabbitmq_recce_chart.svg
+    :target: _static/miros_rabbitmq_recce_chart.pdf
+    :align: center
+
+Compare the statechart within the ``LanRecceChart`` class to the sequence diagram with a description:
+
+.. code-block:: python
+
+  [Statechart: lan_recce_chart]
+             top     private_search  fill_arp_table  identify_all_ip_addresses  recce_rabbit_consumers
+              +-start_at()->|              |                      |                        |
+              |    (1)      |              |                      |                        |
+              |             +-recce_lan()->|                      |                        |
+              |             |    (2)       |                      |                        |
+              |             |              +----arp_time_out()--->|                        |
+              |             |              |         (3)          |                        |
+              |             |              |                      +--ip_addresses_found()->|
+              |             |              |                      |          (4)           |
+              |             +<-------------+----------------------+--lan_recce_complete()--|
+              |             |              |                      |          (5)           |
+
+1. The ``LanRecceChart`` starts itself in the ``private_search`` state.
+   Immediately upon entering the ``private_search`` state the state machine
+   subscribes to the ``RECCE_LAN`` and ``AMQP_CONSUMER_CHECK`` events.  The
+   ``RECCE_LAN`` event will be used by some outside statechart to begin a search
+   of the local network and the ``AMQP_CONSUMER_CHECK`` events will be initiated
+   within the ``recce_rabbit_consumers`` state, talked about in step 4.
+   
+   After subscribing to the public events it uses the ``get_working_ip_address``
+   static to get it's working IP address.
+
+2. In response to our posted ``RECCE_LAN`` event the chart posts a private
+   ``recce_lan`` event and begins a search of the local area network.  Notice
+   that while the state machine is within the ``lan_recce`` state, all
+   additional ``RECCE_LAN`` events will be deferred until the state is exited.
+   This is an example of the `deferred event pattern <https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_.
+
+   After the event processor enters the ``lan_recce`` state, it's initialization
+   signal causes a transition into the ``fill_arp_table``.  Upon entering the
+   ``file_arp_table`` the state machine pings the broadcast address of the local
+   network to fill the arp table and triggers a one shot event called
+   ``ARP_FILL_TIME_OUT`` to fire in ``lan.arp_time_sec``.  This value can be
+   passed into the LanRecceChart as an optional parameter, by default it is set
+   to 2 seconds.
+
+3. 2 seconds after step 2, the ``ARP_FILL_TIME_OUT`` one shot is fired, causing
+   a transition into the ``identify_all_ip_addresses`` state.  Upon entering
+   this state the state machine determines what the network addresses are by
+   reading the arp table within a call to the ``candidiate_ip_addresses``
+   method.  It then posts the ``ip_address_found`` event to itself.
+
+4. At this stage, each of the discovered IP addresses is used to begin a
+   scouting mission.  The missions run in parallel using their own
+   ``RabbitConsumerScoutChart`` instance.  When a mission is completed, the
+   result is published by the ``RabbitConsumerScoutChart`` within the payload of
+   the ``AMQP_CONSUMER_CHECK`` event and caught and handled within the
+   ``recce_rabbit_consumers`` state.
+
+   When all of the searches have returned their respect ``AMQP_CONSUMER_CHECK``
+   the IP addresses that have been confirmed to have a RabbitMQ consumer are put
+   into the payload of a ``LAN_RECCE_COMPLETE`` event and published to the task
+   fabric so that any statechart subscribing to this event will receive the
+   results of the reconnaissance of the local network.
 
 .. _how_it_works2-producescoutchart:
 
@@ -132,6 +464,22 @@ designed to:
 * provide it's answers in the form of asynchronous events to which other
   statecharts can subscribe.
 * be easy to debug/document
+
+The RabbitConsumerScoutChart is built by
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the
+:ref:`LanRecceChart<how_it_works2-the-lanreccechart>` objects:
+
+.. image:: _static/small_context_rabbit_consumer_scout_chart.svg
+    :target: _static/small_context_rabbit_consumer_scout_chart.pdf
+    :align: center
+
+From a high level, the RabbitConsumerScoutChart sends a message after it has
+been constructed with the required RabbitMQ credentials.  It's search can also
+be refactored with the REFACTOR_SEARCH event:
+
+.. image:: _static/medium_context_rabbit_consumer_scout_chart.svg
+    :target: _static/medium_context_rabbit_consumer_scout_chart.pdf
+    :align: center
 
 To perform a scouting mission for a given IP address, you will need the
 routing_key and an exchange_name that you want to connect to, then do something
@@ -313,401 +661,227 @@ during each event:
    respond to the RabbitMQ credentials, the encryption key with the current
    topic key and exchange name.
 
-.. _how_it_works2-the-lanreccechart:
 
-The LanRecceChart
------------------
-.. note::
+.. _cfc:
 
-  The word Recce is the Canadian/British way of saying recon.  Recon, is the
-  short form of the word reconnaissance.  I didn't know this before I googled
-  recon, but being a good Canadian I decided to use ``recce`` to name the
-  objects and classes in the part of the design, instead of the word recon (we
-  all have to do our parts to resist American cultural hegemony).
+The Cache File Chart
+--------------------
 
-  Being new to the word I had to figure out how to say it, recce is pronounced
-  like 'wreck-ee'.
-
-The LanRecceChart performs multiple scouting missions of your local area network
-for compatible RabbitMQ consumers.  The LanRecceChart was designed to:
+The CacheFileChart is used to read and write the network discovery cache
+information.  It was designed to:
 
 * be created/started/destroyed within another statechart
-* hide the complexity of the local area networking search details
-* build a set of search criterion based on it's LAN discovery process
-* rely on the RabbitConsumerScoutChart specialists to perform the individual
-  scouting missions for compatible RabbitMQ consumers.
-* perform all of it's scouting missions in parallel
-* work in Linux and on the Windows Linux Subsystem
-* provide it's result in the form of asynchronous events to which other
-  statecharts can subscribe.
+* allow one cache file to be readable and writable from thousands of different
+  programs running at the same time.
+* hide the complexity of concurrent file reads from the user
+* hide the complexity of concurrent file writes from the user
+* have a stochastic-exponential-timeout mechanism for pending read/write waits 
+* Write a file based on an asynchronous event published from another statechart
+* Convert a file read into an asynchronous event which can be subscribed to
+  by another statechart
 * be easy to debug/document
 
-Here is the design diagram for the LanRecceChart, if it is too small, click on
-the picture to download a pdf of the diagram:
+The network discovery process is expensive, so we will cache its results to a
+JSON file.
 
-.. image:: _static/miros_rabbitmq_recce_chart.svg
-    :target: _static/miros_rabbitmq_recce_chart.pdf
+The cache will persist beyond the life of the program that wrote it.  When the
+next program runs, it will read the cache, determine if it is young enough to be
+useful, and if so, it will skip the expensive network discovery process.
+
+We use the JSON format since we will be transmitting this cache to other hosts
+and JSON has become the standard format for transmitting data.
+
+There could be thousands of processes trying to read and write to this cache
+file at the same time.  To address this concern, we wrap this file access into
+an active object which will check if the file is writable before trying to read
+from it or write to it.  If the file is writable, the statechart will determine
+that no other program is using the file.  The statechart that manages this file
+access is called the CacheFileChart.
+
+The CacheFileChart is build by the
+:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the
+:ref:`LanChart<how_it_works2-mirosrabbitlanchart>`.
+
+.. image:: _static/small_context_cache_file_chart.svg
+    :target: _static/small_context_cache_file_chart.pdf
     :align: center
 
-The LanRecce class, inherited by the LanRecceChart contains all of the methods
-required to search your local area network and your local machine for the IP
-addresses needed to begin a search for compatible RabbitMQ consumers.  The three
-main methods used by the LanRecceChart during the dynamic portion of it's life
-are:
+From a high level, the CacheFileChart responds to three messages and delivers
+one:
 
-  * ``LanRecce.get_working_ip_address``
-  * ``ping_to_fill_arp_table``
-  * ``candidiate_ip_addresses``
-
-The rest of the methods help these main methods perform their required tasks.
-
-To build a CacheFileChart with a live_trace:
-
-.. code-block:: python
-
-  lan_recce = LanRecceChart(
-      routing_key='heya.man',
-      exchange_name='miros.mesh.exchange',
-      live_trace=True)
-
-The LanRecceChart does not start itself.  The statechart that wants to start the
-network reconnaissance will have to publish a ``RECCE_LAN`` event or use the
-``post_fifo`` method on the ``LanRecceChart`` object with the ``RECCE_LAN``
-event.  Let's just post to it directly using the ``post_fifo`` method:
-
-.. code-block:: python
-
-  lan_recce.post_fifo(Event(signals.RECCE_LAN))
-
-Now let's look at the trace:
-
-.. code-block:: python
-
-  [2018-05-27 09:56:54.372046] [lan_recce_chart] e->start_at() top->private_search
-  [2018-05-27 09:56:54.372522] [lan_recce_chart] e->recce_lan() private_search->fill_arp_table
-  [2018-05-27 09:56:58.386858] [lan_recce_chart] e->arp_time_out() fill_arp_table->identify_all_ip_addresses
-  [2018-05-27 09:56:58.454212] [lan_recce_chart] e->ip_addresses_found() identify_all_ip_addresses->recce_rabbit_consumers
-  [2018-05-27 09:57:00.048376] [lan_recce_chart] e->lan_recce_complete() recce_rabbit_consumers->private_search
-
-Compare this trace with it's statechart:
-
-.. image:: _static/miros_rabbitmq_recce_chart.svg
-    :target: _static/miros_rabbitmq_recce_chart.pdf
+.. image:: _static/medium_context_cache_file_chart.svg
+    :target: _static/medium_context_cache_file_chart.pdf
     :align: center
 
-Compare the statechart within the ``LanRecceChart`` class to the sequence diagram with a description:
+The architectural diagram for the CacheFileChart is here:
 
-.. code-block:: python
-
-  [Statechart: lan_recce_chart]
-             top     private_search  fill_arp_table  identify_all_ip_addresses  recce_rabbit_consumers
-              +-start_at()->|              |                      |                        |
-              |    (1)      |              |                      |                        |
-              |             +-recce_lan()->|                      |                        |
-              |             |    (2)       |                      |                        |
-              |             |              +----arp_time_out()--->|                        |
-              |             |              |         (3)          |                        |
-              |             |              |                      +--ip_addresses_found()->|
-              |             |              |                      |          (4)           |
-              |             +<-------------+----------------------+--lan_recce_complete()--|
-              |             |              |                      |          (5)           |
-
-1. The ``LanRecceChart`` starts itself in the ``private_search`` state.
-   Immediately upon entering the ``private_search`` state the state machine
-   subscribes to the ``RECCE_LAN`` and ``AMQP_CONSUMER_CHECK`` events.  The
-   ``RECCE_LAN`` event will be used by some outside statechart to begin a search
-   of the local network and the ``AMQP_CONSUMER_CHECK`` events will be initiated
-   within the ``recce_rabbit_consumers`` state, talked about in step 4.
-   
-   After subscribing to the public events it uses the ``get_working_ip_address``
-   static to get it's working IP address.
-
-2. In response to our posted ``RECCE_LAN`` event the chart posts a private
-   ``recce_lan`` event and begins a search of the local area network.  Notice
-   that while the state machine is within the ``lan_recce`` state, all
-   additional ``RECCE_LAN`` events will be deferred until the state is exited.
-   This is an example of the `deferred event pattern <https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_.
-
-   After the event processor enters the ``lan_recce`` state, it's initialization
-   signal causes a transition into the ``fill_arp_table``.  Upon entering the
-   ``file_arp_table`` the state machine pings the broadcast address of the local
-   network to fill the arp table and triggers a one shot event called
-   ``ARP_FILL_TIME_OUT`` to fire in ``lan.arp_time_sec``.  This value can be
-   passed into the LanRecceChart as an optional parameter, by default it is set
-   to 2 seconds.
-
-3. 2 seconds after step 2, the ``ARP_FILL_TIME_OUT`` one shot is fired, causing
-   a transition into the ``identify_all_ip_addresses`` state.  Upon entering
-   this state the state machine determines what the network addresses are by
-   reading the arp table within a call to the ``candidiate_ip_addresses``
-   method.  It then posts the ``ip_address_found`` event to itself.
-
-4. At this stage, each of the discovered IP addresses is used to begin a
-   scouting mission.  The missions run in parallel using their own
-   ``RabbitConsumerScoutChart`` instance.  When a mission is completed, the
-   result is published by the ``RabbitConsumerScoutChart`` within the payload of
-   the ``AMQP_CONSUMER_CHECK`` event and caught and handled within the
-   ``recce_rabbit_consumers`` state.
-
-   When all of the searches have returned their respect ``AMQP_CONSUMER_CHECK``
-   the IP addresses that have been confirmed to have a RabbitMQ consumer are put
-   into the payload of a ``LAN_RECCE_COMPLETE`` event and published to the task
-   fabric so that any statechart subscribing to this event will receive the
-   results of the reconnaissance of the local network.
-
-.. _how_it_works2-mirosrabbitlanchart:
-
-LanChart
--------------------
-The LanChart is responsible for publishing all of the working RabbitMQ
-consumers that exist on your LAN within a CONNECTION_DISCOVERY event.  It was designed to:
-
-* be created/started/destroyed within another statechart
-* use cached information if it hasn't expired (to save time)
-* perform a LAN discovery process if the cache is expired, then cache this
-  result for the next run of the program
-* output a set of working AMQP urls as the payload of the CONNECTION_DISCOVERY
-  event.  This will be used by another chart.
-
-.. image:: _static/miros_rabbitmq_lan_discovery.svg
-    :target: _static/miros_rabbitmq_lan_discovery.pdf
+.. image:: _static/miros_rabbitmq_cache_file_chart.svg
+    :target: _static/miros_rabbitmq_cache_file_chart.pdf
     :align: center
 
-To build a LanChart, you will need to know the ``routing_key`` and the
-``exchange_name`` that you are trying to connect to:
+To construct the ``CacheFileChart`` with a live trace, for debugging:
 
 .. code-block:: python
 
-  LanChart(
-    routing_key='heya.man',
-    exchange_name='miros.mesh.exchange',
-    live_trace=True)  # to debug or document
+  cache_file = CacheFileChart(live_trace=True)
 
-By default it will look for a file called ``.miros_rabbitmq_lan_cache.json`` which
-will look something like this:
+To read the file, subscribe to the ``CACHE`` event, then publish a
+``CACHE_FILE_READ`` event to the active fabric and wait for a ``CACHE`` event to
+come back.  This ``CACHE`` event will contain a dictionary version of the JSON
+cache file.
 
-.. code-block:: python
+Here is a bit about how it works:
 
-  {
-    "addresses": [
-      "192.168.1.75"
-    ],
-    "amqp_urls": [
-      "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
-    ],
-    "time_out_in_minutes": 30
-  }
+The design was intended to be built within another statechart and to start
+itself upon being constructed.  The CacheFileChart subscribes to the
+``CACHE_FILE_WRITE`` and the ``CACHE_FILE_READ`` events.  If any other part of the
+program wants to see what is in the cache, they would post a ``CACHE_FILE_READ``.
+The CacheFileChart will send a ``CACHE`` event with the contents of the cache and
+whether the cache has been expired.
 
-If the cached file is older than the ``time_out_in_minutes``,
-LanChart will transition into it's ``discover_network`` state,
-discover the network then write the ``.miros_rabbitmq_lan_cache.json`` file with
-the results.
+If any other statechart would like to write the cache, they would place the
+contents of the write into a dict as the payload of the ``CACHE_FILE_WRITE``.
 
-To change the cache file's time out, add ``time_out_in_minutes`` as a named
-parameter when you are constructing your ``LanChart`` object.  Here
-is an example of changing the timeout to 60 minutes:
+Internally the ``CACHE_FILE_READ`` and ``CACHE_FILE_WRITE`` public events are turned
+into the ``file_read`` and ``file_write`` events.  When the state chart sees that such
+an event is posted it will try to enter the file_read or file_write states.
+Such transitions can be blocked if the file is not writable (set by the OS).  In
+the case that the event is blocked, the statechart re-posts the same event to
+itself at a future time, then stops running.  The re-posting time is a random
+number between 0.001 and a timeout.  This timeout parameter increases for each
+re-posting failure, to a maximum value of 5 seconds.
 
-.. code-block:: python
+If a ``file_read`` or ``file_write`` event succeeds to transition past the file access
+state, it will lock the file by making it un-writable.  This global state, put
+onto the file by the operating system will make the file exclusive to this
+program.  When the file is read or written, the CacheFileChart will post either
+a read_successful or write_successful event to itself.  This will cause an exit
+signal to occur on the file_accessed state, which will make the file writable.
+Other programs will now have the ability to access the same file when their
+deferred ``file_read`` or ``file_write`` events fire.
 
-  LanChart(
-    routing_key='heya.man',
-    exchange_name='miros.mesh.exchange',
-    time_out_in_minutes=60)
+The internal code within the file_read and file_write states was taken from
+various stack overflow articles describing how to safely read and write a file
+in a very short period of time, in an environment where many other programs are
+trying to do the same thing.
+
+.. note::
+
+  The CacheFileChart was designed to work within the limited POSIX file features
+  offered by the Windows Linux Subsystem.  So, it should run on Windows, Linux
+  and the various Apple operating systems.
+
 
 .. _how_it_works2-manual-netword-chart:
 
 Manual Network Chart
 --------------------
+The ManNetChart lets a user to specify the addresses they
+want to use in their network. It was designed to:
+
+* Reference a simple JSON file for it's information
+* By default this file is called ``.miros_rabbitmq_hosts.json``, but this can be
+  overridden by setting a path in the ManNetChart constructor.
+* This JSON file will contain host information in the form of an IP address or
+  as a standard URL (not the complicated AMQP URL)
+* Test all manual addresses prior delivering them to the ProducerFactoryChart.
+* Re-evaluate the hosts file to see if any connections that were listed that
+  didn't work, are working.
+
+The ManNetChart is built by the :ref:`ProducerFactoryChart<how_it_works2-the-producer-factory-chart>`.  The ManNetChart makes one
+:ref:`CacheFileChart<cfc>` object and many different :ref:`RabbitConsumerScoutChart<how_it_works2-producescoutchart>` objects:
 
 .. image:: _static/small_context_man_net_chart.svg
     :target: _static/small_context_man_net_chart.pdf
     :align: center
 
+The ManNetChart subscribes to 3 events and publishes 2 events.
+
 .. image:: _static/medium_context_man_net_chart.svg
     :target: _static/medium_context_man_net_chart.pdf
     :align: center
+
+The file that the ``ManNetChart`` uses defaults to
+``.miros_rabbitmq_hosts.json``.  It is just a JSON file listing the hosts that
+you want in your networks:
+
+.. code-block:: JSON
+
+  {
+    "hosts": [
+      "192.168.1.75",
+      "my_host_as_a_url.com"
+    ]
+  }
+
+You would specify the path to the file in the constructor, along with the mesh
+routing key, the mesh exchange name and, if you want instrumentation turned on:
+
+.. code-block:: python
+
+    man_net_chart = ManNetChart(
+      routing_key="heya.man",
+      exchange_name="sex_change",
+      cache_file_path=".miros_rabbitmq_hosts.json")
+
+The cache_file_path is an optional parameter, if you don't set it, it will
+default to using the .miros_rabbitmq_cache_file_chart in the current directory.
+Likewise the ``live_trace`` and ``live_spy`` are default parameters, they default
+to ``False``.
+
+The ManNetChart architectural diagram can be seen here:
 
 .. image:: _static/miros_rabbitmq_manual_discovery.svg
     :target: _static/miros_rabbitmq_manual_discovery.pdf
     :align: center
 
-.. _how_it_works2-the-producer-factory-chart:
+The ``MirosRabbitManualNetwork`` class inherits from the miros ``Factory``
+class, so it has the event processor and all of the other required state chart
+features provided by the miros library.  It also contains all of the worker
+functions and useful attribute names that are needed by the ``ManNetChart``
+class.
 
-The Producer Factory Chart
---------------------------
-The ``ProducerFactoryChart`` is used to build RabbitMQ producers as they are
-discovered by the miros-rabbitmq library.
+When the ``ManNetChart`` is created it immediately starts in the
+``read_and_evaluate_network_details`` state.  It subscribes to the
+``AMQP_CONSUMER_CHECK`` event.  It constructs a
+``CacheFileChart``, subscribes to this chart's ``CACHE`` event then publishes a
+``CACHE_FILE_READ`` to it and stops processing.
 
-Before you can build a producer, you need to know what other RabbitMQ server it
-is aimed at on the network.  Then you have to provide its constructor with all
-of the RabbitMQ credentials, encryption keys and other parameters so that it is
-build up properly.  Furthermore, the miros-rabbitmq library needs three
-producers per target in the network, one for the mesh network and two for the
-different instrumentation channels.  The ``ProducerFactoryChart`` tries to hide
-all of this complexity from the user.  It was design to:
+When the ``CACHE`` event is heard, if the ``CACHE`` event contains a file name
+that matches to one provided to the ``ManNetChart`` constructor, it assigns it
+to the hosts attribute and transitions to the ``evaluate_network`` state.
 
-* Initiate a search for other RabbitMQ servers on the LAN, using the :ref:`LanChart <how_it_works2-the-lanreccechart>`
-* Initiate a search based on the user's manual network settings, using the :ref:`ManNetChart<how_it_works2-manual-netword-chart>`
-* React to the discovery of servers running RabbitMQ instances with the correct
-  encryption and RabbitMQ credentials by building up instances of three
-  different producers per discovery: a mesh producer and a snoop trace and snoop
-  spy producer.
-* Serve up it's constructed list of producers to another thread, using a queue.
+Upon entering the ``evaluate_network`` state, a RecceNode named tuple is made
+for each host address that was listed in the hosts file.  Within this RecceNode
+named tuple is a :ref:`RabbitConsumerScoutChart<how_it_works2-producescoutchart>`.
 
-To understand the point of the ``ProducerFactoryChart`` we need to look at the
-RabbitMQ architectural diagram used by the miros-rabbitmq plugin:
+The ``RabbitConsumerScoutChart`` will start itself and determine if the address
+provided to it has another miros-rabbitmq program running on it with the same
+encryption keys and RabbitMQ credentials.  It finishes it search by sending out
+the ``AMQP_CONSUMER_CHECK`` event with the results in its payload.
 
-.. image:: _static/miros_rabbitmq_network_0.svg
-    :target: _static/miros_rabbitmq_network_0.pdf
-    :align: center
+The ``AMQP_CONSUMER_CHECK`` could be coming at this chart from another part of
+the system, so we confirm that its results are something that we care about then
+process it:
 
-The hard part about setting up the above diagram is building the producer
-collections.
+* setting the scout attribute of the RecceNode named tuple to None so that the
+  Python garbage collector will remove the ``RabbitConsumerScoutChart`` that was
+  used to conduct the search
+* assigning the ``live_hosts``, ``list_amqp_urls``, ``dead_hosts`` and
+  ``dead_amqp_urls`` attributes.
+* determining if our search is complete by looking at the ``searched`` attribute all
+  of our candidate RecceNodes.
 
-The three different networks each have their own producer objects which are
-pre-loaded with the destination information of the servers that they want to
-communicate with.  The members of the producer collection can change as new
-servers are discovered, or removed from the network.  It is the job of the
-``ProducerFactoryChart`` to keep these lists up to date for the other parts of
-the program that need them.
+If the search is complete, we post a ``network_evaluated`` event, which is
+caught by a hook in the outer state.
 
-The ``ProducerFactoryChart`` actually works by orchestrating a number of
-different state charts.  It builds the ``ManNetChart`` and the ``LanChart``,
-which in turn build the statecharts that they need.
+The ``network_evaluated`` hooks publishes the ``CONNECTION_DISCOVERY`` event
+with the ``live_hosts`` and the ``live_amqp_urls`` tabulated during the
+``evaluate_network``.
 
-.. image:: _static/small_context_producer_factory.svg
-    :target: _static/small_context_producer_factory.pdf
-    :align: center
-
-From a very high level the ``ProducerFactoryChart``, consumes
-``CONNECTION_DISCOVERY`` events and puts its newly constructed producers into a
-queue using the ``ProducerQueue`` namedtuple:
-
-.. image:: _static/medium_context_producer_factory.svg
-    :target: _static/medium_context_producer_factory.pdf
-    :align: center
-
-The thread which consumes this queue doesn't have to deal with any of the
-producer construction complexity.  It will just check to see if a new item was
-added to the queue, if so, it will update it's producers with the information in
-this new item.
-
-The actual architectural diagram of the ``ProducerFactoryChart`` can be seen
-here:
-
-.. image:: _static/miros_rabbitmq_producer_discovery.svg
-    :target: _static/miros_rabbitmq_producer_discovery.pdf
-    :align: center
-
-The class which makes a factory is called the ``ProducerFactory``, it is
-subclassed as the ``MeshProducerFactory``, ``SnoopTraceProducerFactory`` and
-``SnoopSpyProducerFactory``.  The ``ProducerFactoryAggregator`` class is a
-subclass of the miros ``Factory``, its purpose is to contain all of the worker
-methods that are custom to the ``ProducerFactoryChart``.
-
-The ``ProducerFactoryChart`` inherits from the ``ProducerFactoryAggregator``, so
-that it has access to all of its needed worker methods and the event processor
-from the ``miros`` ``Factory`` class.
-
-To build a ``ProducerFactoryChart``, you will first need to provide a custom
-serializer function for dealing with miros Event objects and you will need a
-queue where it will place it's results, then you provide the routing_key and
-exchange information:
-
-.. code-block:: python
-
-  import queue
-  def custom_serializer(obj):
-    if isinstance(obj, Event):
-      obj = Event.dumps(obj)
-    pobj = pickle.dumps(obj)
-    return pobj
-
-  q = queue.Queue()
-
-  producer_refactory = ProducerFactoryChart(
-     producer_queue=q,
-     mesh_routing_key = 'heya_man',
-     mesh_exchange_name = 'miros.mesh.exchange',
-     mesh_serialization_function=custom_serializer,
-     snoop_trace_routing_key = 'snoop.trace',
-     snoop_trace_exchange_name = 'miros.snoop.trace',
-     snoop_spy_routing_key = 'snoop.spy',
-     snoop_spy_exchange_name = 'miros.snoop.spy',
-     live_trace=True
-  )
-
-In the above listing I also enabled the trace.  This is useful for debugging and
-documenting how the ``ProducerFactoryChart`` state machine works.
-
-Look at the state machine part of this diagram:
-
-.. image:: _static/miros_rabbitmq_producer_discovery.svg
-    :target: _static/miros_rabbitmq_producer_discovery.pdf
-    :align: center
-
-We see that in the ``ProducerFactoryChart`` that there are three states, the
-``producer_discovery``, the ``post_to_queue`` and the ``refactor_producers``
-states.  When the ``ProducerFactoryChart`` is constructed, it immediately
-transitions into the ``producer_discovery`` state.
-
-The ``producer_discovery`` creates the
-:ref:`ManNetChart<how_it_works2-manual-netword-chart>` and the
-:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` upon entry.  It subscribes to
-the ``CONNECTION_DISCOVERY`` event and stops.  The ``ProducerFactoryChart``
-doesn't know or care how connections are discovered, it is up to the other
-charts to do this work.  All it does is convert new IP information into working
-producers which can be used by the thread pending on it's output queue.  This
-new IP information is delivered to it in ``CONNECTION_DISCOVERY`` events.
-
-Upon receiving a ``CONNECTION_DISCOVERY`` event from either the
-:ref:`ManNetChart<how_it_works2-manual-netword-chart>` object or the
-:ref:`LanChart<how_it_works2-mirosrabbitlanchart>` object, it determines if any
-new IP addresses were discovered.
-
-The first time a ``CONNECTION_DISCOVERY`` event is received this will
-undoubtedly be true.  It determines what the new IP addresses are and what all
-of the IP addresses are.  If there is new information it will post a
-``ips_discovered`` event to itself.  Then it tries to destroy which ever chart
-delivered the message.  The actual destruction of the object will be done by the
-Python garbage collector, the ``producer_discovery`` state just stops
-referencing the object so that the garbage collector will see that it is no
-longer being used.
-
-The purpose of the ``post_to_queue`` state is to defer any
-``CONNECTION_DISCOVERY`` events from occurring while the state chart is dealing
-with an exception from posting to the ``producer_queue``.  This is an example of
-the `deferred event
-<https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_
-statechart pattern.  By using this pattern, we are modifying the sequence of
-events.  To make sense of this, place your eyes on the
-``chart.producer_queue.put`` syntax in the ``refactor_producers`` part of the
-statechart.  If there is an exception here, like if the queue is full because
-the other part of the program hasn't cleared it yet, we need to try posting to
-the queue again in the future.  So, we start a one_shot timer with a time
-between 0.1 and 1 second.  We pick a random time so as to avoid any issues with
-other parts of the program trying to do the same thing.  Now suppose we are
-waiting to try posting to our queue again and another ``CONNECTION_DISCOVERY``
-event comes in?  What do we do?  Well, we deferred the event into the deferred
-event queue, only releasing it back to the statechart upon exiting the
-``post_to_queue`` state.  Sometime in the future
-the ``ips_discovered`` event is fired and captured by the ``post_to_queue``
-state so that it can try to post the queue again.  If it succeeds, a ``ready``
-event will fire, which will cause the ``exit`` event of the ``post_to_queue``
-state to fire.  This will recall the ``CONNECTION_DISCOVERY`` event that was
-salted away and the whole discovery process can be started again.
-
-The ``refactor_producers`` state entry condition creates a set of new producers
-using the ``make_mesh_producers``, ``make_snoop_trace_producers`` and the
-``make_snoop_spy_producers`` worker functions defined within the
-``ProducerFactoryAggregator`` class.  The new producers are appended into their
-appropriate collections, then these collections are organized into the
-``ProducerQueue`` namedtuple.  This namedtuple object is place into the queue.
-If there is a problem with this process, the activity described in the previous
-paragraph is followed.  If there are no problems, the thread pending on this
-queue can extract the new producer information as it sees fit.  
-
-After successfully putting the new producer information into the queue, the
-statechart posts a ``ready`` signal to itself.  This will allow it to process
-any pending ``CONNECTION_DISCOVERY`` events.
+Notice that the ``ManNetChart`` stays in the ``evaluate_network`` state upon
+completing a search.  If another search is required, the ``EVALUATE_HOSTS_FILE``
+event can be sent to the chart.  It might makes sense to send such an event
+periodically if you would like to see if any of the dead hosts have become
+responsive.
 

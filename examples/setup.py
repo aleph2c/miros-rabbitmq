@@ -447,7 +447,6 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
 
     self.search = self.create(state='search'). \
       catch(signal=signals.ENTRY_SIGNAL, handler=self.search_entry). \
-      catch(signal=signals.REFACTOR_SEARCH, handler=self.search_refactor_search). \
       catch(signal=signals.AMQP_CONSUMER_CHECK, handler=self.search_AMPQ_CONSUMER_CHECK).  \
       catch(signal=signals.INIT_SIGNAL, handler=self.search_init). \
       to_method()
@@ -500,7 +499,6 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
         exchange_name=scout.exchange_name,
         connection_attempts=RabbitConsumerScout.CONNECTION_ATTEMPTS,
         callback_tempo=RabbitConsumerScout.SCOUT_TEMPO_SEC).producer
-    scout.subscribe(Event(signals.REFACTOR_SEARCH))
     scout.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
     return status
 
@@ -509,16 +507,6 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
     status = return_status.HANDLED
     if scout.live_trace or scout.live_spy:
       pp(e.payload)
-    return status
-
-  @staticmethod
-  def search_refactor_search(scout, e):
-    status = return_status.HANDLED
-    if 'ip_address' in e.payload and scout.name is e.payload['ip_address']:
-      for item in ['routing_key', 'exchange_name']:
-        if item in e.payload:
-          setattr(scout, item, e.payload[item])
-    status = scout.trans(scout.search)
     return status
 
   @staticmethod
@@ -1098,7 +1086,7 @@ class ManNetChart(MirosRabbitManualNetwork):
         )
     chart.subscribe(Event(signal=signals.CACHE))
     chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
-    chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
+    # chart.subscribe(Event(signal=signals.CONNECTION_DISCOVERY))
     chart.publish(Event(signal=signals.CACHE_FILE_READ))
     return status
 

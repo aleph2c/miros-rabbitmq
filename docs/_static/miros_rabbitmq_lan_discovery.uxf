@@ -468,4 +468,26 @@ bg=red</panel_attributes>
 CACHE_FILE_WRITE(&lt;CacheWritePayload&gt;)</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0;410.0;50.0</additional_attributes>
   </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>144</x>
+      <y>40</y>
+      <w>24</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>112</x>
+      <y>24</y>
+      <w>80</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>Factory</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

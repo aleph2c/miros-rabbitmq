@@ -648,7 +648,7 @@ bg=red</panel_attributes>
       <w>171</w>
       <h>27</h>
     </coordinates>
-    <panel_attributes>RabbitConsumerChart</panel_attributes>
+    <panel_attributes>RabbitConsumerScoutChart</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

@@ -20,7 +20,7 @@
       <w>209</w>
       <h>33</h>
     </coordinates>
-    <panel_attributes>RabbitConsumerChart</panel_attributes>
+    <panel_attributes>RabbitConsumerScoutChart</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

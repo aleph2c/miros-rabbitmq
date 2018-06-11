@@ -70,8 +70,8 @@
     /></g
     ><g transform="translate(430,330)"
     ><rect fill="none" x="0.5" width="188.5" height="28.5" y="0.5" clip-path="url(#clipPath3)"
-      /><text x="25" font-size="14px" y="17.9688" clip-path="url(#clipPath3)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >RabbitConsumerChart</text
+      /><text x="7" font-size="14px" y="17.9688" clip-path="url(#clipPath3)" font-family="sans-serif" stroke="none" xml:space="preserve"
+      >RabbitConsumerScoutChart</text
     ></g
     ><g fill="rgb(255,255,255)" fill-opacity="0" transform="translate(160,330)" stroke-opacity="0" stroke="rgb(255,255,255)"
     ><rect x="0.5" width="188.5" height="28.5" y="0.5" clip-path="url(#clipPath3)" stroke="none"
