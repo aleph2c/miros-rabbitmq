@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from pathlib import Path
 import json
 import time
-import functools
 from datetime import datetime, timedelta
 
 from os import F_OK, W_OK

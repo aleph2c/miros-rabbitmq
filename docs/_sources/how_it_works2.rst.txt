@@ -26,7 +26,7 @@ diagrams to make things easier to see.
   
 * A green dot is placed near an event that has been subscribed to and has been
   published somewhere else in the software system.  It is green, like a green
-  light; it is time to go, to act on the event.
+  light; it is time to go.
 
 The payloads of the published and subscribed events act as an interface for this
 asynchronous API.  To keep things clean, all payloads will exist as named
