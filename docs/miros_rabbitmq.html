@@ -38,6 +38,36 @@
 <div class="section" id="module-miros_rabbitmq.network">
 <span id="miros-rabbitmq-network-module"></span><h2>miros_rabbitmq.network module<a class="headerlink" href="#module-miros_rabbitmq.network" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="miros_rabbitmq.network.AMQPConsumerCheckPayload">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">AMQPConsumerCheckPayload</code><span class="sig-paren">(</span><em>ip_address</em>, <em>result</em>, <em>routing_key</em>, <em>exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.AMQPConsumerCheckPayload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.AMQPConsumerCheckPayload.exchange_name">
+<code class="descname">exchange_name</code><a class="headerlink" href="#miros_rabbitmq.network.AMQPConsumerCheckPayload.exchange_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.AMQPConsumerCheckPayload.ip_address">
+<code class="descname">ip_address</code><a class="headerlink" href="#miros_rabbitmq.network.AMQPConsumerCheckPayload.ip_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.AMQPConsumerCheckPayload.result">
+<code class="descname">result</code><a class="headerlink" href="#miros_rabbitmq.network.AMQPConsumerCheckPayload.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.AMQPConsumerCheckPayload.routing_key">
+<code class="descname">routing_key</code><a class="headerlink" href="#miros_rabbitmq.network.AMQPConsumerCheckPayload.routing_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="miros_rabbitmq.network.AnsiColors">
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">AnsiColors</code><a class="headerlink" href="#miros_rabbitmq.network.AnsiColors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -86,6 +116,378 @@
 <dl class="class">
 <dt id="miros_rabbitmq.network.Attribute">
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">Attribute</code><a class="headerlink" href="#miros_rabbitmq.network.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.CacheFile">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheFile</code><span class="sig-paren">(</span><em>name</em>, <em>file_path</em>, <em>system_read_signal_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.exists">
+<code class="descname">exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.expired">
+<code class="descname">expired</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.expired" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.temp_file_name">
+<code class="descname">temp_file_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.temp_file_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.write_access_off">
+<code class="descname">write_access_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.write_access_off" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.write_access_on">
+<code class="descname">write_access_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.write_access_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.CacheFile.writeable">
+<code class="descname">writeable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFile.writeable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.CacheFileChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheFileChart</code><span class="sig-paren">(</span><em>file_path=None</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.CacheFile" title="miros_rabbitmq.network.CacheFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.CacheFile</span></code></a></p>
+<p>Provides the ability for multiple programs to the same JSON file.
+To see the documentation and the map for this statechart: <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#cfc">link</a></p>
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fa_entry">
+<em class="property">static </em><code class="descname">fa_entry</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fa_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_accessed state ENTRY_SIGNAL event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fa_exit">
+<em class="property">static </em><code class="descname">fa_exit</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fa_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_accessed state EXIT_SIGNAL event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_CACHE_DESTROY">
+<em class="property">static </em><code class="descname">faw_CACHE_DESTROY</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_CACHE_DESTROY" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state global faw_CACHE_DESTROY event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_CACHE_FILE_READ">
+<em class="property">static </em><code class="descname">faw_CACHE_FILE_READ</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_CACHE_FILE_READ" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state global CACHE_FILE_READ event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_CACHE_FILE_WRITE">
+<em class="property">static </em><code class="descname">faw_CACHE_FILE_WRITE</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_CACHE_FILE_WRITE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state global CACHE_FILE_WRITE event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_cache_file_read">
+<em class="property">static </em><code class="descname">faw_cache_file_read</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_cache_file_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state private cache_file_read event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_cache_file_write">
+<em class="property">static </em><code class="descname">faw_cache_file_write</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_cache_file_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state private cache_file_write event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.faw_entry">
+<em class="property">static </em><code class="descname">faw_entry</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.faw_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_access_waiting state ENTRY_SIGNAL event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fr_entry">
+<em class="property">static </em><code class="descname">fr_entry</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fr_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_read state ENTRY_SIGNAL event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fr_read_successful">
+<em class="property">static </em><code class="descname">fr_read_successful</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fr_read_successful" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fw_entry">
+<em class="property">static </em><code class="descname">fw_entry</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fw_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file_write state ENTRY_SIGNAL event handler</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.fw_write_successful">
+<em class="property">static </em><code class="descname">fw_write_successful</code><span class="sig-paren">(</span><em>cache</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.fw_write_successful" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.CacheFileChart.timeout">
+<em class="property">static </em><code class="descname">timeout</code><span class="sig-paren">(</span><em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart.timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.CacheReadPayload">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheReadPayload</code><span class="sig-paren">(</span><em>dict</em>, <em>last_modified</em>, <em>created_at</em>, <em>expired</em>, <em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheReadPayload.created_at">
+<code class="descname">created_at</code><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload.created_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheReadPayload.dict">
+<code class="descname">dict</code><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheReadPayload.expired">
+<code class="descname">expired</code><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload.expired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheReadPayload.file_name">
+<code class="descname">file_name</code><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload.file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheReadPayload.last_modified">
+<code class="descname">last_modified</code><a class="headerlink" href="#miros_rabbitmq.network.CacheReadPayload.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.CacheWritePayload">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheWritePayload</code><span class="sig-paren">(</span><em>json</em>, <em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheWritePayload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheWritePayload.file_name">
+<code class="descname">file_name</code><a class="headerlink" href="#miros_rabbitmq.network.CacheWritePayload.file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.CacheWritePayload.json">
+<code class="descname">json</code><a class="headerlink" href="#miros_rabbitmq.network.CacheWritePayload.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ConnectionDiscoveryPayload">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ConnectionDiscoveryPayload</code><span class="sig-paren">(</span><em>hosts</em>, <em>amqp_urls</em>, <em>dispatcher</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ConnectionDiscoveryPayload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ConnectionDiscoveryPayload.amqp_urls">
+<code class="descname">amqp_urls</code><a class="headerlink" href="#miros_rabbitmq.network.ConnectionDiscoveryPayload.amqp_urls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ConnectionDiscoveryPayload.dispatcher">
+<code class="descname">dispatcher</code><a class="headerlink" href="#miros_rabbitmq.network.ConnectionDiscoveryPayload.dispatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ConnectionDiscoveryPayload.hosts">
+<code class="descname">hosts</code><a class="headerlink" href="#miros_rabbitmq.network.ConnectionDiscoveryPayload.hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="miros_rabbitmq.network.EnvContractBroken">
+<em class="property">exception </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">EnvContractBroken</code><a class="headerlink" href="#miros_rabbitmq.network.EnvContractBroken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.LanChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">LanChart</code><span class="sig-paren">(</span><em>routing_key</em>, <em>exchange_name</em>, <em>time_out_in_minutes=None</em>, <em>cache_file_path=None</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.MirosRabbitLan" title="miros_rabbitmq.network.MirosRabbitLan"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.MirosRabbitLan</span></code></a></p>
+<p>The LanChart is responsible for finding other RabbitMQ servers on your
+Local Area Network</p>
+<p>To see it’s documentation and a map of this statechart, click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#lanchart">here</a></p>
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanChart.dn_LAN_RECCE_COMPLETE">
+<em class="property">static </em><code class="descname">dn_LAN_RECCE_COMPLETE</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.dn_LAN_RECCE_COMPLETE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanChart.dn_entry">
+<em class="property">static </em><code class="descname">dn_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.dn_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanChart.rodnd_CACHE">
+<em class="property">static </em><code class="descname">rodnd_CACHE</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.rodnd_CACHE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanChart.rodnd_connection_discovered">
+<em class="property">static </em><code class="descname">rodnd_connection_discovered</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.rodnd_connection_discovered" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanChart.rodnd_entry">
+<em class="property">static </em><code class="descname">rodnd_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.rodnd_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.LanRecce">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">LanRecce</code><span class="sig-paren">(</span><em>routing_key</em>, <em>exchange_name</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.candidate_ip_addresses">
+<code class="descname">candidate_ip_addresses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.candidate_ip_addresses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.get_ipv4_network">
+<code class="descname">get_ipv4_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.get_ipv4_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecce.get_working_ip_address">
+<em class="property">static </em><code class="descname">get_working_ip_address</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.get_working_ip_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.ip_addresses_on_lan">
+<code class="descname">ip_addresses_on_lan</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.ip_addresses_on_lan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.ip_addresses_on_this_machine">
+<code class="descname">ip_addresses_on_this_machine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.ip_addresses_on_this_machine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.netmask_on_this_machine">
+<code class="descname">netmask_on_this_machine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.netmask_on_this_machine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.LanRecce.ping_to_fill_arp_table">
+<code class="descname">ping_to_fill_arp_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecce.ping_to_fill_arp_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.LanRecceChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">LanRecceChart</code><span class="sig-paren">(</span><em>routing_key</em>, <em>exchange_name</em>, <em>live_trace=None</em>, <em>live_spy=None</em>, <em>arp_timeout_sec=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.LanRecce" title="miros_rabbitmq.network.LanRecce"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.LanRecce</span></code></a></p>
+<p>The LanRecceChart performs multiple scouting missions of your local area network for compatible RabbitMQ consumers.</p>
+<p>To see it’s design and diagram click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#how-it-works2-the-lanreccechart">here</a></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.LanRecceChart.ARP_TIME_OUT_SEC">
+<code class="descname">ARP_TIME_OUT_SEC</code><em class="property"> = 2.0</em><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.ARP_TIME_OUT_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.fill_arp_table_ARP_TIME_OUT">
+<em class="property">static </em><code class="descname">fill_arp_table_ARP_TIME_OUT</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.fill_arp_table_ARP_TIME_OUT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.fill_arp_table_entry">
+<em class="property">static </em><code class="descname">fill_arp_table_entry</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.fill_arp_table_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.fill_arp_table_exit">
+<em class="property">static </em><code class="descname">fill_arp_table_exit</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.fill_arp_table_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.identify_all_ip_addresses_entry">
+<em class="property">static </em><code class="descname">identify_all_ip_addresses_entry</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.identify_all_ip_addresses_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.lan_recce_RECCE_LAN">
+<em class="property">static </em><code class="descname">lan_recce_RECCE_LAN</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.lan_recce_RECCE_LAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.lan_recce_exit">
+<em class="property">static </em><code class="descname">lan_recce_exit</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.lan_recce_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.lan_recce_init">
+<em class="property">static </em><code class="descname">lan_recce_init</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.lan_recce_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.lan_recce_ip_addresses_found">
+<em class="property">static </em><code class="descname">lan_recce_ip_addresses_found</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.lan_recce_ip_addresses_found" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.private_recce_lan">
+<em class="property">static </em><code class="descname">private_recce_lan</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.private_recce_lan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.private_search_RECCE_COMPLETE">
+<em class="property">static </em><code class="descname">private_search_RECCE_COMPLETE</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.private_search_RECCE_COMPLETE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.private_search_RECCE_LAN">
+<em class="property">static </em><code class="descname">private_search_RECCE_LAN</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.private_search_RECCE_LAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.private_search_entry">
+<em class="property">static </em><code class="descname">private_search_entry</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.private_search_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_AMQP_CONSUMER_CHECK">
+<em class="property">static </em><code class="descname">recce_rabbit_consumers_AMQP_CONSUMER_CHECK</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_AMQP_CONSUMER_CHECK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_entry">
+<em class="property">static </em><code class="descname">recce_rabbit_consumers_entry</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_lan_recce_complete">
+<em class="property">static </em><code class="descname">recce_rabbit_consumers_lan_recce_complete</code><span class="sig-paren">(</span><em>lan</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanRecceChart.recce_rabbit_consumers_lan_recce_complete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.LoadEnvironmentalVariables">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">LoadEnvironmentalVariables</code><a class="headerlink" href="#miros_rabbitmq.network.LoadEnvironmentalVariables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
@@ -153,6 +555,55 @@
 <code class="descname">netmask_on_this_machine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LocalAreaNetwork.netmask_on_this_machine" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ManNetChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ManNetChart</code><span class="sig-paren">(</span><em>routing_key</em>, <em>exchange_name</em>, <em>cache_file_path=None</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.MirosRabbitManualNetwork" title="miros_rabbitmq.network.MirosRabbitManualNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.MirosRabbitManualNetwork</span></code></a></p>
+<p>The ManNetChart lets a user specify the addresses they want to use in their network.
+To see it’s documentation and diagrams click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#manual-network-chart">here</a>.</p>
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.en_AMQP_CONSUMER_CHECK">
+<em class="property">static </em><code class="descname">en_AMQP_CONSUMER_CHECK</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.en_AMQP_CONSUMER_CHECK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.en_CACHE">
+<em class="property">static </em><code class="descname">en_CACHE</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.en_CACHE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.en_entry">
+<em class="property">static </em><code class="descname">en_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.en_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.raend_CACHE">
+<em class="property">static </em><code class="descname">raend_CACHE</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.raend_CACHE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.raend_CONNECTION_DISCOVERY">
+<em class="property">static </em><code class="descname">raend_CONNECTION_DISCOVERY</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.raend_CONNECTION_DISCOVERY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.raend_entry">
+<em class="property">static </em><code class="descname">raend_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.raend_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ManNetChart.raend_network_evaluated">
+<em class="property">static </em><code class="descname">raend_network_evaluated</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.raend_network_evaluated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.MeshProducerFactory">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">MeshProducerFactory</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>serialization_function</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MeshProducerFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactory" title="miros_rabbitmq.network.ProducerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactory</span></code></a></p>
 </dd></dl>
 
 <dl class="exception">
@@ -336,6 +787,38 @@
 <dl class="method">
 <dt id="miros_rabbitmq.network.MirosNetsInterface.transmit">
 <code class="descname">transmit</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.transmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.MirosRabbitLan">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">MirosRabbitLan</code><span class="sig-paren">(</span><em>name</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>time_out_in_minutes=None</em>, <em>cache_file_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitLan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.MirosRabbitLan.change_time_out_in_minutes">
+<code class="descname">change_time_out_in_minutes</code><span class="sig-paren">(</span><em>time_out_in_minutes</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitLan.change_time_out_in_minutes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.MirosRabbitLan.make_amqp_url">
+<code class="descname">make_amqp_url</code><span class="sig-paren">(</span><em>ip_address</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitLan.make_amqp_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.MirosRabbitLan.time_out_in_minutes">
+<code class="descname">time_out_in_minutes</code><em class="property"> = 30</em><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitLan.time_out_in_minutes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.MirosRabbitManualNetwork">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">MirosRabbitManualNetwork</code><span class="sig-paren">(</span><em>name</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>file_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitManualNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.MirosRabbitManualNetwork.make_amqp_url">
+<code class="descname">make_amqp_url</code><span class="sig-paren">(</span><em>ip_address</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosRabbitManualNetwork.make_amqp_url" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -571,6 +1054,142 @@ serializing messages.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="miros_rabbitmq.network.PikaTopicPublisherMaker">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">PikaTopicPublisherMaker</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>connection_attempts=None</em>, <em>heartbeat_interval=None</em>, <em>callback_tempo=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.PikaTopicPublisherMaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class which removes as much of the tedium from building a pika producer as is possible.</p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.PikaTopicPublisherMaker.CALLBACK_TEMPO">
+<code class="descname">CALLBACK_TEMPO</code><em class="property"> = 0.1</em><a class="headerlink" href="#miros_rabbitmq.network.PikaTopicPublisherMaker.CALLBACK_TEMPO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.PikaTopicPublisherMaker.CONNECTION_ATTEMPTS">
+<code class="descname">CONNECTION_ATTEMPTS</code><em class="property"> = 3</em><a class="headerlink" href="#miros_rabbitmq.network.PikaTopicPublisherMaker.CONNECTION_ATTEMPTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.PikaTopicPublisherMaker.HEARTBEAT_INTERVAL_SEC">
+<code class="descname">HEARTBEAT_INTERVAL_SEC</code><em class="property"> = 3600</em><a class="headerlink" href="#miros_rabbitmq.network.PikaTopicPublisherMaker.HEARTBEAT_INTERVAL_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ProducerFactory">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactory</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>serialization_function</em>, <em>publish_tempo_sec=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ProducerFactory.PublishTempoSec">
+<code class="descname">PublishTempoSec</code><em class="property"> = 0.1</em><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactory.PublishTempoSec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.ProducerFactory.make_producer">
+<code class="descname">make_producer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactory.make_producer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ProducerFactoryAggregator">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryAggregator</code><span class="sig-paren">(</span><em>name</em>, <em>producer_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.ProducerFactoryAggregator.get_ip_for_hostname">
+<code class="descname">get_ip_for_hostname</code><span class="sig-paren">(</span><em>host</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator.get_ip_for_hostname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.ProducerFactoryAggregator.make_mesh_producer">
+<code class="descname">make_mesh_producer</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator.make_mesh_producer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.ProducerFactoryAggregator.make_snoop_spy_producer">
+<code class="descname">make_snoop_spy_producer</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator.make_snoop_spy_producer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.ProducerFactoryAggregator.make_snoop_trace_producer">
+<code class="descname">make_snoop_trace_producer</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator.make_snoop_trace_producer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryChart</code><span class="sig-paren">(</span><em>producer_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactoryAggregator" title="miros_rabbitmq.network.ProducerFactoryAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactoryAggregator</span></code></a></p>
+<p>The ProducerFactoryChart is used to build RabbitMQ producers as they are discovered by the miros-rabbitmq library.</p>
+<p>To read the documentation and see diagrams for this statechart click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#the-producer-factory-chart">here</a>.</p>
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.pd_CONNECTION_DISCOVERY">
+<em class="property">static </em><code class="descname">pd_CONNECTION_DISCOVERY</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.pd_CONNECTION_DISCOVERY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.pd_entry">
+<em class="property">static </em><code class="descname">pd_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.pd_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.pd_ips_discovered">
+<em class="property">static </em><code class="descname">pd_ips_discovered</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.pd_ips_discovered" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.ptq_CONNECTION_DISCOVERED">
+<em class="property">static </em><code class="descname">ptq_CONNECTION_DISCOVERED</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.ptq_CONNECTION_DISCOVERED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.ptq_exit">
+<em class="property">static </em><code class="descname">ptq_exit</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.ptq_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.ptq_ips_discovered">
+<em class="property">static </em><code class="descname">ptq_ips_discovered</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.ptq_ips_discovered" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.ptq_ready">
+<em class="property">static </em><code class="descname">ptq_ready</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.ptq_ready" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.ProducerFactoryChart.rp_entry">
+<em class="property">static </em><code class="descname">rp_entry</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart.rp_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.ProducerQueue">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerQueue</code><span class="sig-paren">(</span><em>mesh_producers</em>, <em>snoop_trace_producers</em>, <em>snoop_spy_producers</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ProducerQueue.mesh_producers">
+<code class="descname">mesh_producers</code><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue.mesh_producers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ProducerQueue.snoop_spy_producers">
+<code class="descname">snoop_spy_producers</code><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue.snoop_spy_producers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ProducerQueue.snoop_trace_producers">
+<code class="descname">snoop_trace_producers</code><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue.snoop_trace_producers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="miros_rabbitmq.network.QueueToSampleTimeControl">
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">QueueToSampleTimeControl</code><span class="sig-paren">(</span><em>i_max</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.QueueToSampleTimeControl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.PID" title="miros_rabbitmq.network.PID"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.PID</span></code></a></p>
@@ -580,6 +1199,90 @@ serializing messages.</p>
 <dd><p>Invert the output of our PID -&gt; large amounts of control need to express
 short durations in time</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.RabbitConsumerScout">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">RabbitConsumerScout</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RabbitConsumerScout.CONNECTION_ATTEMPTS">
+<code class="descname">CONNECTION_ATTEMPTS</code><em class="property"> = 1</em><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScout.CONNECTION_ATTEMPTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RabbitConsumerScout.SCOUT_TEMPO_SEC">
+<code class="descname">SCOUT_TEMPO_SEC</code><em class="property"> = 0.01</em><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScout.SCOUT_TEMPO_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RabbitConsumerScout.SCOUT_TIMEOUT_SEC">
+<code class="descname">SCOUT_TIMEOUT_SEC</code><em class="property"> = 0.5</em><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScout.SCOUT_TIMEOUT_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="miros_rabbitmq.network.RabbitConsumerScout.get_amqp_consumer_check_payload">
+<code class="descname">get_amqp_consumer_check_payload</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScout.get_amqp_consumer_check_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">RabbitConsumerScoutChart</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.RabbitConsumerScout" title="miros_rabbitmq.network.RabbitConsumerScout"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.RabbitConsumerScout</span></code></a></p>
+<p>The RabbitConsumerScoutChart searches an IP address to see if there is a compatible RabbitMQ consumer running on it.</p>
+<p>To see the map and design information for this chart: <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#the-rabbit-consumer-scout-chart">link</a></p>
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.amqp_consumer_server_found_entry">
+<em class="property">static </em><code class="descname">amqp_consumer_server_found_entry</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.amqp_consumer_server_found_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.no_amqp_consumer_server_found_entry">
+<em class="property">static </em><code class="descname">no_amqp_consumer_server_found_entry</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.no_amqp_consumer_server_found_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.producer_post_and_wait_entry">
+<em class="property">static </em><code class="descname">producer_post_and_wait_entry</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.producer_post_and_wait_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_consumer_test_complete">
+<em class="property">static </em><code class="descname">producer_thread_engaged_consumer_test_complete</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_consumer_test_complete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_entry">
+<em class="property">static </em><code class="descname">producer_thread_engaged_entry</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_exit">
+<em class="property">static </em><code class="descname">producer_thread_engaged_exit</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.producer_thread_engaged_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.producer_try_to_contact_consumer">
+<em class="property">static </em><code class="descname">producer_try_to_contact_consumer</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.producer_try_to_contact_consumer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.search_AMPQ_CONSUMER_CHECK">
+<em class="property">static </em><code class="descname">search_AMPQ_CONSUMER_CHECK</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.search_AMPQ_CONSUMER_CHECK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.search_entry">
+<em class="property">static </em><code class="descname">search_entry</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.search_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="miros_rabbitmq.network.RabbitConsumerScoutChart.search_init">
+<em class="property">static </em><code class="descname">search_init</code><span class="sig-paren">(</span><em>scout</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitConsumerScoutChart.search_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -612,6 +1315,31 @@ short durations in time</p>
       <span class="n">ip_address</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.1</span><span class="p">,</span>
       <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;bob&#39;</span><span class="p">,</span>
       <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;dobb&#39;</span><span class="p">,</span>
+      <span class="n">connection_attempts</span><span class="o">=</span><span class="s1">&#39;3&#39;</span><span class="p">,</span>
+      <span class="n">heartbeat_interval</span><span class="o">=</span><span class="s1">&#39;3600&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">amqp_url</span><span class="p">)</span>  <span class="c1"># =&gt;</span>
+  <span class="s1">&#39;amqp://bob:dobbs@192.168.1.1:5672/</span><span class="si">%2F</span><span class="s1">?connection_attempts=3&amp;heartbeat_interval=3600&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.RabbitHelper2">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">RabbitHelper2</code><a class="headerlink" href="#miros_rabbitmq.network.RabbitHelper2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="miros_rabbitmq.network.RabbitHelper2.make_amqp_url">
+<code class="descname">make_amqp_url</code><span class="sig-paren">(</span><em>ip_address</em>, <em>rabbit_user=None</em>, <em>rabbit_password=None</em>, <em>rabbit_port=None</em>, <em>connection_attempts=None</em>, <em>heartbeat_interval=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitHelper2.make_amqp_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a RabbitMq url.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">amqp_url</span> <span class="o">=</span> \
+  <span class="bp">self</span><span class="o">.</span><span class="n">make_amqp_url</span><span class="p">(</span>
+      <span class="n">ip_address</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.1</span><span class="p">,</span>    <span class="c1"># only mandatory argument</span>
+      <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>       <span class="c1"># if any of the following args not given</span>
+      <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>  <span class="c1"># the .env file will be used</span>
       <span class="n">connection_attempts</span><span class="o">=</span><span class="s1">&#39;3&#39;</span><span class="p">,</span>
       <span class="n">heartbeat_interval</span><span class="o">=</span><span class="s1">&#39;3600&#39;</span><span class="p">)</span>
 
@@ -706,6 +1434,48 @@ the LAN.</p>
 <dt id="miros_rabbitmq.network.RabbitScout.scout_candidates">
 <code class="descname">scout_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RabbitScout.scout_candidates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.RecceCompletePayload">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">RecceCompletePayload</code><span class="sig-paren">(</span><em>other_addresses</em>, <em>my_address</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RecceCompletePayload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RecceCompletePayload.my_address">
+<code class="descname">my_address</code><a class="headerlink" href="#miros_rabbitmq.network.RecceCompletePayload.my_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RecceCompletePayload.other_addresses">
+<code class="descname">other_addresses</code><a class="headerlink" href="#miros_rabbitmq.network.RecceCompletePayload.other_addresses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.RecceNode">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">RecceNode</code><span class="sig-paren">(</span><em>searched</em>, <em>result</em>, <em>scout</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.RecceNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RecceNode.result">
+<code class="descname">result</code><a class="headerlink" href="#miros_rabbitmq.network.RecceNode.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RecceNode.scout">
+<code class="descname">scout</code><a class="headerlink" href="#miros_rabbitmq.network.RecceNode.scout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.RecceNode.searched">
+<code class="descname">searched</code><a class="headerlink" href="#miros_rabbitmq.network.RecceNode.searched" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1457,10 +2227,28 @@ and stop the thread, use the ‘stop’ api</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="miros_rabbitmq.network.SnoopSpyProducerFactory">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">SnoopSpyProducerFactory</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>serialization_function</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.SnoopSpyProducerFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactory" title="miros_rabbitmq.network.ProducerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactory</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="miros_rabbitmq.network.SnoopTraceProducerFactory">
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">SnoopTraceProducerFactory</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em>, <em>serialization_function</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.SnoopTraceProducerFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactory" title="miros_rabbitmq.network.ProducerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactory</span></code></a></p>
+</dd></dl>
+
 <dl class="function">
 <dt id="miros_rabbitmq.network.pp">
 <code class="descclassname">miros_rabbitmq.network.</code><code class="descname">pp</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.pp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="miros_rabbitmq.network.to_snake">
+<code class="descclassname">miros_rabbitmq.network.</code><code class="descname">to_snake</code><span class="sig-paren">(</span><em>camel_case</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.to_snake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a CamelCase name into a camel_case, snake style name</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-miros_rabbitmq">

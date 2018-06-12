@@ -68,7 +68,15 @@ class LoadEnvironmentalVariables():
     # if not os.getenv('SNOOP_BOB'):
     #   raise EnvContractBroken('SNOOP_BOB is missing from your .env file')
 
-class RabbitHelper():
+LoadEnvironmentalVariables()
+
+RABBIT_USER = os.getenv('RABBIT_USER')
+RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
+MESH_ENCRYPTION_KEY = os.getenv('MESH_ENCRYPTION_KEY')
+SNOOP_SPY_ENCRYPTION_KEY = os.getenv('SNOOP_SPY_ENCRYPTION_KEY')
+SNOOP_TRACE_ENCRYPTION_KEY = os.getenv('SNOOP_TRACE_ENCRYPTION_KEY')
+
+class RabbitHelper2():
   def __init__(self):
     '''Create a scout memory interface'''
     LoadEnvironmentalVariables()
@@ -400,7 +408,7 @@ class PikaTopicPublisherMaker():
     if connection_attempts is None:
       connection_attempts = PikaTopicPublisherMaker.CONNECTION_ATTEMPTS
 
-    self.rabbit_helper = RabbitHelper()
+    self.rabbit_helper = RabbitHelper2()
     self.amqp_url = self.rabbit_helper.make_amqp_url(
         ip_address=self.ip_address,
         rabbit_user=self.rabbit_user,
@@ -879,7 +887,7 @@ class MirosRabbitLan(Factory):
     self.dict = {}
     self.addresses = None
     self.amqp_urls = None
-    self.rabbit_helper = RabbitHelper()
+    self.rabbit_helper = RabbitHelper2()
 
   def change_time_out_in_minutes(self, time_out_in_minutes):
     self.time_out_in_minutes = time_out_in_minutes
@@ -1012,7 +1020,7 @@ class MirosRabbitManualNetwork(Factory):
     self.exchange_name = exchange_name
     self.dict = {}
 
-    self.rabbit_helper = RabbitHelper()
+    self.rabbit_helper = RabbitHelper2()
     self.hosts = None
     self.live_hosts = None
     self.live_amqp_urls = None
@@ -1166,7 +1174,7 @@ class ProducerFactory():
                 serialization_function,
                 publish_tempo_sec=None):
 
-    self.rabbit_helper = RabbitHelper()
+    self.rabbit_helper = RabbitHelper2()
     LoadEnvironmentalVariables()
     self.exchange_name = exchange_name
     self.routing_key   = routing_key

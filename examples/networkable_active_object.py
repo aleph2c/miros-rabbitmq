@@ -107,5 +107,5 @@ if __name__ == '__main__':
   # python3 networkable_active_object.py 2>&1 | sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | tee log.txt
   # grep -F [+s] log.txt | grep <name>
   ao.start_at(outer)
-  time.sleep(20)
+  time.sleep(200)
 

@@ -77,7 +77,7 @@ encryption key(s) for the three different networks.
     :target: _static/miros_rabbitmq_2.pdf
     :align: center
 
-The snoop_trace and snoop_spy networks will use the ``mesh_encyption_key`` if a
+The snoop_trace and snoop_spy networks will use the ``mesh_encryption_key`` if a
 ``trace_snoop_encryption_key`` or a ``spy_snoop_encryption_key`` are not
 provided.
 
