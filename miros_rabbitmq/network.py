@@ -185,7 +185,7 @@ CacheWritePayload = \
 
 class CacheFileChart(CacheFile):
   '''Provides the ability for multiple programs to the same JSON file.
-  To see the documentation and the map for this statechart: `link <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#cfc>`_
+  To see the documentation and the map for this statechart: `link <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#cfc>`_
   '''
   def __init__(self, file_path=None, live_trace=None, live_spy=None):
     if file_path is None:
@@ -460,7 +460,7 @@ class RabbitConsumerScout(Factory):
 class RabbitConsumerScoutChart(RabbitConsumerScout):
   '''The RabbitConsumerScoutChart searches an IP address to see if there is a compatible RabbitMQ consumer running on it.
 
-  To see the map and design information for this chart: `link <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#the-rabbit-consumer-scout-chart>`_
+  To see the map and design information for this chart: `link <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#the-rabbit-consumer-scout-chart>`_
   '''
 
   def __init__(self, ip_address, routing_key, exchange_name, live_trace=None, live_spy=None):
@@ -709,7 +709,7 @@ RecceCompletePayload = \
 class LanRecceChart(LanRecce):
   '''The LanRecceChart performs multiple scouting missions of your local area network for compatible RabbitMQ consumers.
 
-  To see it's design and diagram click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#how-it-works2-the-lanreccechart>`_'''
+  To see it's design and diagram click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#how-it-works2-the-lanreccechart>`_'''
 
   ARP_TIME_OUT_SEC = 2.0
 
@@ -918,7 +918,7 @@ class LanChart(MirosRabbitLan):
   Local Area Network
 
   To see it's documentation and a map of this statechart, click `here
-  <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#lanchart>`_'''
+  <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#lanchart>`_'''
   def __init__(self,
         routing_key, exchange_name, time_out_in_minutes=None,
         cache_file_path=None, live_trace=None, live_spy=None):
@@ -1056,7 +1056,7 @@ class MirosRabbitManualNetwork(Factory):
 
 class ManNetChart(MirosRabbitManualNetwork):
   '''The ManNetChart lets a user specify the addresses they want to use in their network.
-  To see it's documentation and diagrams click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#manual-network-chart>`_.
+  To see it's documentation and diagrams click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#manual-network-chart>`_.
   '''
 
   def __init__(self, routing_key, exchange_name, cache_file_path=None, live_trace=None, live_spy=None):
@@ -1213,20 +1213,22 @@ class ProducerFactory():
 
   def make_producer(self):
     if not self.serialization_function:
-      return PikaTopicPublisher(
+      producer = PikaTopicPublisher(
           amqp_url=self.amqp_url,
           routing_key=self.routing_key,
           publish_tempo_sec=self.publish_tempo_sec,
           exchange_name=self.exchange_name,
           encryption_key=self.encryption_key)
     else:
-      return PikaTopicPublisher(
+      producer = PikaTopicPublisher(
           amqp_url=self.amqp_url,
           routing_key=self.routing_key,
           publish_tempo_sec=self.publish_tempo_sec,
           exchange_name=self.exchange_name,
           serialization_function=self.serialization_function,
           encryption_key=self.encryption_key)
+    producer.start_thread()
+    return producer
 
 class MeshProducerFactory(ProducerFactory):
   def __init__(self,
@@ -1324,7 +1326,7 @@ class ProducerFactoryAggregator(Factory):
 class ProducerFactoryChart(ProducerFactoryAggregator):
   '''The ProducerFactoryChart is used to build RabbitMQ producers as they are discovered by the miros-rabbitmq library.
 
-  To read the documentation and see diagrams for this statechart click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works2.html#the-producer-factory-chart>`_.'''
+  To read the documentation and see diagrams for this statechart click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#the-producer-factory-chart>`_.'''
   def __init__(self,
                producer_queue,
                mesh_routing_key,
@@ -3139,8 +3141,7 @@ class MirosNets:
     return discovered
 
   def transmit(self, event):
-    if self.update_producers():
-      self.start_threads()
+    self.update_producers()
     for producer in self.mesh.producers:
       producer.post_fifo(event)
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>8</zoom_level>
+  <zoom_level>7</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>152</x>
-      <y>512</y>
-      <w>1008</w>
-      <h>632</h>
+      <x>308</x>
+      <y>448</y>
+      <w>882</w>
+      <h>553</h>
     </coordinates>
     <panel_attributes>*producer discovery*
 --
@@ -49,10 +49,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>376</x>
-      <y>696</y>
-      <w>232</w>
-      <h>48</h>
+      <x>504</x>
+      <y>609</y>
+      <w>203</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>ConnectionDiscoveryPayload = \
   namedtuple('ConnectionDiscoveryPayload',
@@ -62,10 +62,10 @@ valign=top
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>456</x>
-      <y>104</y>
-      <w>232</w>
-      <h>264</h>
+      <x>574</x>
+      <y>91</y>
+      <w>203</w>
+      <h>231</h>
     </coordinates>
     <panel_attributes>*ProducerFactoryAggregator*
 --
@@ -91,10 +91,10 @@ make_snoop_spy_producer(ip)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>552</x>
-      <y>360</y>
-      <w>24</w>
-      <h>48</h>
+      <x>658</x>
+      <y>315</y>
+      <w>21</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -102,10 +102,10 @@ make_snoop_spy_producer(ip)
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>104</x>
-      <y>392</y>
-      <w>1072</w>
-      <h>776</h>
+      <x>266</x>
+      <y>343</y>
+      <w>938</w>
+      <h>679</h>
     </coordinates>
     <panel_attributes>*ProducerFactoryChart*
 --
@@ -120,10 +120,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>192</x>
-      <y>456</y>
-      <w>40</w>
-      <h>48</h>
+      <x>343</x>
+      <y>399</y>
+      <w>35</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
     <additional_attributes>20.0;10.0;20.0;30.0</additional_attributes>
@@ -131,10 +131,10 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
-      <y>488</y>
-      <w>24</w>
-      <h>48</h>
+      <x>350</x>
+      <y>427</y>
+      <w>21</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=()-[v]</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -142,10 +142,10 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>128</x>
-      <y>424</y>
-      <w>160</w>
-      <h>48</h>
+      <x>287</x>
+      <y>371</y>
+      <w>140</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>symbol=component
 Event Processor</panel_attributes>
@@ -154,10 +154,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>720</x>
-      <y>272</y>
-      <w>232</w>
-      <h>64</h>
+      <x>805</x>
+      <y>238</y>
+      <w>203</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>Note..
   keeps track of everything as raw IP
@@ -168,10 +168,10 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>704</x>
-      <y>648</y>
-      <w>424</w>
-      <h>456</h>
+      <x>791</x>
+      <y>567</y>
+      <w>371</w>
+      <h>399</h>
     </coordinates>
     <panel_attributes>*refactor_producers*
 --
@@ -209,10 +209,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>144</x>
-      <y>976</y>
-      <w>576</w>
-      <h>40</h>
+      <x>301</x>
+      <y>854</y>
+      <w>504</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ips_discovered
@@ -222,10 +222,10 @@ ips_discovered
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>144</x>
-      <y>1032</y>
-      <w>496</w>
-      <h>32</h>
+      <x>301</x>
+      <y>903</y>
+      <w>434</w>
+      <h>28</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ready</panel_attributes>
@@ -234,10 +234,10 @@ ready</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>176</x>
+      <x>329</x>
       <y>0</y>
-      <w>232</w>
-      <h>152</h>
+      <w>203</w>
+      <h>133</h>
     </coordinates>
     <panel_attributes>*ProducerFactory*
 --
@@ -258,10 +258,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>184</x>
-      <y>208</y>
-      <w>184</w>
-      <h>24</h>
+      <x>336</x>
+      <y>182</y>
+      <w>161</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>*MeshProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -269,10 +269,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>184</x>
-      <y>240</y>
-      <w>184</w>
-      <h>24</h>
+      <x>336</x>
+      <y>210</y>
+      <w>161</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>*SnoopTraceProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -280,10 +280,10 @@ make_producer()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>184</x>
-      <y>272</y>
-      <w>184</w>
-      <h>24</h>
+      <x>336</x>
+      <y>238</y>
+      <w>161</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>*SnoopSpyProducerFactory*</panel_attributes>
     <additional_attributes/>
@@ -291,10 +291,10 @@ make_producer()
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>112</x>
-      <y>144</y>
-      <w>192</w>
-      <h>120</h>
+      <x>273</x>
+      <y>126</y>
+      <w>168</w>
+      <h>105</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>220.0;10.0;220.0;50.0;10.0;50.0;10.0;130.0;50.0;130.0</additional_attributes>
@@ -302,10 +302,10 @@ make_producer()
   <element>
     <id>UMLSyncBarVertical</id>
     <coordinates>
-      <x>144</x>
-      <y>208</y>
-      <w>16</w>
-      <h>88</h>
+      <x>301</x>
+      <y>182</y>
+      <w>14</w>
+      <h>77</h>
     </coordinates>
     <panel_attributes>template=txt
 title=titletext
@@ -315,10 +315,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>144</x>
-      <y>208</y>
-      <w>56</w>
-      <h>24</h>
+      <x>301</x>
+      <y>182</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -326,10 +326,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>144</x>
-      <y>240</y>
-      <w>56</w>
-      <h>24</h>
+      <x>301</x>
+      <y>210</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -337,10 +337,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>144</x>
-      <y>272</y>
-      <w>56</w>
-      <h>24</h>
+      <x>301</x>
+      <y>238</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -348,10 +348,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>360</x>
-      <y>208</y>
-      <w>112</w>
-      <h>24</h>
+      <x>490</x>
+      <y>182</y>
+      <w>98</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -359,10 +359,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>360</x>
-      <y>240</y>
-      <w>112</w>
-      <h>24</h>
+      <x>490</x>
+      <y>210</y>
+      <w>98</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -370,10 +370,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>360</x>
-      <y>272</y>
-      <w>112</w>
-      <h>24</h>
+      <x>490</x>
+      <y>238</y>
+      <w>98</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
@@ -381,10 +381,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>728</x>
-      <y>1024</y>
-      <w>376</w>
-      <h>56</h>
+      <x>812</x>
+      <y>896</y>
+      <w>329</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>ProducerQueue = \
   namedtuple('ProducerQueue',
@@ -395,10 +395,10 @@ bg=red</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>712</x>
-      <y>104</y>
-      <w>216</w>
-      <h>168</h>
+      <x>798</x>
+      <y>91</y>
+      <w>189</w>
+      <h>147</h>
     </coordinates>
     <panel_attributes>ProducerFactoryChart(
   producer_discovery_queue,
@@ -419,10 +419,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>136</x>
-      <y>736</y>
-      <w>16</w>
-      <h>16</h>
+      <x>294</x>
+      <y>644</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=green</panel_attributes>
@@ -431,10 +431,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>688</x>
-      <y>824</y>
-      <w>16</w>
-      <h>16</h>
+      <x>777</x>
+      <y>721</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>
 bg=red</panel_attributes>
@@ -443,10 +443,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>624</x>
-      <y>552</y>
-      <w>520</w>
-      <h>568</h>
+      <x>721</x>
+      <y>483</y>
+      <w>455</w>
+      <h>497</h>
     </coordinates>
     <panel_attributes>*post_to_queue*
 --
@@ -463,10 +463,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>616</x>
-      <y>920</y>
-      <w>104</w>
-      <h>40</h>
+      <x>714</x>
+      <y>805</y>
+      <w>91</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ips_discovered
@@ -476,10 +476,10 @@ ips_discovered
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>456</x>
-      <y>64</y>
-      <w>80</w>
-      <h>24</h>
+      <x>574</x>
+      <y>56</y>
+      <w>70</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>Factory</panel_attributes>
     <additional_attributes/>
@@ -487,10 +487,10 @@ ips_discovered
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>488</x>
-      <y>80</y>
-      <w>24</w>
-      <h>40</h>
+      <x>602</x>
+      <y>70</y>
+      <w>21</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
@@ -498,10 +498,10 @@ ips_discovered
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
-      <y>288</y>
-      <w>56</w>
-      <h>24</h>
+      <x>770</x>
+      <y>252</y>
+      <w>49</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -509,10 +509,10 @@ ips_discovered
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>120</x>
-      <y>640</y>
-      <w>16</w>
-      <h>16</h>
+      <x>280</x>
+      <y>560</y>
+      <w>14</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -520,10 +520,10 @@ ips_discovered
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>120</x>
-      <y>640</y>
-      <w>48</w>
-      <h>24</h>
+      <x>280</x>
+      <y>560</y>
+      <w>42</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>

@@ -138,53 +138,6 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>532</x>
-      <y>175</y>
-      <w>154</w>
-      <h>140</h>
-    </coordinates>
-    <panel_attributes>*LocalAreaNetwork*
---
-static: get_working_ip_address()
---
-get_ipv4_network()
-fill_arp_table()
-ip_addresses_on_lan()
-netmask_on_this_machine()
-ip_address_on_this_machine()
-candidate_ip_addresses()
---
-addresses
-this.address
-other.addresses
-fg=black</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>532</x>
-      <y>343</y>
-      <w>154</w>
-      <h>112</h>
-    </coordinates>
-    <panel_attributes>*RabbitScout*
---
-possible_amqp_urls(...)
-make_amqp_url(...)
-scout_candidates(...)
---
-urls
-addresses
-this.url
-other.other.urls
-
-fg=black</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
       <x>763</x>
       <y>350</y>
       <w>210</w>
@@ -203,8 +156,8 @@ enable_snoop_spy()
 enable_snoop_trace()
 start_threads()
 stop_threads()
-build_mesh_network()
-build_snoop_networks()
+build_mesh_consumer()
+build_snoop_consumers()
 change_mesh_encryption_key()
 change_spy_encryption_key()
 change_trace_encryption_key()
@@ -250,17 +203,6 @@ fg=black</panel_attributes>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>595</x>
-      <y>308</y>
-      <w>21</w>
-      <h>49</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -372,11 +314,11 @@ fg=black</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>686</x>
-      <y>483</y>
-      <w>56</w>
-      <h>42</h>
+      <y>504</y>
+      <w>21</w>
+      <h>21</h>
     </coordinates>
-    <panel_attributes>{nodes, 2*nodes, 3*nodes}
+    <panel_attributes>*
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
@@ -497,8 +439,8 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>679</x>
-      <y>448</y>
+      <x>616</x>
+      <y>420</y>
       <w>70</w>
       <h>28</h>
     </coordinates>
@@ -510,24 +452,24 @@ Collaboration
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>679</x>
-      <y>406</y>
-      <w>49</w>
-      <h>56</h>
+      <x>644</x>
+      <y>385</y>
+      <w>21</w>
+      <h>49</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;50.0;60.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>700</x>
-      <y>469</y>
+      <x>644</x>
+      <y>441</y>
       <w>21</w>
-      <h>28</h>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;20.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -544,12 +486,23 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>735</x>
-      <y>441</y>
-      <w>42</w>
-      <h>28</h>
+      <x>679</x>
+      <y>427</y>
+      <w>98</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;20.0;40.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>560</x>
+      <y>371</y>
+      <w>126</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>ProducerFactoryChart</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

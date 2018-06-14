@@ -33,7 +33,7 @@ bg=blue</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_1
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -45,7 +45,7 @@ bg=green</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_2
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -57,7 +57,7 @@ bg=green</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_n
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -527,7 +527,7 @@ bg=blue</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_1
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -539,7 +539,7 @@ bg=green</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_2
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -551,7 +551,7 @@ bg=green</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>producer_n
-bg=green</panel_attributes>
+bg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

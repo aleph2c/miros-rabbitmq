@@ -4,12 +4,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Example &#8212; miros-rabbitmq 2.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -24,7 +32,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -80,7 +89,7 @@ the miros and the miros-rabbitmq packages using pip.</p>
 under the hood.  If you would rather just look at an example without such
 detail, look <a class="reference internal" href="#example-build-a-networkedactiveobject"><span class="std std-ref">here</span></a>.</p>
 <p>To build the NetworkedActiveObject we import the required libraries:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span> <span class="c1"># to generate a unique name</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">miros</span> <span class="kn">import</span> <span class="n">spy_on</span>
@@ -90,14 +99,14 @@ detail, look <a class="reference internal" href="#example-build-a-networkedactiv
 </div>
 <p>Then we construct a function that will generate a unique name for our
 statechart:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
   <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
 </pre></div>
 </div>
 <p>Now we consider the statechart part of our design:</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_example_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_example_1.svg" src="_images/miros_rabbitmq_example_1.svg" /></div>
 </a>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
   <span class="n">chart</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span>
     <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">),</span>
     <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -184,7 +193,7 @@ FIFO of the active object by the miros-rabbitmq library.  As far as the event
 processor is concerned, they are no different than any native event; the only
 way that we know they are alien is that we have pre-pended the word ‘other’ to
 them, as a coding convention.</p>
-<p>To send a message out to another statechart, you use the <code class="docutils literal notranslate"><span class="pre">transmit</span></code> api
+<p>To send a message out to another statechart, you use the <code class="docutils literal"><span class="pre">transmit</span></code> api
 provided by the NetworkedActiveObject.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -212,7 +221,7 @@ But before we do that, we need to build the NetworkedActiveObject using:</p>
 <li>a rx_routing key</li>
 <li>the encryption keys that will be used by the other programs in our network.</li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
   <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>
   <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
   <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -220,8 +229,8 @@ But before we do that, we need to build the NetworkedActiveObject using:</p>
   <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We name our <code class="docutils literal notranslate"><span class="pre">ao</span></code> object using the <code class="docutils literal notranslate"><span class="pre">make_name</span></code> function that we built at the top of the
-example, it pre-pends 5 digits of a UUID to the front of <code class="docutils literal notranslate"><span class="pre">_ao</span></code>.
+<p>We name our <code class="docutils literal"><span class="pre">ao</span></code> object using the <code class="docutils literal"><span class="pre">make_name</span></code> function that we built at the top of the
+example, it pre-pends 5 digits of a UUID to the front of <code class="docutils literal"><span class="pre">_ao</span></code>.
 The rabbit_user and rabbit_password, networking credentials are specified when you <a class="reference external" href="installing_infrastructure-installing-required-programs">install your RabbitMQ server</a>.  The topic
 tx_routing_key are used by the RabbitMQ exchanges to publish to different
 queues.  A consumer can subscribe to different topics <a class="reference external" href="https://www.rabbitmq.com/tutorials/tutorial-five-python.html">using a simple pattern
@@ -253,40 +262,40 @@ will create a producer for each of them in each of the networks, so you don’t
 have to worry about feeding it IP addresses, it will find them if they are
 connected in the same TCP/IP network.</p>
 <p>Each of the networks can have their own encryption key, but if you only specify
-the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> in the NetworkedActiveObject constructor it will be
+the <code class="docutils literal"><span class="pre">mesh_encryption_key</span></code> in the NetworkedActiveObject constructor it will be
 used by all of the networks.  The snoop_trace and snoop_spy encryption handles
-for the NetworkedActiveObject constructor, are <code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> and
-<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code>.</p>
+for the NetworkedActiveObject constructor, are <code class="docutils literal"><span class="pre">trace_snoop_encryption_key</span></code> and
+<code class="docutils literal"><span class="pre">spy_snoop_encryption_key</span></code>.</p>
 <p>To build an encryption key for your distributed system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
 <span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>As an application developer you just need to know what goes in, and what comes
 out of each of the miros-rabbitmq networks.  This will be talked about in the
 next three paragraphs.</p>
-<p>The mesh network is fed an item using it’s <code class="docutils literal notranslate"><span class="pre">transmit</span></code> method.  This
+<p>The mesh network is fed an item using it’s <code class="docutils literal"><span class="pre">transmit</span></code> method.  This
 information will pop out on every connected machine with the same credentials,
 posted into the fifo of another connected NetworkedActiveObject or
 NetworkedFactory object as if that local machine posted that event to itself as
 <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#posting-an-event-to-the-fifo">post_fifo</a>.</p>
 <p>The snoop_trace network will consist of nodes that have turned on this trace
-information using the <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code> call.  If all of the nodes in your
+information using the <code class="docutils literal"><span class="pre">enable_snoop_trace</span></code> call.  If all of the nodes in your
 distributed system have turned on their snoop_trace, the snoop_trace network
 will have as many nodes as the mesh network.  Information is automatically fed
 into the trace network, without any work required by the application developer.
 When the snoop_trace is enabled, a NetworkedActiveObject or NetworkedFactory
 will turn on it’s <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#tracing-live">live trace feature</a> and feed this
 string into the snoop_trace network behind the scenes.  By default, the
-enable_snoop_trace call will turn on an <code class="docutils literal notranslate"><span class="pre">on_network_trace_message</span></code> callback
+enable_snoop_trace call will turn on an <code class="docutils literal"><span class="pre">on_network_trace_message</span></code> callback
 which will color the messages using ANSI strings and print them to your screen.
-If you need to log this information, use <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> to turn
+If you need to log this information, use <code class="docutils literal"><span class="pre">enable_snoop_trace_no_color</span></code> to turn
 on that node’s participation in the snoop_trace network.</p>
 <p>The snoop_spy network will output all of the spy information for all of the
-nodes that have made an <code class="docutils literal notranslate"><span class="pre">enable_snoop_spy</span></code> call.  This amount of information
+nodes that have made an <code class="docutils literal"><span class="pre">enable_snoop_spy</span></code> call.  This amount of information
 quickly becomes daunting unless you write this information into a log file then
 filter it using grep.  If you are logging the information, you can use
-<code class="docutils literal notranslate"><span class="pre">enable_snoop_spy_no_color</span></code> and the ANSI color codes will not pollute your log
+<code class="docutils literal"><span class="pre">enable_snoop_spy_no_color</span></code> and the ANSI color codes will not pollute your log
 file.  After the snoop_spy network is enabled, the miros-rabbitmq package turns
 on that node’s <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#spying-live">live spy feature</a>.  All of the
 snoop_spy information coming back from the network will be displayed to the
@@ -295,7 +304,7 @@ terminal.</p>
 active object and we know how to generate our own encryption key(s).  Now let’s
 turn on this statechart’s contribution to the distributed system’s
 instrumentation, and link it to the network:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># we want to produce and receive trace information</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># we want to produce and receive trace information</span>
 <span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_snoop</span><span class="p">()</span>  <span class="c1"># we want to produce and receive spy information</span>
 <span class="n">ao</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>  <span class="c1"># networks turned on</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>      <span class="c1"># 60 seconds of statechart interactions</span>
@@ -307,7 +316,7 @@ instrumentation, and link it to the network:</p>
 </center><p>So the statechart is running there are no interactions with other statecharts
 because we only see our own name, in blue, and no events with the word ‘other’
 prepended to their signal name:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="mi">0</span><span class="n">ca32_ao</span> <span class="n">START</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="mi">0</span><span class="n">ca32_ao</span> <span class="n">START</span>
 <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="mi">0</span><span class="n">ca32_ao</span> <span class="n">SEARCH_FOR_SUPER_SIGNAL</span><span class="p">:</span><span class="n">outer</span>
 <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="mi">0</span><span class="n">ca32_ao</span> <span class="n">ENTRY_SIGNAL</span><span class="p">:</span><span class="n">outer</span>
 <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="mi">0</span><span class="n">ca32_ao</span> <span class="n">INIT_SIGNAL</span><span class="p">:</span><span class="n">outer</span>
@@ -350,7 +359,7 @@ blue represents the name of that instance and the purple is the name or names of
 any other node that is interacting with the instance.</p>
 <p>We see that even with two simple statecharts, the snoop_spy network is spamming
 us with way too much information, so let’s turn it off.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>    <span class="c1"># we want to produce and receive trace information</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>    <span class="c1"># we want to produce and receive trace information</span>
 <span class="hll"><span class="c1"># ao.enable_snoop_snoop()  # turn off the snoop_spy network</span>
 </span><span class="n">ao</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>  <span class="c1"># networks turned on</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>      <span class="c1"># 60 seconds of statechart interactions</span>
@@ -376,7 +385,7 @@ addresses are used by the distributed system as peers.</p>
 With the sequence diagram and the statechart we can quickly describe the
 dynamics of our distributed system.  Consider the trace from running this
 program:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">+</span><span class="n">t</span><span class="p">]</span> <span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">04</span> <span class="mi">09</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mf">29.177773</span><span class="p">]</span> <span class="p">[</span><span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">outer</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">+</span><span class="n">t</span><span class="p">]</span> <span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">04</span> <span class="mi">09</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mf">29.177773</span><span class="p">]</span> <span class="p">[</span><span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">outer</span>
 <span class="p">[</span><span class="o">+</span><span class="n">t</span><span class="p">]</span> <span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">04</span> <span class="mi">09</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mf">28.954560</span><span class="p">]</span> <span class="p">[</span><span class="mi">2771</span><span class="n">f_ao</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">start_at</span><span class="p">()</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">outer</span>
 <span class="p">[</span><span class="o">+</span><span class="n">t</span><span class="p">]</span> <span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">04</span> <span class="mi">09</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mf">34.178157</span><span class="p">]</span> <span class="p">[</span><span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">to_inner</span><span class="p">()</span> <span class="n">outer</span><span class="o">-&gt;</span><span class="n">inner</span>
 <span class="p">[</span><span class="o">+</span><span class="n">t</span><span class="p">]</span> <span class="p">[</span><span class="mi">2018</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">04</span> <span class="mi">09</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mf">34.256485</span><span class="p">]</span> <span class="p">[</span><span class="mi">2771</span><span class="n">f_ao</span><span class="p">]</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">other_to_inner</span><span class="p">()</span> <span class="n">outer</span><span class="o">-&gt;</span><span class="n">inner</span>
@@ -398,7 +407,7 @@ because the sequence tool has no way to understand your trace; you understand
 your system better than it does, so you need write in the numbers to describe
 when things happen, or if they happen together.</p>
 <p>The result is something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Statechart</span><span class="p">:</span> <span class="mo">04</span><span class="n">ccc_ao</span><span class="p">]</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
       <span class="n">top</span>           <span class="n">outer</span>          <span class="n">inner</span>
        <span class="o">+--</span><span class="n">start_at</span><span class="p">()</span><span class="o">-&gt;|</span>              <span class="o">|</span>
        <span class="o">|</span>     <span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="o">|</span>              <span class="o">|</span>
@@ -441,7 +450,7 @@ of extra explanation.</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_example_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_example_1.svg" src="_images/miros_rabbitmq_example_1.svg" /></div>
 </a>
 <p>We import the required items:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span> <span class="c1"># to generate a unique name</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">miros</span> <span class="kn">import</span> <span class="n">spy_on</span>
@@ -451,12 +460,12 @@ of extra explanation.</p>
 </div>
 <p>Then we construct a function that will generate a unique name for our
 statechart:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
   <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
 </pre></div>
 </div>
 <p>We write the statechart using the flat method required by the ActiveObject.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
   <span class="n">chart</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span>
     <span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">),</span>
     <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -537,7 +546,7 @@ statechart:</p>
 </div>
 <p>We would up a NetworkedActiveObject; providing the required network credentials
 and topic keys.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span><span class="s1">&#39;make_name(&#39;</span><span class="n">ao</span><span class="s1">&#39;),</span>
   <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>
   <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
   <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -547,7 +556,7 @@ and topic keys.</p>
 </div>
 <p>We enable the level of instrumentation we want (trace) and start the chart and
 let it run for 20 seconds:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># we want to produce and receive trace information</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># we want to produce and receive trace information</span>
 <span class="n">ao</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>  <span class="c1"># networks turned on</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>      <span class="c1"># 60 seconds of statechart interactions</span>
 </pre></div>
@@ -559,7 +568,7 @@ let it run for 20 seconds:</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_example_1.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_example_1.svg" src="_images/miros_rabbitmq_example_1.svg" /></div>
 </a>
 <p>We import what is needed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">miros_rabbitmq.network</span> <span class="kn">import</span> <span class="n">NetworkedFactory</span>
@@ -568,12 +577,12 @@ let it run for 20 seconds:</p>
 </div>
 <p>Then we write something that will make a unique name for each of our networked
 state machines:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
   <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
 </pre></div>
 </div>
 <p>Studying our diagram we generate the required callback methods for our factory:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_outer_init</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
   <span class="n">chart</span><span class="o">.</span><span class="n">post_fifo</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">),</span>
     <span class="n">times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">period</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
@@ -614,7 +623,7 @@ state machines:</p>
 </div>
 <p>We build a NetworkedFactory object with the required networking credentials, the
 routing keys we want and an encryption key:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span> <span class="o">=</span> <span class="n">NetworkedFactory</span><span class="p">(</span><span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;fo&#39;</span><span class="p">),</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span> <span class="o">=</span> <span class="n">NetworkedFactory</span><span class="p">(</span><span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;fo&#39;</span><span class="p">),</span>
          <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;bob&#39;</span><span class="p">,</span>
          <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;dobbs&#39;</span><span class="p">,</span>
          <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
@@ -623,7 +632,7 @@ routing keys we want and an encryption key:</p>
 </pre></div>
 </div>
 <p>Now we use the factory to build up states:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">outer</span> <span class="o">=</span> <span class="n">chart</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span><span class="o">.</span> \
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">outer</span> <span class="o">=</span> <span class="n">chart</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span><span class="o">.</span> \
           <span class="n">catch</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">to_inner</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="n">on_outer_to_inner</span><span class="p">)</span><span class="o">.</span> \
           <span class="n">catch</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_to_inner</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="n">on_outer_other_to_inner</span><span class="p">)</span><span class="o">.</span> \
           <span class="n">catch</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">INIT_SIGNAL</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="n">on_outer_init</span><span class="p">)</span><span class="o">.</span> \
@@ -640,13 +649,13 @@ routing keys we want and an encryption key:</p>
 </pre></div>
 </div>
 <p>Add the hierarchy:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">nest</span><span class="p">(</span><span class="n">outer</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span><span class="o">.</span> \
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">nest</span><span class="p">(</span><span class="n">outer</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span><span class="o">.</span> \
       <span class="n">nest</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">outer</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The we seed our random number generator, enable the instrumentation we want and
 start the statechart and let it run for 20 seconds:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
 <span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
@@ -691,14 +700,12 @@ start the statechart and let it run for 20 seconds:</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
