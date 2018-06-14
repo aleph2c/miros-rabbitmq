@@ -22,7 +22,6 @@ Contents
    installation
    quick_start
    how_it_works
-   how_it_works2
    example
    recipes
    reflection
