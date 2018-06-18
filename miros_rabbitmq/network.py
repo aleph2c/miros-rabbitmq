@@ -3350,7 +3350,6 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
     while not self.nets.mesh.producers:
       time.sleep(0.1)
       self.nets.update_producers()
-    print("here")
     super().start_at(initial_state)
     time.sleep(0.1)
     self.nets.start_threads()
