@@ -20,8 +20,8 @@ I went through.
 
 .. _installing_infrastructure-installing-on-windows:
 
-RabbitMQ On Windows
----------------------
+RabbitMQ On Windows and the WLS
+-------------------------------
 
 If you are installing RabbitMQ on (>= Windows 7), try following this `video <https://www.youtube.com/watch?v=gKzKUmtOwR4>`_ and if that
 doesn't work clear your afternoon's schedule, and work through `this <https://www.rabbitmq.com/install-windows.html>`_.  Pay special attention to the section titled `Synchronise Erlang Cookies <https://www.rabbitmq.com/install-windows-manual.html#erlang-cookie>`_.
@@ -30,11 +30,8 @@ doesn't work clear your afternoon's schedule, and work through `this <https://ww
 
 RabbitMQ On Linux
 -------------------
-For Linux, I automated the installation process of RabbitMQ using a simple `Ansible <http://docs.ansible.com/>`_
-script.  If you haven't heard of `Ansible <http://docs.ansible.com/>`_ before, it's a Python library that
-allows you to automatically ssh into machines and run a series of sysadmin
-commands.  You can use it to automatically deploy things.  For this to work
-we will need to:
+For Linux, I automated the installation process of RabbitMQ using a simple `Ansible <http://docs.ansible.com/>`_ script.  If you haven't heard of `Ansible <http://docs.ansible.com/>`_ before, it's a Python library that
+allows you to automatically ssh into machines and run a series of sysadmin commands.  You can use it to deploy things automatically.  For this to work we will need to:
 
  * :ref:`Setup ssh so it can login without a password <installing_infrastructure-setting-up-ssh-so-you-don't-need-a-password>`
  * :ref:`Install Ansible <installing_infrastructure-install-ansible>`
@@ -52,9 +49,7 @@ we will need to:
 
 Setting up SSH so you Don't Need a Password
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`Ansible <http://docs.ansible.com/>`_ needs to be able to automatically ssh into the computer it is trying to
-control.  To do this, you put the public ssh key of the computer running ansible
-into the computer it is deploying software too.
+`Ansible <http://docs.ansible.com/>`_ needs to be able to ssh into the computer it is trying to control.  To let it do this, you will have to first, place the public ssh key of the computer running Ansible into the computer it is deploying software too.
 
 Check to see if the machine you are going to be running `Ansible <http://docs.ansible.com/>`_ from has public
 keys:
@@ -63,7 +58,7 @@ keys:
 
   > ls ~/.ssh | grep pub
 
-If nothing appears, the deployment machine doesn't have a public key.  To make one do this (only run these
+If nothing appears, the deployment machine doesn't have a public key.  To make a public key, do the following (only run these
 commands if you don't have a public key already):
 
 .. code-block:: python
@@ -80,12 +75,9 @@ Now, let's see if we can ssh into our own machine without a password.
 
   ssh $USER@localhost
 
-If you can login without a password, great, `Ansible <http://docs.ansible.com/>`_ can now deploy things to
-this machine, from this machine.
+If you can login without a password, great, `Ansible <http://docs.ansible.com/>`_ can now deploy things to this machine, from this machine.
 
-If you can't SSH without a password to your localhost, we just have to put this
-machine's public key into its *authorized_keys* file. (only run
-this command if you can't ssh into your own machine without a password):
+If you can't SSH without a password to your localhost, we just have to put this machine's public key into its *authorized_keys* file. (only run this command if you can't ssh into your own machine without a password):
 
 .. code-block:: python
 
@@ -93,12 +85,7 @@ this command if you can't ssh into your own machine without a password):
 
 Try to SSH into the machine again. You shouldn't need a password anymore.
 
-Now let's push our public key onto the remote computer that we want to deploy
-software to.  To do this you will need it's URL or IP address and the user name
-of the account that has SSH enabled.  As an example, I'll assume that the
-machine you are trying to set up has the IP address of 192.168.0.169 with a
-username pi.  Change out the user name and IP address with your own for the
-remainder of this example.
+Now let's push our public key onto the remote computer that we want to deploy software too.  To do this, you will need it's URL or IP address and the username of the account that has SSH enabled.  As an example, I'll assume that the machine you are trying to set up has the IP address of 192.168.0.169 with a username pi.  Change out the username and IP address with your own for the remainder of this example.
 
 First we test if it already has this machine's public key:
 
@@ -106,9 +93,7 @@ First we test if it already has this machine's public key:
 
   ssh pi@192.168.0.169
 
-If it asked for a password, it does not have our public key in it's
-authorized_keys file.  If this is true, let's put our public key into it's
-authorized_keys file:
+If it asked for a password, it does not have our public key in its authorized_keys file.  If this is true, let's put our public key into its authorized_keys file:
 
 .. code-block:: python
 
@@ -138,18 +123,9 @@ To install `Ansible <http://docs.ansible.com/>`_:
 
 Tell Ansible Where to Run and with What User Name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`Ansible <http://docs.ansible.com/>`_ needs to know what machines to ssh into and with what user names.  This
-information is kept in the ``/etc/ansible/hosts`` file, it is called an
-inventory.  Basically, you create a named configuration item, and below it place
-the contact information (IP/URL address and username) for each of the machines
-in that group.  Your deployment script references this name to know what
-computers to run against.
+`Ansible <http://docs.ansible.com/>`_ needs to know what machines to ssh into and with what usernames.  This information is kept in the ``/etc/ansible/hosts`` file; it is called an inventory.  To tell Ansible what machines you want it to run its scripts on, you first create a named configuration item, and below it place the contact information (IP/URL address and username) for each of the machines in that group.  Your deployment script references this name to know what computers to log in to and run on.
 
-Suppose I have a bunch of raspberry pi computers on my network, I might want to
-name their group ``pis`` in my `Ansible <http://docs.ansible.com/>`_ inventory.  They all have the same user
-name but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.
-So, on the Linux machine that I will run my deployment scripts from, I would edit
-the ``/etc/ansible/hosts`` file like this:
+Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group ``pis`` in my `Ansible <http://docs.ansible.com/>`_ inventory.  They all have the same username, but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.  So, on the Linux machine that I will run my deployment scripts from, I would edit the ``/etc/ansible/hosts`` file like this:
 
 .. code-block:: python
 
@@ -163,6 +139,11 @@ Then I would change the file to:
   192.168.0.169 ansible_user=pi
   192.168.0.170 ansible_user=pi
   192.168.0.171 ansible_user=pi
+
+.. note::
+
+  The default posix username for a raspberry pi is ``pi``.  If your usernames are different,
+  update the above listing with your usernames.
 
 .. _installing_infrastructure-have-ansible-install-rabbitmq:
 
@@ -270,7 +251,7 @@ Here is the ``rabbitmq.config.j2`` file:
 .. note::
 
   The rabbitmq.config file is actually Erlang.  I lost many hours trying to get
-  RabbitMq to install using the example rabbit.config file from their repo.  It was
+  RabbitMq to install using the example rabbit.config file from RabbitMQ repo.  It was
   broken, too many brackets or something.  Not knowing anything about RabbitMQ
   or Erlang, it took me a while to figure out that the problem was with their
   code and not with my setup.

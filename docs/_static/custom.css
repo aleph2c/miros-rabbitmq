@@ -68,6 +68,16 @@ p.attribution {
   margin: -15px 25px 25px 25px;
   font-family: sans-serif;
 }
+div.body p, div.body dd, div.body li, div.body blockquote {
+  font-family: san-serif;
+  font-size: 15px;
+  line-height: 1.6em;
+}
+
+body {
+  font-family: san-serif;
+}
+
 p {
   /*font-family: serif*/
   /*line-height: 1.75rem;*/

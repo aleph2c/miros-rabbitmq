@@ -627,6 +627,7 @@ let it run for 20 seconds:
   ao.enable_snoop_trace()  # we want to produce and receive trace information
   ao.start_at(outer)  # networks turned on
   time.sleep(20)      # 60 seconds of statechart interactions
+
 .. _example-networkedfactory:
 
 Building a NetworkedFactory
