@@ -347,7 +347,7 @@ this (cargo-culted from stack overflow):</p>
 </div>
 </div>
 <div class="section" id="changing-your-rabbitmq-credentials">
-<span id="recipes-changing-your-rabbitmq-credentials"></span><h2>Changing your RabbitMQ credentials<a class="headerlink" href="#changing-your-rabbitmq-credentials" title="Permalink to this headline">¶</a></h2>
+<span id="recipes-hiding-your-encryption-data-and-user-credentials"></span><h2>Changing your RabbitMQ credentials<a class="headerlink" href="#changing-your-rabbitmq-credentials" title="Permalink to this headline">¶</a></h2>
 <p>If you are installing RabbitMQ using the <a class="reference internal" href="installing_infrastructure.html#installing-infrastructure-have-ansible-install-rabbitmq"><span class="std std-ref">ansible script in the DevOps section</span></a>, set the
 <code class="docutils literal notranslate"><span class="pre">rabbit_name</span></code> to the username you want, and the <code class="docutils literal notranslate"><span class="pre">rabbit_password</span></code> to
 whatever you want your password to be.  Update your code to use your new
@@ -357,19 +357,24 @@ management GUI</span></a>.</p>
 </div>
 <div class="section" id="managing-your-encryption-keys">
 <span id="recipes-encryption-keys-in-your-environment"></span><h2>Managing your Encryption Keys<a class="headerlink" href="#managing-your-encryption-keys" title="Permalink to this headline">¶</a></h2>
-<p>To keep your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> out of
-your source code, you can put them into environment variables and then load them
-into your program.</p>
-<p>A slight extension of this idea is to put your keys into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, then
-load its contents into environment variables, then load these variables into
-your program.  By placing your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, it makes it easier to
-transfer them between the machines in your distributed system.</p>
+<p>To keep your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ
+credentials out of your source code, you can put them into environment variables,
+then load the contents of these environment variables into your program.</p>
+<p>A slight extension of this idea is to put your keys into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, then load its
+contents into environment variables, then load these variables into your program.  By
+placing your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ
+credentials into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, it makes it easier to transfer them between the
+machines in your distributed system.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">By convention the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file is kept in the outermost directory of your project,
+the same directory that you would find your .git folder.</p>
+</div>
 <p>The <a class="reference external" href="https://github.com/theskumar/python-dotenv">python-dotenv</a> package
 converts the contents of a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file into environment variables.  We will
 use it in this recipe.  If you have installed <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code>, you will have this
 package installed on your system already.</p>
-<p>In the same directory as your project create a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file and add the
-following:</p>
+<p>In the outermost directory of your project, create a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file and add the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -378,13 +383,15 @@ following:</p>
 <span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
 <span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">env_path</span><span class="p">))</span>
 
-<span class="c1"># get encryption keys from the environment</span>
+<span class="c1"># get RabbitMQ credentials and encryption keys from the environment</span>
+<span class="n">RABBIT_USER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_USER&#39;</span><span class="p">)</span>
+<span class="n">RABBIT_PASSWORD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_PASSWORD&#39;</span><span class="p">)</span>
 <span class="n">MESH_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MESH_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
 <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_TRACE_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
 <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> from either your shell
+<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ credentials, from either your shell
 environment or from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> program to work there needs to be a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, so let’s
 make an empty one:</p>
@@ -409,6 +416,8 @@ commands, or we can put them into the <code class="docutils literal notranslate"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export RABBIT_USER=peter
+$ export RABBIT_PASSWORD=rabbit
 </pre></div>
 </div>
 <p>In our main program, we can access these encryption keys by importing them from
@@ -417,6 +426,8 @@ our <code class="docutils literal notranslate"><span class="pre">setup.py</span>
 <span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">MESH_ENCRYPTION_KEY</span>
 <span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span>
 <span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">RABBIT_USER</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">RABBIT_PASSWORD</span>
 </pre></div>
 </div>
 <p>Now, when we construct a <code class="docutils literal notranslate"><span class="pre">NetworkedActiveObject</span></code> or a <code class="docutils literal notranslate"><span class="pre">NetworkedFactory</span></code>
@@ -425,8 +436,8 @@ directly into our code base.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in miros-rabbitmq file</span>
 <span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
   <span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;ao&#39;</span><span class="p">),</span>
-  <span class="n">rabbit_user</span><span class="o">=</span><span class="s1">&#39;peter&#39;</span><span class="p">,</span>
-  <span class="n">rabbit_password</span><span class="o">=</span><span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
+  <span class="n">rabbit_user</span><span class="o">=</span><span class="n">RABBIT_USER</span><span class="p">,</span>
+  <span class="n">rabbit_password</span><span class="o">=</span><span class="n">RABBIT_PASSWORD</span><span class="p">,</span>
   <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
   <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
   <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="n">MESH_ENCRYPTION_KEY</span><span class="p">,</span>
@@ -439,7 +450,9 @@ distributed system will work.</p>
 <p>Before we add our encryption keys to our <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, lets first confirm that
 we can break our program by removing them from our shell environment.  In your
 shell type:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ unset MESH_ENCRYPTION_KEY
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ unset RABBIT_USER
+$ unset RABBIT_PASSWORD
+$ unset MESH_ENCRYPTION_KEY
 $ unset SNOOP_TRACE_ENCRYPTION_KEY
 $ unset TRACE_TRACE_ENCRYPTION_KEY
 </pre></div>
@@ -454,6 +467,8 @@ won’t fool ourselves into thinking are <code class="docutils literal notransla
 <span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
 <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
 <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">RABBIT_USER</span><span class="o">=</span><span class="n">peter</span>
+<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="n">rabbit</span>
 </pre></div>
 </div>
 <div class="admonition warning">

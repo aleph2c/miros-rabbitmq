@@ -1,0 +1,411 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Deployment &#8212; miros-rabbitmq 2.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Documenting" href="docs.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="deployment">
+<span id="deployment-deployment"></span><h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<p>In this section I will show how to use Ansible to deploy a miros-rabbitmq system.
+There are many different ways this can be done, this guide will provide a minimal
+example, showing how to install RabbitMQ and how to place your secrets and credentials
+into <code class="docutils literal notranslate"><span class="pre">.env</span></code> files on your remote servers into the top level directory of your
+miros-rabbitmq project.</p>
+<p>Given that the server configuration is coupled with the design of your distributed
+system, its setup should be under revision control.  This can be done with an Ansible
+playbook, and some files that hold your variables and some jinja2 templates.</p>
+<div class="section" id="the-inventory">
+<span id="deployment-the-inventory"></span><h2>The Inventory<a class="headerlink" href="#the-inventory" title="Permalink to this headline">¶</a></h2>
+<p>But to begin with we will start with the <code class="docutils literal notranslate"><span class="pre">/etc/ansible</span></code> directory of the machine that will
+do the deployments.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
+├── ansible.cfg
+└── hosts
+</pre></div>
+</div>
+<p>In your <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> we see an example of an inventory, this one describes a
+group called <code class="docutils literal notranslate"><span class="pre">scotty</span></code>.  It has a list of some addresses and their ansible_user names.
+From now on, when you see the group <code class="docutils literal notranslate"><span class="pre">scotty</span></code> remember we are thinking about these
+machines, with these users:</p>
+<div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>[scotty]
+192.168.1.71 ansible_user=pi
+192.168.1.69 ansible_user=pi
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-ansible-working-directory">
+<span id="deployment-the-playbook-directory"></span><h2>The Ansible Working Directory<a class="headerlink" href="#the-ansible-working-directory" title="Permalink to this headline">¶</a></h2>
+<p>You can place your Ansible files and folders where every you want in your file system.
+Just ensure that they are under revision control.  Your Ansible working directory could
+look something like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>├── group_vars
+│   └── scotty
+│       ├── vars
+│       └── vault
+├── miros_rabbitmq_install.yml
+├── rabbitmq.config.j2
+├── rabbitmq-env.conf.j2
+└── .env.j2
+</pre></div>
+</div>
+<p>We see that there is a group_vars directory, which has a subdirectory called scotty.
+This subdirectory contains all of the variables needed for our deployment.
+There are public vars and their is a vault.</p>
+<p>The var file contains all of the public variables.</p>
+<p>The vault is an encrypted file (AES256) which can be added to your revision
+control system.  I will talk about how to place your secrets into this file and how to
+access these secrets from your vars file shortly.</p>
+<p>But first look at the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_install.yml</span></code> file.  This is the play book that
+contains the instructions about what should be deployed and where and how.  The files
+with the <code class="docutils literal notranslate"><span class="pre">j2</span></code> extension are just jinja2 templates which will be used by the playbook
+when it’s writing new files, populated with the contents of your <code class="docutils literal notranslate"><span class="pre">group_vars</span></code> folder,
+onto your remote servers.</p>
+<p>For your <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code> library to work, it needs to install the Erlang programming
+language, RabbitMQ and several plugins for the RabbitMQ server.  Then in needs to place
+your RabbitMQ credentials and the miros-rabbitmq secrets in to the .env file at the base
+of your software system.  Where this is will be configured directly in the playbook, all
+other variables will be pulled out of the <code class="docutils literal notranslate"><span class="pre">group_vars</span></code> folders.</p>
+</div>
+<div class="section" id="the-miros-rabbitmq-install-playbook">
+<span id="deployment-the-miros-rabbitmq-install-playbook"></span><h2>The Miros RabbitMQ Install Playbook<a class="headerlink" href="#the-miros-rabbitmq-install-playbook" title="Permalink to this headline">¶</a></h2>
+<p>The playbook is written in yaml, so it is easy to read:</p>
+<div class="highlight-yaml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">scotty</span>
+  <span class="l l-Scalar l-Scalar-Plain">vars</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">miros_rabbitmq_project_directory</span><span class="p p-Indicator">:</span> <span class="s">&#39;~/miros-rabbitmq&#39;</span>
+  <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Install rabbitmq-server</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">apt</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">name={{ item }} state=present update_cache=false</span>
+     <span class="l l-Scalar l-Scalar-Plain">with_items</span><span class="p p-Indicator">:</span>
+       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">erlang</span>
+       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmq-server</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Remove user</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmqctl delete_user {{rabbit_user}}</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create a user with password</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmqctl add_user {{rabbit_user}} {{rabbit_password}}</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Assign a tag to the user</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="s">&quot;rabbitmqctl</span><span class="nv"> </span><span class="s">set_user_tags</span><span class="nv"> </span><span class="s">{{rabbit_user}}</span><span class="nv"> </span><span class="s">{{rabbit_tags</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">join(&#39;</span><span class="nv"> </span><span class="s">&#39;)}}&quot;</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Set permissions</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmqctl set_permissions -p / {{rabbit_user}} &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Change default admin password</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmqctl change_password guest {{guest_password}}</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup environment variables</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq-env.conf.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq-env.conf</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">644</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup configuration file</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq.config.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq.config</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">644</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Enable the management plugin</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmq-plugins enable rabbitmq_management</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Restart the rabbitmq-server service</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">service rabbitmq-server restart</span>
+     <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .env file</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./.env.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.env&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
+</pre></div>
+</td></tr></table></div>
+<p>The file is basically self documenting.  On line 2 we see that we want this playbook to
+reference our <code class="docutils literal notranslate"><span class="pre">scotty</span></code> inventory.  This will have ansible load all of the variables
+described in the <code class="docutils literal notranslate"><span class="pre">scotty</span></code> subdirectory of the global_var folder.</p>
+<p>On line 3-4 we see that there is a playbook scoped variable named
+<code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code>.  This is the path in which we will place the
+<code class="docutils literal notranslate"><span class="pre">.env</span></code> file needed for our project.  This <code class="docutils literal notranslate"><span class="pre">.env</span></code> file will have all of the
+encryption keys and RabbitMQ credentials for our deployment to work.  We see lines 5-60
+are just a repeat of the playbook we used in the devops section for installing RabbitMQ.
+Lines 62-66 fill our <code class="docutils literal notranslate"><span class="pre">.env.j2</span></code> template with our variables and the writes it to the
+directory specified by the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code> variable at the top of
+the playbook.</p>
+</div>
+<div class="section" id="the-dot-env-file">
+<span id="deployment-the-dot-env-file"></span><h2>The Dot Env File<a class="headerlink" href="#the-dot-env-file" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.env</span></code> file will contain the secrets needed for a server to communicate with
+another server.  It is derived from the <code class="docutils literal notranslate"><span class="pre">.env.js</span></code> template which looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">mesh_encryption_key</span><span class="p">}}</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">snoop_trace_encryption_key</span><span class="p">}}</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">snoop_spy_encryption_key</span><span class="p">}}</span>
+<span class="n">RABBIT_USER</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_user</span><span class="p">}}</span>
+<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_password</span><span class="p">}}</span>
+<span class="n">RABBIT_PORT</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_port</span><span class="p">}}</span>
+<span class="n">RABBIT_HEARTBEAT_INTERVAL</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_heart_beat_interval</span><span class="p">}}</span>
+<span class="n">CONNECTION_ATTEMPTS</span><span class="o">=</span><span class="p">{{</span><span class="n">connection_attempts</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.env</span></code> will placed in the directory specified by the
+<code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code> variable at the top of the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq.yml</span></code>
+playbook.</p>
+</div>
+<div class="section" id="the-vault-file">
+<span id="deployment-the-vault-file"></span><h2>The vault File<a class="headerlink" href="#the-vault-file" title="Permalink to this headline">¶</a></h2>
+<p>The vault file is an encrypted file that can be added to your code revision system.  It
+contains all of your system’s secrets and credentials.  You would decrypt it at the
+moment you issue the <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> command.</p>
+<p>It is placed within the group_vars/scotty directory of your Ansible working directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>├── group_vars
+    └── scotty
+        ├── vars
+        └── vault
+</pre></div>
+</div>
+<p>To create a vault file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>  ansible-vault create group_vars/scotty/vault
+&gt; New Vault password:
+&gt; Confirm New Vault password:
+</pre></div>
+</div>
+<p>To edit this vault file, you can enter this command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">vault</span> <span class="n">edit</span> <span class="n">vault</span> <span class="o">--</span><span class="n">vault</span><span class="o">-</span><span class="nb">id</span> <span class="nd">@prompt</span>
+<span class="o">&gt;</span> <span class="n">Vault</span> <span class="n">password</span> <span class="p">(</span><span class="n">default</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>If you enter the correct password, your vault file will
+be decrypted and opened with your default editor.  After you have edited your file, the
+closing process of your editor would cause ansible to re-encrypt it, locking it down.</p>
+<p>Let’s add our RabbitMQ credentials and miros-rabbitmq encryption keys to our file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_MESH_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_USER</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">peter</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PASSWORD</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PORT</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5672</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3600</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_CONNECTION_ATTEMPTS</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure you wrap your encryption keys within a set of single-quotes characters
+otherwise the yaml interpretor will get confused by the key’s <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">=</span></code> characters
+and your deployment won’t work.</p>
+</div>
+</div>
+<div class="section" id="the-vars-file">
+<span id="deployment-the-vars-file"></span><h2>The vars File<a class="headerlink" href="#the-vars-file" title="Permalink to this headline">¶</a></h2>
+<p>The vars file contains all of the variables that your playbook and it’s template files
+need.  Ours will look something like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_user</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_USER</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PASSWORD</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_port</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PORT</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_heartbeat_interval</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">connection_attempts</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_CONNECTION_ATTEMPTS</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_tags</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">administrator</span>
+<span class="l l-Scalar l-Scalar-Plain">guest_password</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit123</span>
+<span class="l l-Scalar l-Scalar-Plain">mesh_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_MESH_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">snoop_trace_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">snoop_spy_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_heart_beat_interval</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3600</span>
+</pre></div>
+</div>
+<p>See how some of the variables are just using items from the vault?</p>
+<p>This is done so that the vault variable names don’t remain a secret from your playbook.  If
+you pass off their contents into publicly available variable names, then they can be
+used by someone who doesn’t have the encryption key for the vault file.</p>
+</div>
+<div class="section" id="to-deploy">
+<h2>To Deploy<a class="headerlink" href="#to-deploy" title="Permalink to this headline">¶</a></h2>
+<p>To have your playbook run on each of the servers defined in your inventory, you would
+run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="o">-</span><span class="n">K</span> <span class="n">miros_rabbit_install</span><span class="o">.</span><span class="n">yml</span> <span class="o">--</span><span class="n">ask</span><span class="o">-</span><span class="n">vault</span><span class="o">-</span><span class="k">pass</span>
+<span class="n">BECOME</span> <span class="n">password</span><span class="p">:</span>
+<span class="n">Vault</span> <span class="n">password</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">BECOME</span> <span class="pre">password</span></code> is the password to run <code class="docutils literal notranslate"><span class="pre">sudo</span></code> commands on the remote server,
+and the <code class="docutils literal notranslate"><span class="pre">Vault</span> <span class="pre">password</span></code> is the password you used to encrypt your vault file.</p>
+<a class="reference internal" href="docs.html"><span class="std std-ref">prev</span></a>,
+<a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>,
+<span class="inactive-link">next</span></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo_a" src="_static/miros_rabbitmq_icon_only.svg" width="90" alt="Logo" >
+</a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Deployment</a><ul>
+<li><a class="reference internal" href="#the-inventory">The Inventory</a></li>
+<li><a class="reference internal" href="#the-ansible-working-directory">The Ansible Working Directory</a></li>
+<li><a class="reference internal" href="#the-miros-rabbitmq-install-playbook">The Miros RabbitMQ Install Playbook</a></li>
+<li><a class="reference internal" href="#the-dot-env-file">The Dot Env File</a></li>
+<li><a class="reference internal" href="#the-vault-file">The vault File</a></li>
+<li><a class="reference internal" href="#the-vars-file">The vars File</a></li>
+<li><a class="reference internal" href="#to-deploy">To Deploy</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="docs.html" title="previous chapter">Documenting</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/deployment.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scott Volk.
+      
+      |
+      <a href="_sources/deployment.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

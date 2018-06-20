@@ -426,8 +426,7 @@ Then write your spy information to the log.txt without the command-line complexi
 
   python3 networkable_active_object.py >> log.txt
 
-
-.. _recipes-changing-your-rabbitmq-credentials:
+.. _recipes-hiding-your-encryption-data-and-user-credentials:
 
 Changing your RabbitMQ credentials
 ----------------------------------
@@ -444,23 +443,27 @@ management GUI<reflection-rabbitmq-management>`.
 
 Managing your Encryption Keys
 -----------------------------
-To keep your :ref:`encryption keys <recipes-making-an-encryption-key>` out of
-your source code, you can put them into environment variables and then load them
-into your program.  
+To keep your :ref:`encryption keys <recipes-making-an-encryption-key>` and RabbitMQ
+credentials out of your source code, you can put them into environment variables,
+then load the contents of these environment variables into your program.  
 
-A slight extension of this idea is to put your keys into a ``.env`` file, then
-load its contents into environment variables, then load these variables into
-your program.  By placing your :ref:`encryption keys
-<recipes-making-an-encryption-key>` into a ``.env`` file, it makes it easier to
-transfer them between the machines in your distributed system.
+A slight extension of this idea is to put your keys into a ``.env`` file, then load its
+contents into environment variables, then load these variables into your program.  By
+placing your :ref:`encryption keys <recipes-making-an-encryption-key>` and RabbitMQ
+credentials into a ``.env`` file, it makes it easier to transfer them between the
+machines in your distributed system.
+
+.. note:: 
+  
+  By convention the ``.env`` file is kept in the outermost directory of your project,
+  the same directory that you would find your .git folder.
 
 The `python-dotenv <https://github.com/theskumar/python-dotenv>`_ package
 converts the contents of a ``.env`` file into environment variables.  We will
 use it in this recipe.  If you have installed ``miros-rabbitmq``, you will have this
 package installed on your system already.
 
-In the same directory as your project create a ``setup.py`` file and add the
-following:
+In the outermost directory of your project, create a ``setup.py`` file and add the following:
 
 .. code-block:: python
 
@@ -472,13 +475,15 @@ following:
   env_path = Path('.') / '.env'
   load_dotenv(dotenv_path=str(env_path))
 
-  # get encryption keys from the environment
+  # get RabbitMQ credentials and encryption keys from the environment
+  RABBIT_USER = os.getenv('RABBIT_USER')
+  RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
   MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
   SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
   SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
 
 This program will be able to read your :ref:`encryption keys
-<recipes-making-an-encryption-key>` from either your shell
+<recipes-making-an-encryption-key>` and RabbitMQ credentials, from either your shell
 environment or from a ``.env`` file.  
 
 For the ``setup.py`` program to work there needs to be a ``.env`` file, so let's
@@ -508,6 +513,8 @@ To create an environment variable we use the ``export`` command from your shell.
   $ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  $ export RABBIT_USER=peter
+  $ export RABBIT_PASSWORD=rabbit
 
 In our main program, we can access these encryption keys by importing them from
 our ``setup.py`` file:
@@ -518,7 +525,9 @@ our ``setup.py`` file:
   from setup import MESH_ENCRYPTION_KEY
   from setup import SNOOP_TRACE_ENCRYPTION_KEY
   from setup import SNOOP_SPY_ENCRYPTION_KEY
-  
+  from setup import RABBIT_USER 
+  from setup import RABBIT_PASSWORD
+
 Now, when we construct a ``NetworkedActiveObject`` or a ``NetworkedFactory``
 object we can use our environment variables rather than writing our secret encryption keys
 directly into our code base.
@@ -528,8 +537,8 @@ directly into our code base.
   # in miros-rabbitmq file
   ao = NetworkedActiveObject(
     make_name('ao'),
-    rabbit_user='peter',
-    rabbit_password='rabbit',
+    rabbit_user=RABBIT_USER,
+    rabbit_password=RABBIT_PASSWORD,
     tx_routing_key='heya.man',
     rx_routing_key='#.man',
     mesh_encryption_key=MESH_ENCRYPTION_KEY,
@@ -545,6 +554,8 @@ shell type:
 
 .. code-block:: python
 
+  $ unset RABBIT_USER
+  $ unset RABBIT_PASSWORD
   $ unset MESH_ENCRYPTION_KEY
   $ unset SNOOP_TRACE_ENCRYPTION_KEY
   $ unset TRACE_TRACE_ENCRYPTION_KEY
@@ -563,6 +574,8 @@ Let's move our encryption keys into the ``.env`` file.
   MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
   SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  RABBIT_USER=peter
+  RABBIT_PASSWORD=rabbit
 
 .. warning::
 
