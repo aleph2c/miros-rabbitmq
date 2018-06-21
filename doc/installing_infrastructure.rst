@@ -49,103 +49,22 @@ allows you to automatically ssh into machines and run a series of sysadmin comma
 
 Setting up SSH so you Don't Need a Password
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`Ansible <http://docs.ansible.com/>`_ needs to be able to ssh into the computer it is trying to control.  To let it do this, you will have to first, place the public ssh key of the computer running Ansible into the computer it is deploying software too.
 
-Check to see if the machine you are going to be running `Ansible <http://docs.ansible.com/>`_ from has public
-keys:
-
-.. code-block:: python
-
-  > ls ~/.ssh | grep pub
-
-If nothing appears, the deployment machine doesn't have a public key.  To make a public key, do the following (only run these
-commands if you don't have a public key already):
-
-.. code-block:: python
-  
-  > mkdir ~/.ssh
-  > cd ~/.ssh
-  > sudo ssh-keygen
-
-When you see an option to enter a passphrase, just hit enter.
-
-Now, let's see if we can ssh into our own machine without a password.
-
-.. code-block:: python
-
-  ssh $USER@localhost
-
-If you can login without a password, great, `Ansible <http://docs.ansible.com/>`_ can now deploy things to this machine, from this machine.
-
-If you can't SSH without a password to your localhost, we just have to put this machine's public key into its *authorized_keys* file. (only run this command if you can't ssh into your own machine without a password):
-
-.. code-block:: python
-
-  > sudo cat '~/.ssh/id_rsa.pub' >> '~/.ssh/authorized_keys'
-
-Try to SSH into the machine again. You shouldn't need a password anymore.
-
-Now let's push our public key onto the remote computer that we want to deploy software too.  To do this, you will need it's URL or IP address and the username of the account that has SSH enabled.  As an example, I'll assume that the machine you are trying to set up has the IP address of 192.168.0.169 with a username pi.  Change out the username and IP address with your own for the remainder of this example.
-
-First we test if it already has this machine's public key:
-
-.. code-block:: python
-
-  ssh pi@192.168.0.169
-
-If it asked for a password, it does not have our public key in its authorized_keys file.  If this is true, let's put our public key into its authorized_keys file:
-
-.. code-block:: python
-
-   > cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.169 'cat >> .ssh/authorized_keys'
-
-Now test it:
-
-.. code-block:: python
-
-  ssh pi@192.168.0.169
-
-The above command shouldn't ask for a password anymore.
-
-Repeat this procedure for every machine onto which you would like to deploy RabbitMQ.
+.. include:: i_setting_up_ssh_so_you_dont_need_a_password.rst
 
 .. _installing_infrastructure-install-ansible:
 
 Install Ansible
 ^^^^^^^^^^^^^^^
-To install `Ansible <http://docs.ansible.com/>`_:
 
-.. code-block:: python
-
-  > sudo apt-get install ansible
+.. include:: i_install_ansible.rst
 
 .. _installing_infrastructure-tell-ansible-where-to-run:
 
 Tell Ansible Where to Run and with What User Name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`Ansible <http://docs.ansible.com/>`_ needs to know what machines to ssh into and with what usernames.  This information is kept in the ``/etc/ansible/hosts`` file; it is called an inventory.  To tell Ansible what machines you want it to run its scripts on, you first create a named configuration item, and below it place the contact information (IP/URL address and username) for each of the machines in that group.  Your deployment script references this name to know what computers to log in to and run on.
 
-Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group ``pis`` in my `Ansible <http://docs.ansible.com/>`_ inventory.  They all have the same username, but they are on addresses, 192.168.0.169, 192.168.0.170 and 192.168.0.171.  So, on the Linux machine that I will run my deployment scripts from, I would edit the ``/etc/ansible/hosts`` file like this:
-
-.. code-block:: python
-
-  sudo pico /etc/ansible/hosts
-
-Then I would change the file to:
-
-.. code-block:: python
-
-  [pis]
-  192.168.0.169 ansible_user=pi
-  192.168.0.170 ansible_user=pi
-  192.168.0.171 ansible_user=pi
-
-.. note::
-
-  The default posix username for a raspberry pi is ``pi``.  If your usernames are different,
-  update the above listing with your usernames.
-
-.. _installing_infrastructure-have-ansible-install-rabbitmq:
+.. include:: i_tell_ansible_where_to_run.rst
 
 Have Ansible Install RabbitMQ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
