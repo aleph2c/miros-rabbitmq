@@ -26,8 +26,8 @@
     /></g
     ><g transform="translate(360,570)"
     ><rect x="0.5" y="0.5" clip-path="url(#clipPath2)" fill="none" width="478.5" rx="12" ry="12" height="58.5"
-      /><text x="22" font-size="14px" y="34.9844" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" font-weight="bold" xml:space="preserve"
-      >deploy your infrastructure, credentials and secret to all machines</text
+      /><text x="18" font-size="14px" y="34.9844" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" font-weight="bold" xml:space="preserve"
+      >deploy your infrastructure, credentials and secrets to all machines</text
     ></g
     ><g font-size="14px" transform="translate(360,570)" fill-opacity="0" fill="rgb(255,255,255)" font-family="sans-serif" stroke="rgb(255,255,255)" stroke-opacity="0"
     ><rect x="443.1" y="46.54" clip-path="url(#clipPath2)" width="22.4" rx="3.36" ry="3.36" height="8.96" stroke="none"

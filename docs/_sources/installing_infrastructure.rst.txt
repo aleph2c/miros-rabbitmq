@@ -50,7 +50,8 @@ allows you to automatically ssh into machines and run a series of sysadmin comma
 Setting up SSH so you Don't Need a Password
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: i_setting_up_ssh_so_you_dont_need_a_password.rst
+.. include:: i_setting_up_ssh.rst
+.. include:: i_setting_up_ssh_on_remote.rst
 
 .. _installing_infrastructure-install-ansible:
 
@@ -72,12 +73,12 @@ Now that `Ansible <http://docs.ansible.com/>`_ knows what user names and address
 something.  `Ansible <http://docs.ansible.com/>`_ scripts are just yml files; they are easy to read.  The
 only people I know, who don't like yml files, are minecraft administrators.  So,
 here is the yml file that will install RabbitMq onto all of the computers in my
-``pis`` group, I called it ``rabbit_install.yml``:
+``scotty`` group, I called it ``rabbit_install.yml``:
 
 .. code-block:: ansible
 
   ---
-  - hosts: pis
+  - hosts: scotty
     vars:
 
       rabbit_name: peter

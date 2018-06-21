@@ -2,15 +2,351 @@
 
 Deployment
 ==========
-In this section I will show how to use Ansible to deploy a miros-rabbitmq system.
-There are many different ways this can be done, this guide will provide a minimal
-example, showing how to install RabbitMQ and how to place your secrets and credentials
-into ``.env`` files on your remote servers into the top level directory of your
-miros-rabbitmq project.
+Getting miros-rabbitmq working on one machine is relatively straightforward.
+The hard part about building a distributed system is deploying its
+infrastructure (Erlang, RabbitMQ, ...), the credentials needed to run it and the
+encryption keys securely onto multiple machines.  By default, I have written
+encryption into the library, but the tricky thing about encryption is keeping
+your keys secret: transmitting and installing these keys in multiple locations
+without exposing them to the Big Bad Internet, or to your code revision system.
 
-Given that the server configuration is coupled with the design of your distributed
-system, its setup should be under revision control.  This can be done with an Ansible
-playbook, and some files that hold your variables and some jinja2 templates.
+As the author of the miros-rabbitmq framework, I accept the deployment problem
+as part of my responsibility.  If I didn't at least try to take on this problem,
+people would use miros-rabbitmq insecurely out of the box, and I would be
+partially complicit in their decision.  So, here is a guide that will show you
+one technique for keeping your secrets, secret.
+
+If you are new to the technology, don't worry I'm going to step you through a
+deployment process.
+
+.. _deployment-deployment-specification:
+
+Deployment Specification
+------------------------
+Here is the deployment process's requirements, assumptions and limitations:
+
+* It should be secure
+* It should be automated
+* It should use standardized and known techniques (ssh, Ansible vault, .env files, ... )
+* It should run from one machine and deploy to an arbitrary number of other computers/containers.
+* It can only deploy to Linux computers/containers (WLS will not be supported).
+* All machines in your system will have the same ``sudo`` password.
+* All machines in your system will be considered secure.
+* An encrypted vault file will be constructed on the computer that runs the
+  deployment.
+* The key, or phrase, used to decrypt the vault file will be kept in your head (or written down).
+* The vault file can be kept in your revision control system.
+* The mesh, snoop_trace and snoop_spy network keys will be kept in the vault file.
+* The RabbitMQ credentials will be kept in the vault file.
+* It will **not** deploy your code (I don't know what revision control system you have)
+* It will **not** install miros-rabbitmq.  (I don't know how you want to set up your Python environment).
+* It will deploy the .env file, with the RabbitMQ credentials and miros-rabbitmq secrets into your working folder
+* It will install Erlang
+* It will install RabbitMQ and it's management plugin
+* It will configure your RabbitMQ servers to use the credentials in your vault file.
+* It should be easy to extend the deployment process to meet your needs.
+* It should be easy to change your keys 
+
+Here is a high level view of the secrets in our system:
+
+.. image:: _static/deployment_machines.svg
+    :target: _static/deployment_machines.pdf
+    :align: center
+
+We will talk about how to transfer the secrets in the next couple of sections.
+
+When you install the miros-rabbitmq package and your code on each computer (by
+extending this deployment process to suit your needs), your code should automatically
+use the .env file you have installed into your working directory.  You shouldn't
+have to care about the RabbitMQ server, the .env file should contain everything
+required for the miros-rabbitmq library to work.
+
+.. _deployment-high-level-view:
+
+High Level View
+---------------
+Here are the five step we will make in this deployment:
+
+* :ref:`set up deployment computer<deployment-set-up-your-deployment-computer>`
+* :ref:`determine what machines you want in your distributed system<deployment-what-machine-do-you-want-in-your-distributed-system>`
+* :ref:`invent credentials and secrets<deployment-invent-your-credentials-and-secrets>`
+* :ref:`setup ansible file structure on deployment computer<deployment-setup-ansible-file-structure-on-the-deployment-computer>`
+* :ref:`deploy your infrastructure, credentials and secrets to all machines<deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines>`
+
+.. image:: _static/deployment_statechart_1.svg
+    :target: _static/deployment_statechart_1.pdf
+    :align: center
+
+.. _deployment-set-up-your-deployment-computer:
+
+Set Up Your Deployment Computer
+-------------------------------
+
+Our first step will be to setup our deployment computer:
+
+* :ref:`install ansible<deployment-install-ansible-on-deployment-computer>`
+* :ref:`setup private ssh keys<deployment-setup-private-keys-on-deployment-computer>`
+* :ref:`make a deployment directory<deployment-make-a-deployment-directory>`
+
+.. image:: _static/d_setup_deployment_computer.svg
+    :target: _static/d_setup_deployment_computer.pdf
+    :align: center
+
+.. _deployment-install-ansible-on-deployment-computer:
+
+Install Ansible on Deployment Computer
+--------------------------------------
+
+.. include:: i_install_ansible.rst
+
+.. _deployment-setup-private-keys-on-deployment-computer:
+
+Setup Private Keys on Deployment Computer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. include:: i_setting_up_ssh.rst
+
+
+.. _deployment-make-a-deployment-directory:
+
+Make a Deployment Directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The files needed to tell Ansible what to do need to be placed in a directory.
+Suppose we want this directory in the home folder of our deployment machine:
+
+.. code-block:: python
+
+  mkdir ~/miros_rabbitmq_deployment
+
+After we have finished this step we have a ``id_rsa.pub`` file on our deployment
+computer.
+
+.. image:: _static/deployment_machines_step_1.svg
+    :target: _static/deployment_machines_step_1.pdf
+    :align: center
+
+.. _deployment-what-machine-do-you-want-in-your-distributed-system:
+
+What Machines do you want in your Distributed System
+-------------------------------------------------------------
+In this second deployment step we will determine what computers we want in our
+system, create secure connections between them and our deployment computer, then
+put some information into an Ansible inventory file, so Ansible will know which
+machines we want to deploy to:
+
+* :ref:`ensure ssh passwordless access on all machines from deployment computer<deployment-ensure-ssh-passwordless-access-to-all-remote-machines>`
+* :ref:`create ansible inventory file<deployment-create-ansbile-inventory-file>`
+
+.. image:: _static/d_determine_what_machines_you_want_in_your_distributed_system.svg
+    :target: _static/d_determine_what_machines_you_want_in_your_distributed_system.pdf
+    :align: center
+
+The Ansible inventory file can be used for many many different deployments, so
+it is organized into named groups.  Come up with a named group for your
+miros-rabbitmq deployment, mine is called ``scotty`` because that is the name of
+the raspberry pi it runs from.
+
+Collect the IP addresses, or URLs of all of the machines that you want in your
+distributed system.  Then collect the user names for each machine.
+
+.. _deployment-ensure-ssh-passwordless-access-to-all-remote-machines:
+
+Ensure SSH Passwordless Access to All Remote Machines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. include:: i_setting_up_ssh_on_remote.rst
+
+.. _deployment-create-ansbile-inventory-file:
+
+Create Ansible Inventory File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. include:: i_tell_ansible_where_to_run.rst
+
+Let's look at what we have done so far:
+
+.. image:: _static/deployment_machines_step_2.svg
+    :target: _static/deployment_machines_step_2.pdf
+    :align: center
+
+.. _deployment-invent-your-credentials-and-secrets:
+
+Invent your Credentials and Secrets
+-----------------------------------
+Let's create an unencrypted version of our vault file.  This will be broken down
+into the following steps:
+
+* :ref:`invent RabbitMQ server credentials and settings<deployment-invent-rabbitmq-server-credentials-and-settings>`
+* :ref:`create the RabbitMQ connection parameters <deployment-set-rabbitmq-connection-parameters>`
+* :ref:`invent miros-rabbitmq encryption keys <deployment-invent-miros-rabbitmq-encryption-keys>`
+* :ref:`add encryption keys to the fake_value <deployment-add-encryption-keys-to-the-fake-vault>`
+
+.. image:: _static/d_invent_credentials_and_secrets.svg
+    :target: _static/d_invent_credentials_and_secrets.pdf
+    :align: center
+
+On our deployment computer we make a fake_vault file in our deployment
+directory:
+
+.. code-block:: bash
+
+  cd ~/miros_rabbitmq_deployment
+  touch fake_vault
+
+.. warning::
+
+  Keep this ``fault_vault`` file out of your code revision system.
+
+The ``fake_vault`` file is called this so we don't forget that it isn't
+encrypted.  Eventually we will encrypt it and place it within the Ansible file structure,
+but for now, let's just leave where it is and treat it as a ``yaml`` file.
+
+.. _deployment-invent-rabbitmq-server-credentials-and-settings:
+
+Invent RabbitMQ Server Credentials and Settings
+-----------------------------------------------
+
+Let's start adding our secrets to this file.  We will start with our RabbitMQ
+credentials and parameters:
+
+.. code-block:: yaml
+
+  vault_RABBIT_USER: peter
+  vault_RABBIT_PASSWORD: rabbit
+  vault_RABBIT_PORT: 5672
+  vault_RABBIT_GUEST_PASSWORD: rabbit567
+
+.. note::
+
+  The ``vault`` word prepended to our variables is a ansible coding convention.
+  It means that the values associated with the variable are intended to be
+  encrypted.
+
+.. _deployment-set-rabbitmq-connection-parameters:
+
+Set RabbitMQ Connection Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now let's add our rabbit_heart_beat_interval and connection_attempts settings to
+our file:
+
+.. code-block:: yaml
+
+  vault_RABBIT_HEARTBEAT_INTERVAL: 3600
+  vault_CONNECTION_ATTEMPTS: 3
+  vault_RABBIT_USER: peter
+  vault_RABBIT_PASSWORD: rabbit
+  vault_RABBIT_PORT: 5672
+  vault_RABBIT_GUEST_PASSWORD: rabbit567
+
+Save and close the ``fake_vault`` file.  
+
+.. _deployment-invent-miros-rabbitmq-encryption-keys:
+
+Invent miros-rabbitmq Encryption Keys
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now we need to generate some encryption keys for the
+mesh, snoop_trace and snoop_spy networks.  To do this, open the python3
+terminal, import ``cryptography`` and use it to generate some keys:
+
+.. code-block:: python
+
+  $ python3
+  from cryptography import Fernet
+  encryption_key = Fernet.generate_key()
+  print(encryption_key) # => u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+
+You can do this once per needed key, or just use the same key each time.  In
+this example I will just use the same key over and over again.
+
+.. _deployment-add-encryption-keys-to-the-fake-vault:
+
+Add Encryption Keys to the Fake Vault
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Now re-open the ``fake_vault`` file and set the mesh, snoop_trace and snoop_spy
+encryption keys:
+
+.. code-block:: python
+  
+  vault_MESH_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+  vault_SNOOP_TRACE_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+  vault_SNOOP_SPY_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+  vault_RABBIT_HEARTBEAT_INTERVAL: 3600
+  vault_CONNECTION_ATTEMPTS: 3
+  vault_RABBIT_USER: peter
+  vault_RABBIT_PASSWORD: rabbit
+  vault_RABBIT_PORT: 5672
+  vault_RABBIT_GUEST_PASSWORD: rabbit567
+
+.. warning::
+
+  The ``fault_vault`` file needs to be in yaml format.  The yaml interpretor
+  used by ansible will get confused by your encryption key unless you put it
+  between quotation makes.  In fact the error message will spill your secrets
+  for everyone to see.
+
+Let's look at what we have done so far:
+
+.. image:: _static/deployment_machines_step_3.svg
+    :target: _static/deployment_machines_step_3.pdf
+    :align: center
+
+.. _deployment-setup-ansible-file-structure-on-the-deployment-computer:
+
+Setup Ansible File Structure on the Deployment Computer
+-------------------------------------------------------
+At this point we have an unencrypted vault file, ``fake_vault``, we have setup
+the Ansible inventory so that it knows what machines we want to connect to and
+our deployment computer can communicate with our remote devices using SSH without
+needing to provide a password.
+
+Now we will design our Ansible deployment system:
+
+* :ref:`setup ansible directory structure<deployment-setting-up-the-ansible-directory-structure>`
+* :ref:`setup global variables used for all computers in your distributed system<deployment-setup-ansible-global-variable-used-by-all-remote-machines>`
+* :ref:`determine where you want your software on your remote machines<deployment-determine-where-you-will-install-your-software-one-your-remote-machines>`
+* :ref:`add template files <deployment-add-our-template-files>`
+* :ref:`create the ansible playbook <deployment-create-the-miros-rabbitmq-playbook>`
+
+.. image:: _static/d_setup_ansible_file_structure_on_deployment_computer.svg
+    :target: _static/d_setup_ansible_file_structure_on_deployment_computer.pdf
+    :align: center
+
+.. _deployment-setting-up-the-ansible-directory-structure:
+
+Setting Up the Ansible Directory Structure
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _deployment-setup-ansible-global-variable-used-by-all-remote-machines:
+
+Setup Ansible Global Variable Used By all Remote Machines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _deployment-determine-where-you-will-install-your-software-one-your-remote-machines:
+
+Determine Where you will Install your Software one your Remote Machines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _deployment-add-our-template-files:
+
+Add Our Template Files
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. _deployment-create-the-miros-rabbitmq-playbook:
+
+Create the miros-rabbitmq playbook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines:
+
+Deploy Your Infrastructure Credentials and Secrets to all Machines
+------------------------------------------------------------------
+
+.. image:: _static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg
+    :target: _static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf
+    :align: center
 
 .. _deployment-the-inventory:
 

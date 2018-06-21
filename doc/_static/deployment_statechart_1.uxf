@@ -79,7 +79,7 @@ symbol=substate</panel_attributes>
       <w>480</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>*deploy your infrastructure, credentials and secret to all machines*
+    <panel_attributes>*deploy your infrastructure, credentials and secrets to all machines*
 symbol=substate</panel_attributes>
     <additional_attributes/>
   </element>
