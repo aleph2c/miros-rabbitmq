@@ -21,7 +21,7 @@
       <h>90</h>
     </coordinates>
     <panel_attributes>symbol=component
-fake_vault:
+vault:
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -482,7 +482,9 @@ bg=green</panel_attributes>
       <w>220</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>Software and secrets deployed
+    <panel_attributes>RabbitMQ
+server and secrets deployed
+miros-rabbitmq secrets deployed
 bg=green</panel_attributes>
     <additional_attributes/>
   </element>
