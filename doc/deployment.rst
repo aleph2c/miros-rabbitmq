@@ -80,8 +80,8 @@ Here are the five step we will make in this deployment:
 
 Where you are reading each section, you will find:
 
-* a cheat sheet picture, which will describe the workflow with examples of each thing to do in the workflow.
-* a written description of the things needed to do the step
+* a cheatsheet for fast reference
+* a detailed written description of the things needed to do the step
 * a summary of what you have accomplished at the end of the step
 
 .. _deployment-set-up-your-deployment-computer:
