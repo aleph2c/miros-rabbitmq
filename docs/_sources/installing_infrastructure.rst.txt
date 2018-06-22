@@ -167,6 +167,7 @@ Here is the ``rabbitmq.config.j2`` file:
       ]
     }
   ]
+  .
 
 .. note::
 

@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>12</zoom_level>
+  <zoom_level>9</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>144</x>
-      <y>180</y>
-      <w>732</w>
-      <h>552</h>
+      <x>270</x>
+      <y>171</y>
+      <w>549</w>
+      <h>513</h>
     </coordinates>
     <panel_attributes>*determine what machines you want in your distributed system*
 --
-entry /
-  come up with name for your inventory
-  for each machine in machines:
-    collect ip address/urls
-    collect user name
+
 
 valign=top
 </panel_attributes>
@@ -24,28 +20,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>180</x>
-      <y>324</y>
-      <w>672</w>
-      <h>168</h>
-    </coordinates>
-    <panel_attributes>*Ensure SSH passwordless access on all machines from deployment computer*
---
-entry /
-  for each machine in machines:
-    place deployment computer's public key into ~/.ssh/authorized_keys
-
-valign=top
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>264</x>
-      <y>528</y>
-      <w>588</w>
-      <h>156</h>
+      <x>297</x>
+      <y>531</y>
+      <w>504</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>*Create Ansible Inventory File*
 --
@@ -59,23 +37,12 @@ valign=top
     <additional_attributes/>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>192</x>
-      <y>480</y>
-      <w>36</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>192</x>
-      <y>528</y>
-      <w>24</w>
-      <h>24</h>
+      <x>315</x>
+      <y>252</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -83,45 +50,21 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>480</y>
-      <w>36</w>
-      <h>72</h>
+      <x>531</x>
+      <y>495</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>792</x>
-      <y>360</y>
-      <w>120</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;30.0;80.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>888</x>
-      <y>348</y>
-      <w>564</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>example:
---
-cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.169 'cat &gt;&gt; .ssh/authorized_keys'</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>888</x>
-      <y>216</y>
-      <w>216</w>
-      <h>60</h>
+      <x>837</x>
+      <y>450</y>
+      <w>162</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>example inventory name:
 --
@@ -131,21 +74,21 @@ scotty</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>432</x>
-      <y>228</y>
-      <w>480</w>
-      <h>36</h>
+      <x>585</x>
+      <y>459</y>
+      <w>270</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;380.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;280.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>888</x>
-      <y>528</y>
-      <w>372</w>
-      <h>120</h>
+      <x>837</x>
+      <y>531</y>
+      <w>279</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>example inventory, on deployment machine 
 in it's /etc/ansible/hosts:
@@ -158,21 +101,21 @@ in it's /etc/ansible/hosts:
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>840</x>
-      <y>588</y>
-      <w>72</w>
-      <h>36</h>
+      <x>792</x>
+      <y>576</y>
+      <w>63</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>672</y>
-      <w>36</w>
-      <h>120</h>
+      <x>468</x>
+      <y>639</y>
+      <w>27</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
@@ -180,36 +123,36 @@ in it's /etc/ansible/hosts:
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1140</x>
+      <x>837</x>
       <y>216</y>
-      <w>156</w>
-      <h>108</h>
+      <w>117</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>example:
 --
-machine        user
-192.168.0.71   pi
+machine          user
+192.168.0.71     pi
 192.168.0.169   pi</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>336</x>
-      <y>276</y>
-      <w>828</w>
-      <h>36</h>
+      <x>702</x>
+      <y>252</y>
+      <w>153</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;670.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1008</x>
-      <y>0</y>
-      <w>168</w>
-      <h>48</h>
+      <x>918</x>
+      <y>54</y>
+      <w>126</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>EXAMPLES
 style=wordwrap</panel_attributes>
@@ -218,10 +161,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>408</x>
-      <y>0</y>
-      <w>168</w>
-      <h>48</h>
+      <x>468</x>
+      <y>45</y>
+      <w>126</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>WORKFLOW
 style=wordwrap</panel_attributes>
@@ -230,10 +173,10 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>888</x>
-      <y>120</y>
-      <w>468</w>
-      <h>84</h>
+      <x>837</x>
+      <y>108</y>
+      <w>351</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>Assumption:
 --
@@ -245,21 +188,21 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>792</x>
-      <y>144</y>
-      <w>120</w>
-      <h>60</h>
+      <x>756</x>
+      <y>126</y>
+      <w>99</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;30.0;80.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;90.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>84</x>
-      <y>96</y>
-      <w>24</w>
-      <h>24</h>
+      <x>216</x>
+      <y>99</y>
+      <w>18</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -267,10 +210,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>84</x>
-      <y>96</y>
-      <w>84</w>
-      <h>36</h>
+      <x>225</x>
+      <y>99</y>
+      <w>63</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -278,33 +221,22 @@ bg=red</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>144</x>
-      <y>72</y>
-      <w>576</w>
-      <h>72</h>
+      <x>270</x>
+      <y>81</y>
+      <w>432</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>*set up deployment computer*
 symbol=substate</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>408</x>
-      <y>132</y>
-      <w>36</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLState</id>
     <coordinates>
-      <x>144</x>
-      <y>768</y>
-      <w>576</w>
-      <h>72</h>
+      <x>270</x>
+      <y>711</y>
+      <w>432</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>*invent credentials and secrets*
 symbol=substate</panel_attributes>
@@ -313,10 +245,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>828</y>
-      <w>36</w>
-      <h>72</h>
+      <x>468</x>
+      <y>756</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -324,10 +256,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>144</x>
-      <y>876</y>
-      <w>576</w>
-      <h>72</h>
+      <x>270</x>
+      <y>792</y>
+      <w>432</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>*setup ansible file structure on deployment computer*
 symbol=substate</panel_attributes>
@@ -336,10 +268,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>936</y>
-      <w>36</w>
-      <h>72</h>
+      <x>468</x>
+      <y>837</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -347,13 +279,134 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>144</x>
-      <y>984</y>
-      <w>576</w>
-      <h>72</h>
+      <x>270</x>
+      <y>873</y>
+      <w>432</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>*deploy your infrastructure, credentials and secret to all machines*
 symbol=substate</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>351</x>
+      <y>225</y>
+      <w>441</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>*Collect the addresses and ssh usernames for all remote machines*
+--
+# addresses can be IP addresses or URLs that work with DNS
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>306</x>
+      <y>432</y>
+      <w>504</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>*Name this collection of addresses and user names*
+--
+# come up with name for this ansible 'inventory'
+
+    
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>315</x>
+      <y>252</y>
+      <w>54</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>306</x>
+      <y>315</y>
+      <w>504</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>*Ensure SSH passwordless access on all machines from deployment computer*
+--
+entry /
+  for each machine in machines:
+    place deployment computer's public key into ~/.ssh/authorized_keys
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>360</y>
+      <w>135</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>342</y>
+      <w>423</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.169 'cat &gt;&gt; .ssh/authorized_keys'</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>531</x>
+      <y>396</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>531</x>
+      <y>279</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>126</y>
+      <w>27</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
 </diagram>

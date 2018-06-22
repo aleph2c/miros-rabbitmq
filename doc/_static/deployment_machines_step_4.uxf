@@ -409,27 +409,37 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>140</x>
+      <x>160</x>
       <y>260</y>
       <w>150</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>secrets invented, but 
-NOT ENCRYPTED!
+    <panel_attributes>This is done!
 
-bg=red</panel_attributes>
+bg=green</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
+      <x>300</x>
       <y>280</y>
-      <w>100</w>
+      <w>80</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1210</x>
+      <y>230</y>
+      <w>160</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Nothing deployed yet</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
@@ -474,16 +484,5 @@ bg=red</panel_attributes>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;350.0;100.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>1210</x>
-      <y>230</y>
-      <w>160</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>Nothing deployed yet</panel_attributes>
-    <additional_attributes/>
   </element>
 </diagram>

@@ -51,13 +51,12 @@ deployment process.</p>
 <span id="deployment-deployment-specification"></span><h2>Deployment Specification<a class="headerlink" href="#deployment-specification" title="Permalink to this headline">¶</a></h2>
 <p>Here is the deployment process’s requirements, assumptions and limitations:</p>
 <ul class="simple">
-<li>It should be secure</li>
 <li>It should be automated</li>
-<li>It should use standardized and known techniques (ssh, Ansible vault, .env files, … )</li>
-<li>It should run from one machine and deploy to an arbitrary number of other computers/containers.</li>
-<li>It can only deploy to Linux computers/containers (WLS will not be supported).</li>
-<li>All machines in your system will have the same <code class="docutils literal notranslate"><span class="pre">sudo</span></code> password.</li>
-<li>All machines in your system will be considered secure.</li>
+<li>It should use trusted open source technologies (ssh, Ansible vault, .env files, … )</li>
+<li>It <em>can only deploy</em> to Linux computers/containers (WLS will not be supported).</li>
+<li>All of the remote machines in your system will have the same <code class="docutils literal notranslate"><span class="pre">sudo</span></code> password.</li>
+<li>It should run from one deployment machine and deploy to an arbitrary number of other remote computers/containers.</li>
+<li>All machines in your system will be assumed to be secure.</li>
 <li>An encrypted vault file will be constructed on the computer that runs the
 deployment.</li>
 <li>The key, or phrase, used to decrypt the vault file will be kept in your head (or written down).</li>
@@ -72,6 +71,8 @@ deployment.</li>
 <li>It will configure your RabbitMQ servers to use the credentials in your vault file.</li>
 <li>It should be easy to extend the deployment process to meet your needs.</li>
 <li>It should be easy to change your keys</li>
+<li>It will securely transfer your secrets from your deployment machine onto your
+remote machines.</li>
 </ul>
 <p>Here is a high level view of the secrets in our system:</p>
 <a class="reference external image-reference" href="_static/deployment_machines.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines.svg" src="_images/deployment_machines.svg" /></div>
@@ -95,14 +96,21 @@ required for the miros-rabbitmq library to work.</p>
 </ul>
 <a class="reference external image-reference" href="_static/deployment_statechart_1.pdf"><div align="center" class="align-center"><img alt="_images/deployment_statechart_1.svg" src="_images/deployment_statechart_1.svg" /></div>
 </a>
+<p>Where you are reading each section, you will find:</p>
+<ul class="simple">
+<li>a cheat sheet picture, which will describe the workflow with examples of each thing to do in the workflow.</li>
+<li>a written description of the things needed to do the step</li>
+<li>a summary of what you have accomplished at the end of the step</li>
+</ul>
 </div>
 <div class="section" id="set-up-your-deployment-computer">
-<span id="deployment-set-up-your-deployment-computer"></span><h2>Set Up Your Deployment Computer<a class="headerlink" href="#set-up-your-deployment-computer" title="Permalink to this headline">¶</a></h2>
+<span id="deployment-set-up-your-deployment-computer"></span><h2>1. Set Up Your Deployment Computer<a class="headerlink" href="#set-up-your-deployment-computer" title="Permalink to this headline">¶</a></h2>
 <p>Our first step will be to setup our deployment computer:</p>
 <ul class="simple">
 <li><a class="reference internal" href="#deployment-install-ansible-on-deployment-computer"><span class="std std-ref">install ansible</span></a></li>
 <li><a class="reference internal" href="#deployment-setup-private-keys-on-deployment-computer"><span class="std std-ref">setup private ssh keys</span></a></li>
 <li><a class="reference internal" href="#deployment-make-a-deployment-directory"><span class="std std-ref">make a deployment directory</span></a></li>
+<li><a class="reference internal" href="#deployment-thing-accomplished-so-far-1"><span class="std std-ref">things accomplished so far</span></a></li>
 </ul>
 <a class="reference external image-reference" href="_static/d_setup_deployment_computer.pdf"><div align="center" class="align-center"><img alt="_images/d_setup_deployment_computer.svg" src="_images/d_setup_deployment_computer.svg" /></div>
 </a>
@@ -142,12 +150,15 @@ commands if you don’t have a public key already):</p>
 </div>
 <div class="section" id="make-a-deployment-directory">
 <span id="deployment-make-a-deployment-directory"></span><h3>Make a Deployment Directory<a class="headerlink" href="#make-a-deployment-directory" title="Permalink to this headline">¶</a></h3>
-<p>The files needed to tell Ansible what to do need to be placed in a directory.
-Suppose we want this directory in the home folder of our deployment machine:</p>
+<p>The deployment directory will contain all of the files that will tell Ansible
+what we want it to do. Let’s make the deployment directory.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">~/</span><span class="n">miros_rabbitmq_deployment</span>
 </pre></div>
 </div>
-<p>After we have finished this step we have a <code class="docutils literal notranslate"><span class="pre">id_rsa.pub</span></code> file on our deployment
+</div>
+<div class="section" id="things-accomplished-so-far">
+<span id="deployment-thing-accomplished-so-far-1"></span><h3>Things Accomplished So Far<a class="headerlink" href="#things-accomplished-so-far" title="Permalink to this headline">¶</a></h3>
+<p>After we have finished <a class="reference internal" href="#deployment-set-up-your-deployment-computer"><span class="std std-ref">this step</span></a> we have a <code class="docutils literal notranslate"><span class="pre">id_rsa.pub</span></code> file on our deployment
 computer.</p>
 <a class="reference external image-reference" href="_static/deployment_machines_step_1.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines_step_1.svg" src="_images/deployment_machines_step_1.svg" /></div>
 </a>
@@ -160,20 +171,26 @@ system, create secure connections between them and our deployment computer, then
 put some information into an Ansible inventory file, so Ansible will know which
 machines we want to deploy to:</p>
 <ul class="simple">
+<li><a class="reference internal" href="#deployment-collect-the-addresses-and-ssh-usernames-for-all-remote-machines"><span class="std std-ref">collect the addresses and ssh usernames for all remote machines</span></a></li>
 <li><a class="reference internal" href="#deployment-ensure-ssh-passwordless-access-to-all-remote-machines"><span class="std std-ref">ensure ssh passwordless access on all machines from deployment computer</span></a></li>
+<li><a class="reference internal" href="#deployment-name-the-collection-of-addresses-and-usernames"><span class="std std-ref">name the collection of addresses and usernames</span></a></li>
 <li><a class="reference internal" href="#deployment-create-ansbile-inventory-file"><span class="std std-ref">create ansible inventory file</span></a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-2"><span class="std std-ref">things accomplished so far</span></a></li>
 </ul>
 <a class="reference external image-reference" href="_static/d_determine_what_machines_you_want_in_your_distributed_system.pdf"><div align="center" class="align-center"><img alt="_images/d_determine_what_machines_you_want_in_your_distributed_system.svg" src="_images/d_determine_what_machines_you_want_in_your_distributed_system.svg" /></div>
 </a>
-<p>The Ansible inventory file can be used for many many different deployments, so
-it is organized into named groups.  Come up with a named group for your
-miros-rabbitmq deployment, mine is called <code class="docutils literal notranslate"><span class="pre">scotty</span></code> because that is the name of
-the raspberry pi it runs from.</p>
-<p>Collect the IP addresses, or URLs of all of the machines that you want in your
-distributed system.  Then collect the user names for each machine.</p>
+</div>
+<div class="section" id="collect-the-addresses-and-ssh-usernames-for-all-remote-machines">
+<span id="deployment-collect-the-addresses-and-ssh-usernames-for-all-remote-machines"></span><h2>Collect the Addresses and ssh usernames for all Remote Machines<a class="headerlink" href="#collect-the-addresses-and-ssh-usernames-for-all-remote-machines" title="Permalink to this headline">¶</a></h2>
+<p>Ansible will deploy your software and push your files to each of your remote
+machines using ssh.  So, we need to collect the addresses and usernames for all
+of the machines/containers in your deployment.  The addresses can be in the form
+of an IP address or a traditional URL.  The username will be user which you will
+login as and under who’s permissions you will be installing your code.  This
+should not be the root user.</p>
 <div class="section" id="ensure-ssh-passwordless-access-to-all-remote-machines">
 <span id="deployment-ensure-ssh-passwordless-access-to-all-remote-machines"></span><h3>Ensure SSH Passwordless Access to All Remote Machines<a class="headerlink" href="#ensure-ssh-passwordless-access-to-all-remote-machines" title="Permalink to this headline">¶</a></h3>
-<p>Now let’s push our public key onto a remote computer that we want to deploy software too.  To do this, you will need it’s URL or IP address and the username of the account that has SSH enabled.  As an example, I’ll assume that the machine you are trying to set up has the IP address of 192.168.0.169 with a username pi.  Change out the username and IP address with your own for the remainder of this example.</p>
+<p id="deployment-name-the-collection-of-addresses-and-usernames">Now let’s push our public key onto a remote computer that we want to deploy software too.  To do this, you will need it’s URL or IP address and the username of the account that has SSH enabled.  As an example, I’ll assume that the machine you are trying to set up has the IP address of 192.168.0.169 with a username pi.  Change out the username and IP address with your own for the remainder of this example.</p>
 <p>First we test if it already has this machine’s public key:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@192.168.0.169</span>
 </pre></div>
@@ -188,6 +205,15 @@ distributed system.  Then collect the user names for each machine.</p>
 </div>
 <p>The above command shouldn’t ask for a password anymore.</p>
 <p>Repeat this procedure for every machine onto which you would like to deploy RabbitMQ.</p>
+</div>
+<div class="section" id="name-the-collection-of-addresses-and-usernames">
+<h3>Name the Collection of Addresses and Usernames<a class="headerlink" href="#name-the-collection-of-addresses-and-usernames" title="Permalink to this headline">¶</a></h3>
+<p>The Ansible inventory file can be used for many different deployments, so it is
+organized into named groups.  Come up with a named group for your miros-rabbitmq
+deployment, what would you like to call your distributed system?.  Mine is
+called <code class="docutils literal notranslate"><span class="pre">scotty</span></code> because that is the name of the raspberry pi it runs from.</p>
+<p>Collect the IP addresses, or URLs of all of the machines that you want in your
+distributed system.  Then collect the user names for each machine.</p>
 </div>
 <div class="section" id="create-ansible-inventory-file">
 <span id="deployment-create-ansbile-inventory-file"></span><h3>Create Ansible Inventory File<a class="headerlink" href="#create-ansible-inventory-file" title="Permalink to this headline">¶</a></h3>
@@ -207,7 +233,10 @@ distributed system.  Then collect the user names for each machine.</p>
 <p class="last">The default posix username for a raspberry pi is <code class="docutils literal notranslate"><span class="pre">pi</span></code>.  If your usernames are different,
 update the above listing with your usernames.</p>
 </div>
-<p>Let’s look at what we have done so far:</p>
+</div>
+<div class="section" id="deployment-things-accomplished-so-far-2">
+<span id="id6"></span><h3>Things Accomplished So Far<a class="headerlink" href="#deployment-things-accomplished-so-far-2" title="Permalink to this headline">¶</a></h3>
+<p>After completing this <a class="reference internal" href="#deployment-what-machine-do-you-want-in-your-distributed-system"><span class="std std-ref">step</span></a>, this is what has been done so far:</p>
 <a class="reference external image-reference" href="_static/deployment_machines_step_2.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines_step_2.svg" src="_images/deployment_machines_step_2.svg" /></div>
 </a>
 </div>
@@ -217,13 +246,17 @@ update the above listing with your usernames.</p>
 <p>Let’s create an unencrypted version of our vault file.  This will be broken down
 into the following steps:</p>
 <ul class="simple">
+<li><a class="reference internal" href="#deployment-make-a-fake-vault-file"><span class="std std-ref">make a fake_vault file</span></a></li>
 <li><a class="reference internal" href="#deployment-invent-rabbitmq-server-credentials-and-settings"><span class="std std-ref">invent RabbitMQ server credentials and settings</span></a></li>
 <li><a class="reference internal" href="#deployment-set-rabbitmq-connection-parameters"><span class="std std-ref">create the RabbitMQ connection parameters</span></a></li>
 <li><a class="reference internal" href="#deployment-invent-miros-rabbitmq-encryption-keys"><span class="std std-ref">invent miros-rabbitmq encryption keys</span></a></li>
 <li><a class="reference internal" href="#deployment-add-encryption-keys-to-the-fake-vault"><span class="std std-ref">add encryption keys to the fake_value</span></a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-3"><span class="std std-ref">things accomplished so far</span></a></li>
 </ul>
 <a class="reference external image-reference" href="_static/d_invent_credentials_and_secrets.pdf"><div align="center" class="align-center"><img alt="_images/d_invent_credentials_and_secrets.svg" src="_images/d_invent_credentials_and_secrets.svg" /></div>
 </a>
+<div class="section" id="make-a-fake-vault-file">
+<span id="deployment-make-a-fake-vault-file"></span><h3>Make a fake_vault file<a class="headerlink" href="#make-a-fake-vault-file" title="Permalink to this headline">¶</a></h3>
 <p>On our deployment computer we make a fake_vault file in our deployment
 directory:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/miros_rabbitmq_deployment
@@ -237,6 +270,7 @@ touch fake_vault
 <p>The <code class="docutils literal notranslate"><span class="pre">fake_vault</span></code> file is called this so we don’t forget that it isn’t
 encrypted.  Eventually we will encrypt it and place it within the Ansible file structure,
 but for now, let’s just leave where it is and treat it as a <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file.</p>
+</div>
 </div>
 <div class="section" id="invent-rabbitmq-server-credentials-and-settings">
 <span id="deployment-invent-rabbitmq-server-credentials-and-settings"></span><h2>Invent RabbitMQ Server Credentials and Settings<a class="headerlink" href="#invent-rabbitmq-server-credentials-and-settings" title="Permalink to this headline">¶</a></h2>
@@ -304,6 +338,9 @@ used by ansible will get confused by your encryption key unless you put it
 between quotation makes.  In fact the error message will spill your secrets
 for everyone to see.</p>
 </div>
+</div>
+<div class="section" id="deployment-things-accomplished-so-far-3">
+<span id="id7"></span><h3>Things Accomplished So Far<a class="headerlink" href="#deployment-things-accomplished-so-far-3" title="Permalink to this headline">¶</a></h3>
 <p>Let’s look at what we have done so far:</p>
 <a class="reference external image-reference" href="_static/deployment_machines_step_3.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines_step_3.svg" src="_images/deployment_machines_step_3.svg" /></div>
 </a>
@@ -322,151 +359,226 @@ needing to provide a password.</p>
 <li><a class="reference internal" href="#deployment-determine-where-you-will-install-your-software-one-your-remote-machines"><span class="std std-ref">determine where you want your software on your remote machines</span></a></li>
 <li><a class="reference internal" href="#deployment-add-our-template-files"><span class="std std-ref">add template files</span></a></li>
 <li><a class="reference internal" href="#deployment-create-the-miros-rabbitmq-playbook"><span class="std std-ref">create the ansible playbook</span></a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-4"><span class="std std-ref">things accomplished so far</span></a></li>
 </ul>
 <a class="reference external image-reference" href="_static/d_setup_ansible_file_structure_on_deployment_computer.pdf"><div align="center" class="align-center"><img alt="_images/d_setup_ansible_file_structure_on_deployment_computer.svg" src="_images/d_setup_ansible_file_structure_on_deployment_computer.svg" /></div>
 </a>
+<p>Before we start this step make sure you working in your deployment directory of your deployment machine.  In my
+case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">miros_rabbitmq_deployment</span>
+</pre></div>
+</div>
 <div class="section" id="setting-up-the-ansible-directory-structure">
 <span id="deployment-setting-up-the-ansible-directory-structure"></span><h3>Setting Up the Ansible Directory Structure<a class="headerlink" href="#setting-up-the-ansible-directory-structure" title="Permalink to this headline">¶</a></h3>
+<p>Our Ansible program will be partially organized into directories.  But, before we
+talk about this, let’s consider what we want:</p>
+<ul class="simple">
+<li>We want to keep some of our distributed system settings as plain text files</li>
+<li>We want to encrypt some of our information on our deployment machine</li>
+<li>We want to create some template files that will be used with our stored
+setting information to make new files.  These new files will be posted into
+specific locations in the directory structure of our remote computers.</li>
+<li>We want a set of instructions that will tell Ansible what software to deploy.
+These instructions will be dependent upon some of our settings.</li>
+<li>We want to keep all of these files under revision control, it’s code afterall.</li>
+</ul>
+<p>Ansible let’s you assign your settings to variables which can be used to either
+fill in a template file or run a playbook.  A playbook is a YAML file which
+lists a series of deployment instructions, run against an inventory.  In our
+case the inventory consists of the addresses and names we wrote into our
+<code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file.  Its name was <code class="docutils literal notranslate"><span class="pre">scotty</span></code>.</p>
+<p>Ansible has developed some customs since its inception.  If you have an encrypted vault file they
+want you to organize your variable files as:</p>
+<div class="highlight-code notranslate"><div class="highlight"><pre><span></span># plain text settings assigned to variables
+./group_vars/&lt;inventory_name&gt;/vars
+
+# encrypted file, settings assigned to variables
+./group_vars/&lt;inventory_name&gt;/vault
+</pre></div>
+</div>
+<p>The playbooks at the top level directory can just reference the variable names
+in these files without explicitly defining the path to them.</p>
+<p>Ansible let’s you leave your template files at the top level of your deployment
+directory, or to salt them away into a templates directory.  If you put them
+into a templates directory, you don’t have to explicitly define the path to them
+in your playbook, Ansible knows where they are.</p>
+<p>Now that we understand this stuff, let’s setup our directory structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mkdir group_vars
+$ mkdir ./group_vars/scotty
+$ touch ./group_vars/scotty/vars
+$ mkdir ./templates
+</pre></div>
+</div>
+<p>Our deployment directory structure will now look something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>.
+├── group_vars
+│   └── scotty
+│       └── vars
+└── templates
+</pre></div>
+</div>
 </div>
 <div class="section" id="setup-ansible-global-variable-used-by-all-remote-machines">
 <span id="deployment-setup-ansible-global-variable-used-by-all-remote-machines"></span><h3>Setup Ansible Global Variable Used By all Remote Machines<a class="headerlink" href="#setup-ansible-global-variable-used-by-all-remote-machines" title="Permalink to this headline">¶</a></h3>
+<p>In this step we will assign all of our global variables.  The variables are
+defined in the <code class="docutils literal notranslate"><span class="pre">./group_vars</span></code> subdirectory.  We will do this in several
+stages.</p>
+<p><strong>Encrypt credentials and secrets in the vault:</strong>
+We need to encrypt our <code class="docutils literal notranslate"><span class="pre">fake_vault</span></code> file.  To do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ mv fake_vault ./group_vars/&lt;inventory_name&gt;/vault
+$ ansible-vault ./group_vars/&lt;inventory_name&gt;/vault
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Make sure you remember your vault encryption key ;)</p>
+</div>
+<p>To confirm that the file was encrypted, you can just look at it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ cat ./global_vars/scotty/vault
+
+$ANSIBLE_VAULT;1.1;AES256
+34363736353133336561626464646437613...
+</pre></div>
+</div>
+<p>Here we see that the file was encrypted using AES256.</p>
+<p><strong>Edit your encypted vault file:</strong>  Let’s confirm we can re-open this file and
+then copy it’s variable names, so that we can reference them in our <code class="docutils literal notranslate"><span class="pre">vars</span></code>
+file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ ansible-vault edit ./global_vars/scotty/vault</span>
+
+<span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_MESH_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3600</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_CONNECTION_ATTEMPTS</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_USER</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">peter</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PASSWORD</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PORT</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5672</span>
+<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_GUEST_PASSWORD</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit567</span>
+</pre></div>
+</div>
+<p>Copy the variable names, you will be using them in the next step.
+Close the file.  This will automatically re-encrypt it.</p>
+<p><strong>Add vars file</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pico</span> <span class="o">./</span><span class="n">global_vars</span><span class="o">/</span><span class="n">scotty</span><span class="o">/</span><span class="nb">vars</span>
+</pre></div>
+</div>
+<p>Now add your settings information to the vars file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="c1"># public</span>
+<span class="l l-Scalar l-Scalar-Plain">python_packages_to_install</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">miros-rabbitmq</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_tags</span><span class="p p-Indicator">:</span>
+ <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">administrator</span>
+
+<span class="c1"># secrets</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_user</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_USER</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PASSWORD</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_port</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PORT</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_heartbeat_interval</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">connection_attempts</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_CONNECTION_ATTEMPTS</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_guest_password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_GUEST_PASSWORD</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">mesh_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_MESH_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">snoop_trace_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">snoop_spy_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">rabbit_heart_beat_interval</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Notice that the secret variable names reference the vault variable names
+Things are done this way, so that someone writing a play book using our vault
+can know what a variable name is without knowing how to decrypt the vault
+file.</p>
+</div>
 </div>
 <div class="section" id="determine-where-you-will-install-your-software-one-your-remote-machines">
 <span id="deployment-determine-where-you-will-install-your-software-one-your-remote-machines"></span><h3>Determine Where you will Install your Software one your Remote Machines<a class="headerlink" href="#determine-where-you-will-install-your-software-one-your-remote-machines" title="Permalink to this headline">¶</a></h3>
+<p>In the previous step we defined a bunch of variables that can be used by our
+playbook (which we haven’t written yet).  We defined a lot of things, but we
+didn’t establish what directory, on our remote machines, we would like to
+install our application into.</p>
+<p>This playbook won’t deploy any application code, but it will put the <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+file at the top level of its directory.  This directory setting, will be stored
+as the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code> variable at the top of the playbook
+(when we write it). We will keep it here rather than in the <code class="docutils literal notranslate"><span class="pre">global_vars</span></code> directory,
+so that it is easy to change while editing the playbook.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># this will be where we want to put our code on the remote machines</span>
+<span class="l l-Scalar l-Scalar-Plain">miros_rabbitmq_project_directory</span><span class="p p-Indicator">:</span> <span class="s">&#39;~/miros-rabbitmq&#39;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="add-our-template-files">
 <span id="deployment-add-our-template-files"></span><h3>Add Our Template Files<a class="headerlink" href="#add-our-template-files" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="create-the-miros-rabbitmq-playbook">
-<span id="deployment-create-the-miros-rabbitmq-playbook"></span><h3>Create the miros-rabbitmq playbook<a class="headerlink" href="#create-the-miros-rabbitmq-playbook" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="deploy-your-infrastructure-credentials-and-secrets-to-all-machines">
-<span id="deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines"></span><h2>Deploy Your Infrastructure Credentials and Secrets to all Machines<a class="headerlink" href="#deploy-your-infrastructure-credentials-and-secrets-to-all-machines" title="Permalink to this headline">¶</a></h2>
-<a class="reference external image-reference" href="_static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf"><div align="center" class="align-center"><img alt="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" src="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" /></div>
-</a>
-</div>
-<div class="section" id="the-inventory">
-<span id="deployment-the-inventory"></span><h2>The Inventory<a class="headerlink" href="#the-inventory" title="Permalink to this headline">¶</a></h2>
-<p>But to begin with we will start with the <code class="docutils literal notranslate"><span class="pre">/etc/ansible</span></code> directory of the machine that will
-do the deployments.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
-├── ansible.cfg
-└── hosts
+<p>Now we will write our template files for our deployment, so far we need three
+things:</p>
+<ul class="simple">
+<li>a file to tell RabbitMQ about its environment</li>
+<li>a file to configure the RabbitMQ server</li>
+<li>the <code class="docutils literal notranslate"><span class="pre">.env</span></code> template.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ touch ./templates/rabbit-env.config.j2
+$ touch ./templates/rabbit.config.j2
+$ touch ./templates/.env.j2
 </pre></div>
 </div>
-<p>In your <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> we see an example of an inventory, this one describes a
-group called <code class="docutils literal notranslate"><span class="pre">scotty</span></code>.  It has a list of some addresses and their ansible_user names.
-From now on, when you see the group <code class="docutils literal notranslate"><span class="pre">scotty</span></code> remember we are thinking about these
-machines, with these users:</p>
-<div class="highlight-ansible notranslate"><div class="highlight"><pre><span></span>[scotty]
-192.168.1.71 ansible_user=pi
-192.168.1.69 ansible_user=pi
+<p>The <code class="docutils literal notranslate"><span class="pre">j2</span></code> extension is our hint that these files are jinja2 template files.
+Here is my barebones <code class="docutils literal notranslate"><span class="pre">rabbit-env.config.j2</span></code> template:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RABBITMQ_CONFIG_FILE</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">rabbitmq</span><span class="o">/</span><span class="n">rabbitmq</span>
+<span class="n">NODE_IP_ADDRESS</span><span class="o">=</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
 </pre></div>
 </div>
+<p>Here is the <code class="docutils literal notranslate"><span class="pre">rabbitmq.config.j2</span></code> template file:</p>
+<div class="highlight-erlang notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span><span class="n">rabbit</span><span class="p">,</span>
+    <span class="p">[</span>
+      <span class="p">{</span><span class="n">loopback_users</span><span class="p">,[]}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">.</span>
+</pre></div>
 </div>
-<div class="section" id="the-ansible-working-directory">
-<span id="deployment-the-playbook-directory"></span><h2>The Ansible Working Directory<a class="headerlink" href="#the-ansible-working-directory" title="Permalink to this headline">¶</a></h2>
-<p>You can place your Ansible files and folders where every you want in your file system.
-Just ensure that they are under revision control.  Your Ansible working directory could
-look something like this:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>├── group_vars
+<p>Neither of the above templates actually used our Ansible variables.  This is OK,
+we leave them in the templates directory, so that in the future we have the
+option of parameterizing them with our settings.</p>
+<p>Now we will create the <code class="docutils literal notranslate"><span class="pre">.env.j2</span></code> template, it <em>will</em> use our Ansible variables:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">MESH_ENCRYPTION_KEY={{mesh_encryption_key}}</span>
+<span class="l l-Scalar l-Scalar-Plain">SNOOP_TRACE_ENCRYPTION_KEY={{snoop_trace_encryption_key}}</span>
+<span class="l l-Scalar l-Scalar-Plain">SNOOP_SPY_ENCRYPTION_KEY={{snoop_spy_encryption_key}}</span>
+<span class="l l-Scalar l-Scalar-Plain">RABBIT_USER={{rabbit_user}}</span>
+<span class="l l-Scalar l-Scalar-Plain">RABBIT_PASSWORD={{rabbit_password}}</span>
+<span class="l l-Scalar l-Scalar-Plain">RABBIT_PORT={{rabbit_port}}</span>
+<span class="l l-Scalar l-Scalar-Plain">RABBIT_HEARTBEAT_INTERVAL={{rabbit_heart_beat_interval}}</span>
+<span class="l l-Scalar l-Scalar-Plain">CONNECTION_ATTEMPTS={{connection_attempts}}</span>
+<span class="l l-Scalar l-Scalar-Plain">RABBIT_GUEST_USER={{rabbit_guest_user}}</span>
+</pre></div>
+</div>
+<p>When we have finished this step our deployment directory will look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>.
+├── group_vars
 │   └── scotty
 │       ├── vars
 │       └── vault
-├── miros_rabbitmq_install.yml
-├── rabbitmq.config.j2
-├── rabbitmq-env.conf.j2
-└── .env.j2
+└── templates
+    ├── .env.j2
+    ├── rabbitmq.config.j2
+    └── rabbitmq-env.conf.j2
 </pre></div>
 </div>
-<p>We see that there is a group_vars directory, which has a subdirectory called scotty.
-This subdirectory contains all of the variables needed for our deployment.
-There are public vars and their is a vault.</p>
-<p>The var file contains all of the public variables.</p>
-<p>The vault is an encrypted file (AES256) which can be added to your revision
-control system.  I will talk about how to place your secrets into this file and how to
-access these secrets from your vars file shortly.</p>
-<p>But first look at the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_install.yml</span></code> file.  This is the play book that
-contains the instructions about what should be deployed and where and how.  The files
-with the <code class="docutils literal notranslate"><span class="pre">j2</span></code> extension are just jinja2 templates which will be used by the playbook
-when it’s writing new files, populated with the contents of your <code class="docutils literal notranslate"><span class="pre">group_vars</span></code> folder,
-onto your remote servers.</p>
-<p>For your <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code> library to work, it needs to install the Erlang programming
-language, RabbitMQ and several plugins for the RabbitMQ server.  Then in needs to place
-your RabbitMQ credentials and the miros-rabbitmq secrets in to the .env file at the base
-of your software system.  Where this is will be configured directly in the playbook, all
-other variables will be pulled out of the <code class="docutils literal notranslate"><span class="pre">group_vars</span></code> folders.</p>
 </div>
-<div class="section" id="the-miros-rabbitmq-install-playbook">
-<span id="deployment-the-miros-rabbitmq-install-playbook"></span><h2>The Miros RabbitMQ Install Playbook<a class="headerlink" href="#the-miros-rabbitmq-install-playbook" title="Permalink to this headline">¶</a></h2>
-<p>The playbook is written in yaml, so it is easy to read:</p>
-<div class="highlight-yaml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<div class="section" id="create-the-miros-rabbitmq-playbook">
+<span id="deployment-create-the-miros-rabbitmq-playbook"></span><h3>Create the miros-rabbitmq playbook<a class="headerlink" href="#create-the-miros-rabbitmq-playbook" title="Permalink to this headline">¶</a></h3>
+<p>Now that we have defined our vault, variables and template files.  We will build
+our Ansible playbook, so Ansible can deploy our system.</p>
+<p>First we create a file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ touch ./miros_rabbitmq_install.yml
+</pre></div>
+</div>
+<p>The play book it yet another YAML file.  Now let’s write the file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
 <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">scotty</span>
   <span class="l l-Scalar l-Scalar-Plain">vars</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">miros_rabbitmq_project_directory</span><span class="p p-Indicator">:</span> <span class="s">&#39;~/miros-rabbitmq&#39;</span>
@@ -533,108 +645,35 @@ other variables will be pulled out of the <code class="docutils literal notransl
        <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.env&quot;</span>
        <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
 </pre></div>
-</td></tr></table></div>
-<p>The file is basically self documenting.  On line 2 we see that we want this playbook to
-reference our <code class="docutils literal notranslate"><span class="pre">scotty</span></code> inventory.  This will have ansible load all of the variables
-described in the <code class="docutils literal notranslate"><span class="pre">scotty</span></code> subdirectory of the global_var folder.</p>
-<p>On line 3-4 we see that there is a playbook scoped variable named
-<code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code>.  This is the path in which we will place the
-<code class="docutils literal notranslate"><span class="pre">.env</span></code> file needed for our project.  This <code class="docutils literal notranslate"><span class="pre">.env</span></code> file will have all of the
-encryption keys and RabbitMQ credentials for our deployment to work.  We see lines 5-60
-are just a repeat of the playbook we used in the devops section for installing RabbitMQ.
-Lines 62-66 fill our <code class="docutils literal notranslate"><span class="pre">.env.j2</span></code> template with our variables and the writes it to the
-directory specified by the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code> variable at the top of
-the playbook.</p>
-</div>
-<div class="section" id="the-dot-env-file">
-<span id="deployment-the-dot-env-file"></span><h2>The Dot Env File<a class="headerlink" href="#the-dot-env-file" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">.env</span></code> file will contain the secrets needed for a server to communicate with
-another server.  It is derived from the <code class="docutils literal notranslate"><span class="pre">.env.js</span></code> template which looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">mesh_encryption_key</span><span class="p">}}</span>
-<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">snoop_trace_encryption_key</span><span class="p">}}</span>
-<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="p">{{</span><span class="n">snoop_spy_encryption_key</span><span class="p">}}</span>
-<span class="n">RABBIT_USER</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_user</span><span class="p">}}</span>
-<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_password</span><span class="p">}}</span>
-<span class="n">RABBIT_PORT</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_port</span><span class="p">}}</span>
-<span class="n">RABBIT_HEARTBEAT_INTERVAL</span><span class="o">=</span><span class="p">{{</span><span class="n">rabbit_heart_beat_interval</span><span class="p">}}</span>
-<span class="n">CONNECTION_ATTEMPTS</span><span class="o">=</span><span class="p">{{</span><span class="n">connection_attempts</span><span class="p">}}</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">.env</span></code> will placed in the directory specified by the
-<code class="docutils literal notranslate"><span class="pre">miros_rabbitmq_project_directory</span></code> variable at the top of the <code class="docutils literal notranslate"><span class="pre">miros_rabbitmq.yml</span></code>
-playbook.</p>
-</div>
-<div class="section" id="the-vault-file">
-<span id="deployment-the-vault-file"></span><h2>The vault File<a class="headerlink" href="#the-vault-file" title="Permalink to this headline">¶</a></h2>
-<p>The vault file is an encrypted file that can be added to your code revision system.  It
-contains all of your system’s secrets and credentials.  You would decrypt it at the
-moment you issue the <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> command.</p>
-<p>It is placed within the group_vars/scotty directory of your Ansible working directory.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>├── group_vars
-    └── scotty
-        ├── vars
-        └── vault
-</pre></div>
-</div>
-<p>To create a vault file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>  ansible-vault create group_vars/scotty/vault
-&gt; New Vault password:
-&gt; Confirm New Vault password:
-</pre></div>
-</div>
-<p>To edit this vault file, you can enter this command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">vault</span> <span class="n">edit</span> <span class="n">vault</span> <span class="o">--</span><span class="n">vault</span><span class="o">-</span><span class="nb">id</span> <span class="nd">@prompt</span>
-<span class="o">&gt;</span> <span class="n">Vault</span> <span class="n">password</span> <span class="p">(</span><span class="n">default</span><span class="p">):</span>
-</pre></div>
-</div>
-<p>If you enter the correct password, your vault file will
-be decrypted and opened with your default editor.  After you have edited your file, the
-closing process of your editor would cause ansible to re-encrypt it, locking it down.</p>
-<p>Let’s add our RabbitMQ credentials and miros-rabbitmq encryption keys to our file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_MESH_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_USER</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">peter</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PASSWORD</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_PORT</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5672</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3600</span>
-<span class="l l-Scalar l-Scalar-Plain">vault_CONNECTION_ATTEMPTS</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
-</pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Make sure you wrap your encryption keys within a set of single-quotes characters
-otherwise the yaml interpretor will get confused by the key’s <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">=</span></code> characters
-and your deployment won’t work.</p>
+<p class="last">Extend this playbook to customize your deployment.</p>
 </div>
 </div>
-<div class="section" id="the-vars-file">
-<span id="deployment-the-vars-file"></span><h2>The vars File<a class="headerlink" href="#the-vars-file" title="Permalink to this headline">¶</a></h2>
-<p>The vars file contains all of the variables that your playbook and it’s template files
-need.  Ours will look something like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_user</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_USER</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PASSWORD</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_port</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_PORT</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_heartbeat_interval</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_RABBIT_HEARTBEAT_INTERVAL</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">connection_attempts</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_CONNECTION_ATTEMPTS</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_tags</span><span class="p p-Indicator">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">administrator</span>
-<span class="l l-Scalar l-Scalar-Plain">guest_password</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbit123</span>
-<span class="l l-Scalar l-Scalar-Plain">mesh_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_MESH_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">snoop_trace_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_TRACE_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">snoop_spy_encryption_key</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vault_SNOOP_SPY_ENCRYPTION_KEY</span><span class="nv"> </span><span class="s">}}&quot;</span>
-<span class="l l-Scalar l-Scalar-Plain">rabbit_heart_beat_interval</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">3600</span>
+<div class="section" id="deployment-things-accomplished-so-far-4">
+<span id="id8"></span><h3>Things Accomplished So Far<a class="headerlink" href="#deployment-things-accomplished-so-far-4" title="Permalink to this headline">¶</a></h3>
+<p>We encrypted our vault file in this step.  Our secrets and infrastructure are
+ready to be deployed to the system:</p>
+<a class="reference external image-reference" href="_static/deployment_machines_step_4.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines_step_4.svg" src="_images/deployment_machines_step_4.svg" /></div>
+</a>
+<p>Our deployment directory will look like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>├── group_vars
+│   └── scotty
+│       ├── vars
+│       └── vault
+├── miros_rabbitmq_install.yml
+├── rabbitmq.config.j2
+├── rabbitmq-env.conf.j2
+└── .env.j2
 </pre></div>
 </div>
-<p>See how some of the variables are just using items from the vault?</p>
-<p>This is done so that the vault variable names don’t remain a secret from your playbook.  If
-you pass off their contents into publicly available variable names, then they can be
-used by someone who doesn’t have the encryption key for the vault file.</p>
 </div>
-<div class="section" id="to-deploy">
-<h2>To Deploy<a class="headerlink" href="#to-deploy" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="deploy-your-infrastructure-credentials-and-secrets-to-all-machines">
+<span id="deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines"></span><h2>Deploy Your Infrastructure Credentials and Secrets to all Machines<a class="headerlink" href="#deploy-your-infrastructure-credentials-and-secrets-to-all-machines" title="Permalink to this headline">¶</a></h2>
+<a class="reference external image-reference" href="_static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf"><div align="center" class="align-center"><img alt="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" src="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" /></div>
+</a>
 <p>To have your playbook run on each of the servers defined in your inventory, you would
 run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="o">-</span><span class="n">K</span> <span class="n">miros_rabbit_install</span><span class="o">.</span><span class="n">yml</span> <span class="o">--</span><span class="n">ask</span><span class="o">-</span><span class="n">vault</span><span class="o">-</span><span class="k">pass</span>
@@ -644,6 +683,9 @@ run:</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">BECOME</span> <span class="pre">password</span></code> is the password to run <code class="docutils literal notranslate"><span class="pre">sudo</span></code> commands on the remote server,
 and the <code class="docutils literal notranslate"><span class="pre">Vault</span> <span class="pre">password</span></code> is the password you used to encrypt your vault file.</p>
+<p>Upon completing this step:</p>
+<a class="reference external image-reference" href="_static/deployment_machines_step_5.pdf"><div align="center" class="align-center"><img alt="_images/deployment_machines_step_5.svg" src="_images/deployment_machines_step_5.svg" /></div>
+</a>
 <a class="reference internal" href="docs.html"><span class="std std-ref">prev</span></a>,
 <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>,
 <span class="inactive-link">next</span></div>
@@ -662,22 +704,30 @@ and the <code class="docutils literal notranslate"><span class="pre">Vault</span
 <li><a class="reference internal" href="#">Deployment</a><ul>
 <li><a class="reference internal" href="#deployment-specification">Deployment Specification</a></li>
 <li><a class="reference internal" href="#high-level-view">High Level View</a></li>
-<li><a class="reference internal" href="#set-up-your-deployment-computer">Set Up Your Deployment Computer</a></li>
+<li><a class="reference internal" href="#set-up-your-deployment-computer">1. Set Up Your Deployment Computer</a></li>
 <li><a class="reference internal" href="#install-ansible-on-deployment-computer">Install Ansible on Deployment Computer</a><ul>
 <li><a class="reference internal" href="#setup-private-keys-on-deployment-computer">Setup Private Keys on Deployment Computer</a></li>
 <li><a class="reference internal" href="#make-a-deployment-directory">Make a Deployment Directory</a></li>
+<li><a class="reference internal" href="#things-accomplished-so-far">Things Accomplished So Far</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#what-machines-do-you-want-in-your-distributed-system">What Machines do you want in your Distributed System</a><ul>
+<li><a class="reference internal" href="#what-machines-do-you-want-in-your-distributed-system">What Machines do you want in your Distributed System</a></li>
+<li><a class="reference internal" href="#collect-the-addresses-and-ssh-usernames-for-all-remote-machines">Collect the Addresses and ssh usernames for all Remote Machines</a><ul>
 <li><a class="reference internal" href="#ensure-ssh-passwordless-access-to-all-remote-machines">Ensure SSH Passwordless Access to All Remote Machines</a></li>
+<li><a class="reference internal" href="#name-the-collection-of-addresses-and-usernames">Name the Collection of Addresses and Usernames</a></li>
 <li><a class="reference internal" href="#create-ansible-inventory-file">Create Ansible Inventory File</a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-2">Things Accomplished So Far</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#invent-your-credentials-and-secrets">Invent your Credentials and Secrets</a></li>
+<li><a class="reference internal" href="#invent-your-credentials-and-secrets">Invent your Credentials and Secrets</a><ul>
+<li><a class="reference internal" href="#make-a-fake-vault-file">Make a fake_vault file</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#invent-rabbitmq-server-credentials-and-settings">Invent RabbitMQ Server Credentials and Settings</a><ul>
 <li><a class="reference internal" href="#set-rabbitmq-connection-parameters">Set RabbitMQ Connection Parameters</a></li>
 <li><a class="reference internal" href="#invent-miros-rabbitmq-encryption-keys">Invent miros-rabbitmq Encryption Keys</a></li>
 <li><a class="reference internal" href="#add-encryption-keys-to-the-fake-vault">Add Encryption Keys to the Fake Vault</a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-3">Things Accomplished So Far</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#setup-ansible-file-structure-on-the-deployment-computer">Setup Ansible File Structure on the Deployment Computer</a><ul>
@@ -686,16 +736,10 @@ and the <code class="docutils literal notranslate"><span class="pre">Vault</span
 <li><a class="reference internal" href="#determine-where-you-will-install-your-software-one-your-remote-machines">Determine Where you will Install your Software one your Remote Machines</a></li>
 <li><a class="reference internal" href="#add-our-template-files">Add Our Template Files</a></li>
 <li><a class="reference internal" href="#create-the-miros-rabbitmq-playbook">Create the miros-rabbitmq playbook</a></li>
+<li><a class="reference internal" href="#deployment-things-accomplished-so-far-4">Things Accomplished So Far</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#deploy-your-infrastructure-credentials-and-secrets-to-all-machines">Deploy Your Infrastructure Credentials and Secrets to all Machines</a></li>
-<li><a class="reference internal" href="#the-inventory">The Inventory</a></li>
-<li><a class="reference internal" href="#the-ansible-working-directory">The Ansible Working Directory</a></li>
-<li><a class="reference internal" href="#the-miros-rabbitmq-install-playbook">The Miros RabbitMQ Install Playbook</a></li>
-<li><a class="reference internal" href="#the-dot-env-file">The Dot Env File</a></li>
-<li><a class="reference internal" href="#the-vault-file">The vault File</a></li>
-<li><a class="reference internal" href="#the-vars-file">The vars File</a></li>
-<li><a class="reference internal" href="#to-deploy">To Deploy</a></li>
 </ul>
 </li>
 </ul>
