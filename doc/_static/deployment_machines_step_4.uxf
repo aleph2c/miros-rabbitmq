@@ -21,7 +21,7 @@
       <h>90</h>
     </coordinates>
     <panel_attributes>symbol=component
-fake_vault:
+vault:
 </panel_attributes>
     <additional_attributes/>
   </element>
