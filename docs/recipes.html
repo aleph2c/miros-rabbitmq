@@ -194,13 +194,6 @@ event.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="node-discovery">
-<span id="recipes-node-discovery"></span><h3>Node Discovery<a class="headerlink" href="#node-discovery" title="Permalink to this headline">¶</a></h3>
-<p>This is taken care of by the library.  If your node is on your local area network
-and it’s IP address is in the ARP table or it’s computer will respond to a ping;
-The miros-rabbitmq library should find it.  If two nodes are on the same network
-and share encryption and rabbit credentials they will be able to communicate.</p>
-</div>
 <div class="section" id="making-an-encryption-key">
 <span id="recipes-making-an-encryption-key"></span><h3>Making an Encryption Key<a class="headerlink" href="#making-an-encryption-key" title="Permalink to this headline">¶</a></h3>
 <p>The miro-rabbitmq library uses Fernet symmetric encryption.  The same keys need
@@ -346,8 +339,10 @@ this (cargo-culted from stack overflow):</p>
 </div>
 </div>
 </div>
+<div class="section" id="credentials-and-encryption-keys">
+<span id="recipes-credentials-and-encryption-keys"></span><h2>Credentials and Encryption Keys<a class="headerlink" href="#credentials-and-encryption-keys" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="changing-your-rabbitmq-credentials">
-<span id="recipes-hiding-your-encryption-data-and-user-credentials"></span><h2>Changing your RabbitMQ credentials<a class="headerlink" href="#changing-your-rabbitmq-credentials" title="Permalink to this headline">¶</a></h2>
+<span id="recipes-hiding-your-encryption-data-and-user-credentials"></span><h3>Changing your RabbitMQ credentials<a class="headerlink" href="#changing-your-rabbitmq-credentials" title="Permalink to this headline">¶</a></h3>
 <p>If you are installing RabbitMQ using the <span class="xref std std-ref">ansible script in the DevOps section</span>, set the
 <code class="docutils literal notranslate"><span class="pre">rabbit_name</span></code> to the username you want, and the <code class="docutils literal notranslate"><span class="pre">rabbit_password</span></code> to
 whatever you want your password to be.  Update your code to use your new
@@ -355,8 +350,50 @@ credentials.</p>
 <p>You can also change your user name and password with the <a class="reference internal" href="reflection.html#reflection-rabbitmq-management"><span class="std std-ref">RabbitMQ
 management GUI</span></a>.</p>
 </div>
-<div class="section" id="managing-your-encryption-keys">
-<span id="recipes-encryption-keys-in-your-environment"></span><h2>Managing your Encryption Keys<a class="headerlink" href="#managing-your-encryption-keys" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="managing-your-encryption-keys-and-rabbitmq-credentials-short-version">
+<span id="recipes-managing-your-encryption-keys-and-rabbitmq-credentials-short-version"></span><h3>Managing your Encryption Keys and RabbitMQ Credentials (Short Version)<a class="headerlink" href="#managing-your-encryption-keys-and-rabbitmq-credentials-short-version" title="Permalink to this headline">¶</a></h3>
+<p>Use this <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment strategy</span></a> to ensure a <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+file is in your top level directory of your application (the same directory you
+would find your .git directory).  Your RabbitMQ credentials and your
+miros-rabbitmq <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> will be in this <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+file,  which will look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">RABBIT_USER</span><span class="o">=</span><span class="n">peter</span>
+<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="n">rabbit</span>
+<span class="n">RABBIT_PORT</span><span class="o">=</span><span class="mi">5672</span>
+<span class="n">RABBIT_HEARTBEAT_INTERVAL</span><span class="o">=</span><span class="mi">3600</span>
+<span class="n">CONNECTION_ATTEMPTS</span><span class="o">=</span><span class="mi">3</span>
+<span class="n">RABBIT_GUEST_USER</span><span class="o">=</span><span class="n">rabbit567</span>
+</pre></div>
+</div>
+<p>Then in your setup.py or your actual application code, include the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># write .env items to the environment</span>
+<span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
+<span class="k">if</span> <span class="n">env_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+  <span class="n">load_dotenv</span><span class="p">(</span><span class="n">env_path</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="c1"># recurse outward to find .env file</span>
+  <span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="n">RABBIT_USER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_USER&#39;</span><span class="p">)</span>
+<span class="n">RABBIT_PASSWORD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_PASSWORD&#39;</span><span class="p">)</span>
+<span class="n">MESH_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MESH_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_TRACE_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="c1"># .. etc</span>
+</pre></div>
+</div>
+<p>For details about how to set up your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file without the mentioned
+deployment procedure read the next section.</p>
+</div>
+<div class="section" id="managing-your-encryption-keys-and-rabbitmq-credentials-long-verion">
+<span id="recipes-encryption-keys-in-your-environment"></span><h3>Managing your Encryption Keys and RabbitMQ Credentials (Long Verion)<a class="headerlink" href="#managing-your-encryption-keys-and-rabbitmq-credentials-long-verion" title="Permalink to this headline">¶</a></h3>
 <p>To keep your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ
 credentials out of your source code, you can put them into environment variables,
 then load the contents of these environment variables into your program.</p>
@@ -381,7 +418,11 @@ package installed on your system already.</p>
 
 <span class="c1"># write .env items to the environment</span>
 <span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
-<span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">env_path</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">env_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+  <span class="n">load_dotenv</span><span class="p">(</span><span class="n">env_path</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="c1"># recurse outward to find .env file</span>
+  <span class="n">load_dotenv</span><span class="p">()</span>
 
 <span class="c1"># get RabbitMQ credentials and encryption keys from the environment</span>
 <span class="n">RABBIT_USER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_USER&#39;</span><span class="p">)</span>
@@ -391,8 +432,8 @@ package installed on your system already.</p>
 <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ credentials, from either your shell
-environment or from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
+<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ credentials, from either your shell’s
+environment variables or from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> program to work there needs to be a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, so let’s
 make an empty one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ touch .env
@@ -412,7 +453,7 @@ commands, or we can put them into the <code class="docutils literal notranslate"
 <li>Talk about how to transfer the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file securely.</li>
 </ul>
 </div></blockquote>
-<p>To create an environment variable we use the <code class="docutils literal notranslate"><span class="pre">export</span></code> command from your shell.</p>
+<p>To create an environment variable we use the shell’s <code class="docutils literal notranslate"><span class="pre">export</span></code> command.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 $ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
 $ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
@@ -494,7 +535,68 @@ Don’t use email.</p>
 $ scp /path/to/.env &lt;username&gt;@ip/path/to/destination/.env
 </pre></div>
 </div>
+<p>If you use this <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment strategy</span></a>, the <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+files will be placed at the top level of all of working directory on all of the
+machines in your distributed system.</p>
+</div>
+</div>
+<div class="section" id="networking">
+<span id="recipes-networking"></span><h2>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h2>
+<p>The problem of how to network your distributed system can be broken into two different pieces:</p>
+<blockquote>
+<div><ul class="simple">
+<li>how to deploy your servers, code, secrets and infrastructure</li>
+<li>how a node can discover other nodes in the same system</li>
+</ul>
+</div></blockquote>
+<p>To read about a deployment strategy see <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">this deployment example</span></a>.</p>
+<p>A node determines what other nodes it can talk to, by using two different strategies:</p>
+<blockquote>
+<div><ul class="simple">
+<li>it uses a list of addresses in the <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> file.</li>
+<li>it automatically discovers other nodes like itself on your LAN, then it caches this information into the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache.json</span></code> file.</li>
+</ul>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> and <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache.json</span></code> files are kept in the same directory as the code that is using the miros-rabbitmq package.</p>
+<div class="section" id="manually-setting-node-addresses">
+<span id="recipes-manually-setting-node-addresses"></span><span id="recipes-node-discovery"></span><h3>Manually setting Node Addresses<a class="headerlink" href="#manually-setting-node-addresses" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> file in the same directory as your
+miros-rabbitmq program looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.71&quot;</span><span class="p">,</span>
+    <span class="n">www</span><span class="o">.</span><span class="n">myurl</span><span class="o">.</span><span class="n">xyz</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="node-discovery-on-your-lan">
+<h3>Node Discovery on your LAN<a class="headerlink" href="#node-discovery-on-your-lan" title="Permalink to this headline">¶</a></h3>
+<p>This is taken care of by the library.  If your node is on your local area network
+and it’s IP address is in the ARP table or it’s computer will respond to a ping;
+The miros-rabbitmq library should find it.  If two nodes are on the same network
+and share encryption and rabbit credentials they will be able to communicate.</p>
+<p>The results of the process are cached in the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache</span></code> file
+which looks something like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.75&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;192.168.1.71&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;amqp_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.71:5672/%2F?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;time_out_in_minutes&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To force your program to update this cache, change the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code>
+setting to 0 and re-run your program.  Your application will cause another LAN
+search and update the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code> back to it’s default setting.</p>
 <p><a class="reference internal" href="example.html#example"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="reflection.html#reflection"><span class="std std-ref">next</span></a></p>
+</div>
 </div>
 </div>
 
@@ -516,7 +618,6 @@ $ scp /path/to/.env &lt;username&gt;@ip/path/to/destination/.env
 <li><a class="reference internal" href="#making-unique-names">Making Unique Names</a></li>
 <li><a class="reference internal" href="#transmitting-an-event">Transmitting an Event</a></li>
 <li><a class="reference internal" href="#transmitting-a-payload-in-an-event">Transmitting a Payload in an Event</a></li>
-<li><a class="reference internal" href="#node-discovery">Node Discovery</a></li>
 <li><a class="reference internal" href="#making-an-encryption-key">Making an Encryption Key</a></li>
 <li><a class="reference internal" href="#snoop-trace">Snoop Trace</a></li>
 <li><a class="reference internal" href="#snoop-scribble">Snoop Scribble</a></li>
@@ -526,8 +627,17 @@ $ scp /path/to/.env &lt;username&gt;@ip/path/to/destination/.env
 <li><a class="reference internal" href="#logging-the-snoop-spy">Logging the Snoop Spy</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#credentials-and-encryption-keys">Credentials and Encryption Keys</a><ul>
 <li><a class="reference internal" href="#changing-your-rabbitmq-credentials">Changing your RabbitMQ credentials</a></li>
-<li><a class="reference internal" href="#managing-your-encryption-keys">Managing your Encryption Keys</a></li>
+<li><a class="reference internal" href="#managing-your-encryption-keys-and-rabbitmq-credentials-short-version">Managing your Encryption Keys and RabbitMQ Credentials (Short Version)</a></li>
+<li><a class="reference internal" href="#managing-your-encryption-keys-and-rabbitmq-credentials-long-verion">Managing your Encryption Keys and RabbitMQ Credentials (Long Verion)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#networking">Networking</a><ul>
+<li><a class="reference internal" href="#manually-setting-node-addresses">Manually setting Node Addresses</a></li>
+<li><a class="reference internal" href="#node-discovery-on-your-lan">Node Discovery on your LAN</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

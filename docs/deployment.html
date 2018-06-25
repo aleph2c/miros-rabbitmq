@@ -31,8 +31,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="deployment">
-<span id="deployment-deployment"></span><h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+  <blockquote class="epigraph" id="deployment-deployment">
+<div><p><em>If you think it’s expensive to hire a professional to do the job, wait unit
+you hire an amateur.</em></p>
+<p class="attribution">&mdash;Red Adair</p>
+</div></blockquote>
+<div class="section" id="deployment">
+<h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
 <p>Getting miros-rabbitmq working on one machine is relatively straightforward.
 The hard part about building a distributed system is deploying its
 infrastructure (Erlang, RabbitMQ, …), the credentials needed to run it and the
@@ -517,10 +522,14 @@ things:</p>
 <li>a file to tell RabbitMQ about its environment</li>
 <li>a file to configure the RabbitMQ server</li>
 <li>the <code class="docutils literal notranslate"><span class="pre">.env</span></code> template.</li>
+<li>a file to tell your program what other nodes to talk to</li>
+<li>a cache file for its automatic discovery phase</li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ touch ./templates/rabbit-env.config.j2
 $ touch ./templates/rabbit.config.j2
 $ touch ./templates/.env.j2
+$ touch ./templates/.miros_rabbit_hosts.json.j2
+$ touch ./templates/.miros_rabbitlan_cache.j2
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">j2</span></code> extension is our hint that these files are jinja2 template files.
@@ -556,6 +565,35 @@ option of parameterizing them with our settings.</p>
 <span class="l l-Scalar l-Scalar-Plain">RABBIT_GUEST_USER={{rabbit_guest_user}}</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json.j2</span></code> file is used to manually set the IP
+addresses that will be used by your program to talk to other nodes in your
+distributed system.  Well, you wrote this list into your inventory file, so
+let’s just have Ansible write out the <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_host.json</span></code> file for us.
+Here is its template file:</p>
+<div class="highlight-jinja2 notranslate"><div class="highlight"><pre><span></span>{
+  &quot;hosts&quot;: [
+  {% for host in ansible_play_batch %}
+  &quot;{{ host }}&quot;{% if not loop.last %},{% endif %}
+  {% endfor %}
+
+  ]
+}
+</pre></div>
+</div>
+<p>Finally, miros-rabbitmq uses another file called <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache.json</span></code>
+which contains a list of all of the other nodes like it that it has discovered
+in it’s LAN.  We don’t know anything about that so we will write a file that has
+the correct structure, but it empty and will force a search the first time you
+run your program after you have deployed it.  Here is its template file:</p>
+<div class="highlight-jinja2 notranslate"><div class="highlight"><pre><span></span>{
+  &quot;addresses&quot;: [
+  ],
+  &quot;amqp_urls&quot;: [
+  ],
+  &quot;time_out_in_minutes&quot;: 0
+}
+</pre></div>
+</div>
 <p>When we have finished this step our deployment directory will look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>.
 ├── group_vars
@@ -564,6 +602,8 @@ option of parameterizing them with our settings.</p>
 │       └── vault
 └── templates
     ├── .env.j2
+    ├── .miros_rabbitlan_cache.json.j2
+    ├── .miros_rabbit_hosts.json.j2
     ├── rabbitmq.config.j2
     └── rabbitmq-env.conf.j2
 </pre></div>
@@ -644,6 +684,22 @@ our Ansible playbook, so Ansible can deploy our system.</p>
        <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./.env.j2</span>
        <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.env&quot;</span>
        <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .miros_rabbitlan_cache.json file</span>
+       <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+         <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbitlan_cache.json.j2</span>
+         <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbitlan_cache.json&quot;</span>
+         <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
+     <span class=" -Error">  </span><span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
+         <span class="p p-Indicator">-</span> <span class="s">&#39;cache&#39;</span>
+
+     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .miros_rabbit_hosts.json file</span>
+       <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+         <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbit_hosts.json.j2</span>
+         <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbit_hosts.json&quot;</span>
+         <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=rw,o=r&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
+         <span class="p p-Indicator">-</span> <span class="s">&#39;hosts&#39;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -663,9 +719,12 @@ ready to be deployed to the system:</p>
 │       ├── vars
 │       └── vault
 ├── miros_rabbitmq_install.yml
-├── rabbitmq.config.j2
-├── rabbitmq-env.conf.j2
-└── .env.j2
+└── templates
+  ├── .miros_rabbitlan_cache.json.j2
+  ├── .miros_rabbit_hosts.json.j2
+  ├── rabbitmq.config.j2
+  ├── rabbitmq-env.conf.j2
+  └── .env.j2
 </pre></div>
 </div>
 </div>

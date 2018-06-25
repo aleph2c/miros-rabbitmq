@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>6</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>444</x>
-      <y>918</y>
-      <w>372</w>
-      <h>72</h>
+      <x>80</x>
+      <y>1056</y>
+      <w>496</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>*determine where you want your software on your machines*
 --
@@ -25,10 +25,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>972</y>
-      <w>216</w>
-      <h>30</h>
+      <x>656</x>
+      <y>1128</y>
+      <w>288</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -39,10 +39,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>414</x>
-      <y>324</y>
-      <w>444</w>
-      <h>990</h>
+      <x>40</x>
+      <y>264</y>
+      <w>592</w>
+      <h>1608</h>
     </coordinates>
     <panel_attributes>*setup ansible file structure on deployment computer*
 --
@@ -56,10 +56,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>516</x>
-      <y>366</y>
-      <w>288</w>
-      <h>72</h>
+      <x>176</x>
+      <y>320</y>
+      <w>384</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>*Setup Ansible Directory Structure*
 --
@@ -77,10 +77,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1020</x>
-      <y>330</y>
-      <w>138</w>
-      <h>120</h>
+      <x>848</x>
+      <y>272</y>
+      <w>184</w>
+      <h>160</h>
     </coordinates>
     <panel_attributes>example
 --
@@ -103,10 +103,10 @@ mkdir templates
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>798</x>
-      <y>396</y>
-      <w>234</w>
-      <h>18</h>
+      <x>552</x>
+      <y>360</y>
+      <w>312</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;370.0;10.0</additional_attributes>
@@ -114,10 +114,10 @@ mkdir templates
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>870</x>
-      <y>330</y>
-      <w>144</w>
-      <h>36</h>
+      <x>648</x>
+      <y>272</y>
+      <w>192</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -129,10 +129,10 @@ $ cd ~/miros_rabbitmq_deployment
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>594</x>
-      <y>342</y>
-      <w>288</w>
-      <h>18</h>
+      <x>280</x>
+      <y>288</y>
+      <w>384</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;460.0;10.0</additional_attributes>
@@ -140,17 +140,17 @@ $ cd ~/miros_rabbitmq_deployment
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>516</x>
-      <y>474</y>
-      <w>288</w>
-      <h>90</h>
+      <x>176</x>
+      <y>464</y>
+      <w>384</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>*Encrypt credentials and secrets in vault*
 --
 entry/ 
   move your fake_vault into your ./groups_var/&lt;inventory_name&gt; directory
   change its name to vault
-  encrypt it using `ansible-value encrypt`
+  encrypt it using `ansible-vault encrypt`
   cat it to see it is encrypted
   confirm you can open it with `ansible-vault edit`
   
@@ -162,10 +162,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>456</y>
-      <w>186</w>
-      <h>42</h>
+      <x>656</x>
+      <y>440</y>
+      <w>248</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -178,10 +178,10 @@ $ ansible-vault encrypt ./global_vars/scotty/vault
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>780</x>
-      <y>468</y>
-      <w>108</w>
-      <h>30</h>
+      <x>528</x>
+      <y>456</y>
+      <w>144</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;30.0;160.0;10.0</additional_attributes>
@@ -189,10 +189,10 @@ $ ansible-vault encrypt ./global_vars/scotty/vault
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
+      <x>656</x>
       <y>504</y>
-      <w>186</w>
-      <h>60</h>
+      <w>248</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -206,10 +206,10 @@ $ANSIBLE_VAULT;1.1;AES256
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>678</x>
+      <x>392</x>
       <y>504</y>
-      <w>210</w>
-      <h>24</h>
+      <w>280</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;330.0;20.0</additional_attributes>
@@ -217,10 +217,10 @@ $ANSIBLE_VAULT;1.1;AES256
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>570</y>
-      <w>396</w>
-      <h>138</h>
+      <x>656</x>
+      <y>592</y>
+      <w>528</w>
+      <h>184</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -242,10 +242,10 @@ vault_RABBIT_GUEST_PASSWORD: rabbit567
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>696</x>
-      <y>540</y>
-      <w>192</w>
-      <h>60</h>
+      <x>416</x>
+      <y>552</y>
+      <w>256</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;300.0;80.0</additional_attributes>
@@ -253,10 +253,10 @@ vault_RABBIT_GUEST_PASSWORD: rabbit567
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>648</x>
-      <y>432</y>
-      <w>18</w>
-      <h>30</h>
+      <x>352</x>
+      <y>408</y>
+      <w>24</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
@@ -264,10 +264,10 @@ vault_RABBIT_GUEST_PASSWORD: rabbit567
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1074</x>
-      <y>516</y>
-      <w>156</w>
-      <h>48</h>
+      <x>920</x>
+      <y>520</y>
+      <w>208</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>Note..
 If you see something like this you 
@@ -279,10 +279,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1002</x>
-      <y>534</y>
-      <w>84</w>
-      <h>24</h>
+      <x>824</x>
+      <y>544</y>
+      <w>112</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;20.0;120.0;10.0</additional_attributes>
@@ -290,10 +290,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>510</x>
-      <y>708</y>
-      <w>288</w>
-      <h>156</h>
+      <x>168</x>
+      <y>776</y>
+      <w>384</w>
+      <h>208</h>
     </coordinates>
     <panel_attributes>*Add var file*
 --
@@ -320,10 +320,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>714</y>
-      <w>186</w>
-      <h>42</h>
+      <x>656</x>
+      <y>784</y>
+      <w>248</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>example:
 --
@@ -336,10 +336,10 @@ $ touch ./global_vars/scotty/var
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>714</x>
-      <y>720</y>
-      <w>174</w>
-      <h>30</h>
+      <x>440</x>
+      <y>792</y>
+      <w>232</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;30.0;270.0;10.0</additional_attributes>
@@ -347,10 +347,10 @@ $ touch ./global_vars/scotty/var
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>762</y>
-      <w>312</w>
-      <h>198</h>
+      <x>656</x>
+      <y>848</y>
+      <w>416</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>example vars file:
 --
@@ -379,10 +379,10 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>660</x>
-      <y>780</y>
-      <w>228</w>
-      <h>60</h>
+      <x>368</x>
+      <y>872</y>
+      <w>304</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;360.0;80.0</additional_attributes>
@@ -390,10 +390,10 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>642</x>
-      <y>558</y>
-      <w>18</w>
-      <h>162</h>
+      <x>344</x>
+      <y>576</y>
+      <w>24</w>
+      <h>216</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;250.0</additional_attributes>
@@ -401,10 +401,10 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1170</x>
-      <y>420</y>
-      <w>108</w>
-      <h>84</h>
+      <x>1048</x>
+      <y>392</y>
+      <w>144</w>
+      <h>112</h>
     </coordinates>
     <panel_attributes>Directory structure now
 -
@@ -419,10 +419,10 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1056</x>
-      <y>468</y>
-      <w>126</w>
-      <h>24</h>
+      <x>896</x>
+      <y>456</y>
+      <w>168</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;20.0;190.0;10.0</additional_attributes>
@@ -430,10 +430,10 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>990</x>
-      <y>798</y>
-      <w>156</w>
-      <h>48</h>
+      <x>808</x>
+      <y>896</y>
+      <w>208</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>Note..
 this creates public variable names 
@@ -444,10 +444,10 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>960</x>
-      <y>840</y>
-      <w>42</w>
-      <h>24</h>
+      <x>768</x>
+      <y>952</y>
+      <w>56</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;20.0;50.0;10.0</additional_attributes>
@@ -455,10 +455,10 @@ bg=green</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>444</x>
-      <y>450</y>
-      <w>384</w>
-      <h>444</h>
+      <x>80</x>
+      <y>432</y>
+      <w>512</w>
+      <h>592</h>
     </coordinates>
     <panel_attributes>*Setup global variables used for all computers in your distributed system*
 --
@@ -472,10 +472,10 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>486</x>
+      <x>136</x>
       <y>504</y>
-      <w>12</w>
-      <h>12</h>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -483,10 +483,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>486</x>
+      <x>136</x>
       <y>504</y>
-      <w>42</w>
-      <h>18</h>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -494,10 +494,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>888</y>
-      <w>18</w>
-      <h>42</h>
+      <x>272</x>
+      <y>1016</y>
+      <w>24</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -505,10 +505,10 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>810</x>
-      <y>948</y>
-      <w>78</w>
-      <h>42</h>
+      <x>568</x>
+      <y>1096</y>
+      <w>104</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;110.0;50.0</additional_attributes>
@@ -516,10 +516,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>444</x>
-      <y>1014</y>
-      <w>408</w>
-      <h>72</h>
+      <x>80</x>
+      <y>1184</y>
+      <w>544</w>
+      <h>112</h>
     </coordinates>
     <panel_attributes>*add template files*
 --
@@ -527,6 +527,9 @@ entry /
   create ./templates/rabbit-env.conf.j2  # will tell rabbit where to find it's config
   create ./templates/rabbit.config.j2      # the RabbitMQ config template
   create ./templates/.env.j2                   # will contain all the secrets needed for your miros-rabbitmq to work
+  create ./templates/.miros_rabbitlan_cache.json.j2  # the empty lan cache file
+  create ./templates/.miros_rabbit_hosts.json.j2        # describes addresses of other nodes in your system
+                       
   
   
 valign=top
@@ -536,10 +539,10 @@ valign=top
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>1020</y>
-      <w>216</w>
-      <h>54</h>
+      <x>656</x>
+      <y>1192</y>
+      <w>288</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>example ./templates/rabbit-env.conf.j2 file:
 --
@@ -552,10 +555,10 @@ NODE_IP_ADDRESS=0.0.0.0
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>1080</y>
-      <w>216</w>
-      <h>96</h>
+      <x>656</x>
+      <y>1272</y>
+      <w>288</w>
+      <h>128</h>
     </coordinates>
     <panel_attributes>example ./templates/rabbit-config.j2 file:
 --
@@ -575,13 +578,14 @@ NODE_IP_ADDRESS=0.0.0.0
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>1182</y>
-      <w>288</w>
-      <h>114</h>
+      <x>656</x>
+      <y>1408</y>
+      <w>384</w>
+      <h>152</h>
     </coordinates>
     <panel_attributes>example ./templates/.env.j2 file:
 --
+---
 MESH_ENCRYPTION_KEY={{mesh_encryption_key}}
 SNOOP_TRACE_ENCRYPTION_KEY={{snoop_trace_encryption_key}}
 SNOOP_SPY_ENCRYPTION_KEY={{snoop_spy_encryption_key}}
@@ -599,10 +603,10 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>732</x>
-      <y>1038</y>
-      <w>156</w>
-      <h>18</h>
+      <x>464</x>
+      <y>1216</y>
+      <w>208</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;240.0;10.0</additional_attributes>
@@ -610,10 +614,10 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>702</x>
-      <y>1050</y>
-      <w>186</w>
-      <h>72</h>
+      <x>424</x>
+      <y>1232</y>
+      <w>248</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;240.0;10.0;290.0;100.0</additional_attributes>
@@ -621,21 +625,21 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>756</x>
-      <y>1068</y>
-      <w>132</w>
-      <h>132</h>
+      <x>592</x>
+      <y>1248</y>
+      <w>80</w>
+      <h>184</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;200.0;200.0</additional_attributes>
+    <additional_attributes>10.0;10.0;60.0;100.0;80.0;210.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>984</y>
-      <w>18</w>
-      <h>42</h>
+      <x>272</x>
+      <y>1144</y>
+      <w>24</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -643,10 +647,10 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1116</x>
-      <y>1062</y>
-      <w>150</w>
-      <h>108</h>
+      <x>960</x>
+      <y>1592</y>
+      <w>200</w>
+      <h>184</h>
     </coordinates>
     <panel_attributes>Directory structure now
 -
@@ -657,29 +661,30 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
 │       └── vault
 └── templates
     ├── .env.j2
+    ├── .miros_rabbitlan_cache.json
+    ├── .miros_rabbit_hosts.json
     ├── rabbitmq.config.j2
-    └── rabbitmq-env.conf.j2
-</panel_attributes>
+    └── rabbitmq-env.conf.j2</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1098</x>
-      <y>1164</y>
-      <w>30</w>
-      <h>30</h>
+      <x>912</x>
+      <y>1768</y>
+      <w>64</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;30.0;30.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>438</x>
-      <y>1110</y>
-      <w>408</w>
-      <h>72</h>
+      <x>64</x>
+      <y>1536</y>
+      <w>544</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>*create playbook*
 --
@@ -696,21 +701,21 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>1080</y>
-      <w>18</w>
-      <h>42</h>
+      <x>264</x>
+      <y>1288</y>
+      <w>32</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>20.0;10.0;10.0;310.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>630</x>
-      <y>1188</y>
-      <w>198</w>
-      <h>114</h>
+      <x>320</x>
+      <y>1648</y>
+      <w>264</w>
+      <h>200</h>
     </coordinates>
     <panel_attributes>Directory structure now:
 --
@@ -722,6 +727,8 @@ valign=top
 ├── miros_rabbitmq_install.yml
 └── templates
     ├── .env.j2
+    ├── .miros_rabbitlan_cache.json
+    ├── .miros_rabbit_hosts.json
     ├── rabbitmq.config.j2
     └── rabbitmq-env.conf.j2
 </panel_attributes>
@@ -730,21 +737,21 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>576</x>
-      <y>1176</y>
-      <w>66</w>
-      <h>84</h>
+      <x>248</x>
+      <y>1624</y>
+      <w>88</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>90.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>90.0;130.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>462</x>
-      <y>576</y>
-      <w>174</w>
-      <h>54</h>
+      <x>104</x>
+      <y>600</y>
+      <w>232</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Note..
 Remember this secret
@@ -756,10 +763,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>468</x>
-      <y>516</y>
-      <w>66</w>
-      <h>72</h>
+      <x>112</x>
+      <y>520</y>
+      <w>88</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;100.0;10.0;10.0;90.0;10.0</additional_attributes>
@@ -767,10 +774,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>876</x>
-      <y>1302</y>
-      <w>288</w>
-      <h>156</h>
+      <x>656</x>
+      <y>1848</y>
+      <w>384</w>
+      <h>208</h>
     </coordinates>
     <panel_attributes>example ./miros_rabbitmq_install.yml
 --
@@ -794,21 +801,21 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>828</x>
-      <y>1176</y>
-      <w>60</w>
-      <h>216</h>
+      <x>584</x>
+      <y>1624</y>
+      <w>88</w>
+      <h>344</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;60.0;240.0;60.0;340.0;80.0;340.0</additional_attributes>
+    <additional_attributes>10.0;10.0;90.0;410.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>486</x>
-      <y>396</y>
-      <w>42</w>
-      <h>18</h>
+      <x>136</x>
+      <y>360</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -816,10 +823,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>486</x>
-      <y>396</y>
-      <w>12</w>
-      <h>12</h>
+      <x>136</x>
+      <y>360</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -827,10 +834,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>384</x>
-      <y>174</y>
-      <w>12</w>
-      <h>12</h>
+      <x>0</x>
+      <y>64</y>
+      <w>16</w>
+      <h>16</h>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
@@ -838,10 +845,10 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>384</x>
-      <y>174</y>
-      <w>42</w>
-      <h>18</h>
+      <x>0</x>
+      <y>64</y>
+      <w>56</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
@@ -849,10 +856,10 @@ bg=red</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>414</x>
-      <y>162</y>
-      <w>288</w>
-      <h>36</h>
+      <x>40</x>
+      <y>48</y>
+      <w>384</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>*set up deployment computer*
 symbol=substate</panel_attributes>
@@ -861,10 +868,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>414</x>
-      <y>216</y>
-      <w>288</w>
-      <h>36</h>
+      <x>40</x>
+      <y>120</y>
+      <w>384</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>*determine what machines you want in your distributed system*
 symbol=substate</panel_attributes>
@@ -873,10 +880,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>414</x>
-      <y>270</y>
-      <w>288</w>
-      <h>36</h>
+      <x>40</x>
+      <y>192</y>
+      <w>384</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>*invent credentials and secrets*
 symbol=substate</panel_attributes>
@@ -885,10 +892,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>546</x>
-      <y>192</y>
-      <w>18</w>
-      <h>36</h>
+      <x>216</x>
+      <y>88</y>
+      <w>24</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -896,10 +903,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>546</x>
-      <y>246</y>
-      <w>18</w>
-      <h>36</h>
+      <x>216</x>
+      <y>160</y>
+      <w>24</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -907,10 +914,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>546</x>
-      <y>300</y>
-      <w>18</w>
-      <h>36</h>
+      <x>216</x>
+      <y>232</y>
+      <w>24</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -918,10 +925,10 @@ symbol=substate</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>414</x>
-      <y>1332</y>
-      <w>288</w>
-      <h>36</h>
+      <x>40</x>
+      <y>1912</y>
+      <w>384</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>*deploy your infrastructure, credentials and secret to all machines*
 symbol=substate</panel_attributes>
@@ -930,21 +937,21 @@ symbol=substate</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>546</x>
-      <y>1308</y>
-      <w>18</w>
-      <h>36</h>
+      <x>216</x>
+      <y>1864</y>
+      <w>24</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>546</x>
-      <y>126</y>
-      <w>84</w>
-      <h>24</h>
+      <x>216</x>
+      <y>0</y>
+      <w>112</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>WORKFLOW
 style=wordwrap</panel_attributes>
@@ -953,13 +960,77 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>882</x>
-      <y>126</y>
-      <w>84</w>
-      <h>24</h>
+      <x>664</x>
+      <y>0</y>
+      <w>112</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>EXAMPLES
 style=wordwrap</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>656</x>
+      <y>1568</y>
+      <w>280</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>example ./templates/.miros_rabbitlan_cache.json.j2
+--
+{
+  "addresses": [
+  ],
+  "amqp_urls": [
+  ],
+  "time_out_in_minutes": 0
+}
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>656</x>
+      <y>1704</y>
+      <w>264</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>example ./templates/.miros_rabbit_hosts.json.j2
+--
+{
+  "hosts": [
+  {% for host in ansible_play_batch %}
+  "{{ host }}"{% if not loop.last %},{% endif %}
+  {% endfor %}
+
+  ]
+}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>464</x>
+      <y>1256</y>
+      <w>208</w>
+      <h>336</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;180.0;240.0;400.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>312</x>
+      <y>1272</y>
+      <w>360</w>
+      <h>456</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;380.0;310.0;430.0;550.0</additional_attributes>
   </element>
 </diagram>

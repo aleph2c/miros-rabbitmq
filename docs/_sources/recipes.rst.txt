@@ -213,15 +213,6 @@ event.
     chart.transmit(Event(signal=signals.other_with_payload, payload="a string"))
     return return_status.HANDLED
 
-.. _recipes-node-discovery:
-
-Node Discovery
-^^^^^^^^^^^^^^
-
-This is taken care of by the library.  If your node is on your local area network
-and it's IP address is in the ARP table or it's computer will respond to a ping;
-The miros-rabbitmq library should find it.  If two nodes are on the same network
-and share encryption and rabbit credentials they will be able to communicate.
 
 .. _recipes-making-an-encryption-key:
 
@@ -426,10 +417,15 @@ Then write your spy information to the log.txt without the command-line complexi
 
   python3 networkable_active_object.py >> log.txt
 
+.. _recipes-credentials-and-encryption-keys:
+
+Credentials and Encryption Keys
+-------------------------------
+
 .. _recipes-hiding-your-encryption-data-and-user-credentials:
 
 Changing your RabbitMQ credentials
-----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you are installing RabbitMQ using the :ref:`ansible script in the DevOps section
 <installing_infrastructure-have-ansible-install-rabbitmq>`, set the
 ``rabbit_name`` to the username you want, and the ``rabbit_password`` to
@@ -439,10 +435,58 @@ credentials.
 You can also change your user name and password with the :ref:`RabbitMQ
 management GUI<reflection-rabbitmq-management>`.
 
+.. _recipes-managing-your-encryption-keys-and-rabbitmq-credentials-(short-version):
+
+Managing your Encryption Keys and RabbitMQ Credentials (Short Version)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Use this :ref:`deployment strategy<deployment-deployment>` to ensure a ``.env``
+file is in your top level directory of your application (the same directory you
+would find your .git directory).  Your RabbitMQ credentials and your
+miros-rabbitmq :ref:`encryption keys<recipes-making-an-encryption-key>` will be in this ``.env``
+file,  which will look something like this:
+
+.. code-block:: python
+
+  MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+  RABBIT_USER=peter
+  RABBIT_PASSWORD=rabbit
+  RABBIT_PORT=5672
+  RABBIT_HEARTBEAT_INTERVAL=3600
+  CONNECTION_ATTEMPTS=3
+  RABBIT_GUEST_USER=rabbit567
+  
+Then in your setup.py or your actual application code, include the following:
+
+.. code-block:: python
+
+  import os
+  from dotenv import load_dotenv
+  from pathlib import Path
+
+  # write .env items to the environment
+  env_path = Path('.') / '.env'
+  if env_path.is_file():
+    load_dotenv(env_path)
+  else:
+    # recurse outward to find .env file
+    load_dotenv()
+
+  RABBIT_USER = os.getenv('RABBIT_USER')
+  RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
+  MESH_ENCRYPTION_KEY = os.getenv("MESH_ENCRYPTION_KEY")
+  SNOOP_TRACE_ENCRYPTION_KEY = os.getenv("SNOOP_TRACE_ENCRYPTION_KEY")
+  SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
+  # .. etc 
+
+For details about how to set up your ``.env`` file without the mentioned
+deployment procedure read the next section.
+
 .. _recipes-encryption-keys-in-your-environment:
 
-Managing your Encryption Keys
------------------------------
+Managing your Encryption Keys and RabbitMQ Credentials (Long Verion)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To keep your :ref:`encryption keys <recipes-making-an-encryption-key>` and RabbitMQ
 credentials out of your source code, you can put them into environment variables,
 then load the contents of these environment variables into your program.  
@@ -473,7 +517,11 @@ In the outermost directory of your project, create a ``setup.py`` file and add t
 
   # write .env items to the environment
   env_path = Path('.') / '.env'
-  load_dotenv(dotenv_path=str(env_path))
+  if env_path.is_file():
+    load_dotenv(env_path)
+  else:
+    # recurse outward to find .env file
+    load_dotenv()
 
   # get RabbitMQ credentials and encryption keys from the environment
   RABBIT_USER = os.getenv('RABBIT_USER')
@@ -483,8 +531,8 @@ In the outermost directory of your project, create a ``setup.py`` file and add t
   SNOOP_SPY_ENCRYPTION_KEY = os.getenv("SNOOP_SPY_ENCRYPTION_KEY")
 
 This program will be able to read your :ref:`encryption keys
-<recipes-making-an-encryption-key>` and RabbitMQ credentials, from either your shell
-environment or from a ``.env`` file.  
+<recipes-making-an-encryption-key>` and RabbitMQ credentials, from either your shell's
+environment variables or from a ``.env`` file.  
 
 For the ``setup.py`` program to work there needs to be a ``.env`` file, so let's
 make an empty one:
@@ -506,7 +554,7 @@ Let's explore these options:
   * Show that the program works
   * Talk about how to transfer the ``.env`` file securely.
 
-To create an environment variable we use the ``export`` command from your shell.
+To create an environment variable we use the shell's ``export`` command.
 
 .. code-block:: python
 
@@ -605,6 +653,76 @@ Here is a reminder about how to use scp:
 
   # scp <source> <destination>
   $ scp /path/to/.env <username>@ip/path/to/destination/.env
+
+If you use this :ref:`deployment strategy<deployment-deployment>`, the ``.env``
+files will be placed at the top level of all of working directory on all of the
+machines in your distributed system.
+
+.. _recipes-networking:
+
+Networking
+----------
+The problem of how to network your distributed system can be broken into two different pieces:
+
+  * how to deploy your servers, code, secrets and infrastructure
+  * how a node can discover other nodes in the same system
+
+To read about a deployment strategy see :ref:`this deployment example<deployment-deployment>`.
+
+A node determines what other nodes it can talk to, by using two different strategies:
+
+  * it uses a list of addresses in the ``.miros_rabbit_hosts.json`` file.
+  * it automatically discovers other nodes like itself on your LAN, then it caches this information into the ``.miros_rabbitlan_cache.json`` file.
+
+The ``.miros_rabbit_hosts.json`` and ``.miros_rabbitlan_cache.json`` files are kept in the same directory as the code that is using the miros-rabbitmq package.
+
+.. _recipes-node-discovery:
+
+.. _recipes-manually-setting-node-addresses:
+
+Manually setting Node Addresses
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The ``.miros_rabbit_hosts.json`` file in the same directory as your
+miros-rabbitmq program looks like this:
+
+.. code-block:: python
+
+  {
+    "hosts": [
+      "192.168.1.71",
+      www.myurl.xyz
+    ]
+  }
+
+Node Discovery on your LAN
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+This is taken care of by the library.  If your node is on your local area network
+and it's IP address is in the ARP table or it's computer will respond to a ping;
+The miros-rabbitmq library should find it.  If two nodes are on the same network
+and share encryption and rabbit credentials they will be able to communicate.
+
+The results of the process are cached in the ``.miros_rabbitlan_cache`` file
+which looks something like this:
+
+.. code-block:: json
+
+  {
+    "addresses": [
+      "192.168.1.75",
+      "192.168.1.71"
+    ],
+    "amqp_urls": [
+      "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600",
+      "amqp://bob:dobbs@192.168.1.71:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
+    ],
+    "time_out_in_minutes": 30
+  }
+
+To force your program to update this cache, change the ``time_out_in_minutes``
+setting to 0 and re-run your program.  Your application will cause another LAN
+search and update the ``time_out_in_minutes`` back to it's default setting.
+
+
 
 :ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
 

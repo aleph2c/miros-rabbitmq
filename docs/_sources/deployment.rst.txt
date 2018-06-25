@@ -1,5 +1,12 @@
 .. _deployment-deployment:
 
+.. epigraph::
+
+  *If you think it's expensive to hire a professional to do the job, wait unit
+  you hire an amateur.*
+
+  -- Red Adair
+
 Deployment
 ==========
 Getting miros-rabbitmq working on one machine is relatively straightforward.
@@ -552,12 +559,16 @@ things:
 * a file to tell RabbitMQ about its environment
 * a file to configure the RabbitMQ server
 * the ``.env`` template.
+* a file to tell your program what other nodes to talk to 
+* a cache file for its automatic discovery phase
 
 .. code-block:: python
 
   $ touch ./templates/rabbit-env.config.j2
   $ touch ./templates/rabbit.config.j2
   $ touch ./templates/.env.j2
+  $ touch ./templates/.miros_rabbit_hosts.json.j2
+  $ touch ./templates/.miros_rabbitlan_cache.j2
 
 The ``j2`` extension is our hint that these files are jinja2 template files.
 Here is my barebones ``rabbit-env.config.j2`` template:
@@ -599,6 +610,39 @@ Now we will create the ``.env.j2`` template, it *will* use our Ansible variables
   CONNECTION_ATTEMPTS={{connection_attempts}}
   RABBIT_GUEST_USER={{rabbit_guest_user}}
 
+The ``.miros_rabbit_hosts.json.j2`` file is used to manually set the IP
+addresses that will be used by your program to talk to other nodes in your
+distributed system.  Well, you wrote this list into your inventory file, so
+let's just have Ansible write out the ``.miros_rabbit_host.json`` file for us.
+Here is its template file:
+
+.. code-block:: jinja2
+  
+  {
+    "hosts": [
+    {% for host in ansible_play_batch %}
+    "{{ host }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+
+    ]
+  }
+
+Finally, miros-rabbitmq uses another file called ``.miros_rabbitlan_cache.json``
+which contains a list of all of the other nodes like it that it has discovered
+in it's LAN.  We don't know anything about that so we will write a file that has
+the correct structure, but it empty and will force a search the first time you
+run your program after you have deployed it.  Here is its template file:
+
+.. code-block:: jinja2
+
+  {
+    "addresses": [
+    ],
+    "amqp_urls": [
+    ],
+    "time_out_in_minutes": 0
+  }
+
 When we have finished this step our deployment directory will look like:
 
 .. code-block:: python
@@ -610,6 +654,8 @@ When we have finished this step our deployment directory will look like:
   │       └── vault
   └── templates
       ├── .env.j2
+      ├── .miros_rabbitlan_cache.json.j2
+      ├── .miros_rabbit_hosts.json.j2
       ├── rabbitmq.config.j2
       └── rabbitmq-env.conf.j2
 
@@ -697,6 +743,22 @@ The play book it yet another YAML file.  Now let's write the file:
          dest: "{{ miros_rabbitmq_project_directory }}/.env"
          mode: "u=rw,g=r,o=r"
 
+     - name: Write the .miros_rabbitlan_cache.json file
+         template:
+           src: .miros_rabbitlan_cache.json.j2
+           dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbitlan_cache.json"
+           mode: "u=rw,g=r,o=r"
+         tags:
+           - 'cache'
+
+       - name: Write the .miros_rabbit_hosts.json file
+         template:
+           src: .miros_rabbit_hosts.json.j2
+           dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbit_hosts.json"
+           mode: "u=rw,g=rw,o=r"
+         tags:
+           - 'hosts'
+
 .. note:: 
   
   Extend this playbook to customize your deployment.
@@ -721,9 +783,12 @@ Our deployment directory will look like this:
     │       ├── vars
     │       └── vault
     ├── miros_rabbitmq_install.yml
-    ├── rabbitmq.config.j2
-    ├── rabbitmq-env.conf.j2
-    └── .env.j2
+    └── templates
+      ├── .miros_rabbitlan_cache.json.j2
+      ├── .miros_rabbit_hosts.json.j2
+      ├── rabbitmq.config.j2
+      ├── rabbitmq-env.conf.j2
+      └── .env.j2
 
 .. _deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines:
 
