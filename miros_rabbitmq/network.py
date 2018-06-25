@@ -527,7 +527,8 @@ class RabbitConsumerScoutChart(RabbitConsumerScout):
   def search_AMPQ_CONSUMER_CHECK(scout, e):
     status = return_status.HANDLED
     if scout.live_trace or scout.live_spy:
-      pp(e.payload)
+     # pp(e.payload)
+     pass
     return status
 
   @staticmethod
@@ -1136,7 +1137,7 @@ class ManNetChart(MirosRabbitManualNetwork):
   @staticmethod
   def raend_CONNECTION_DISCOVERY(chart, e):
     status = return_status.HANDLED
-    pp(e.payload)
+    #pp(e.payload)
     return status
 
   @staticmethod
@@ -3183,7 +3184,7 @@ class MirosNetsInterface():
 
   def on_network_message(self, unused_channel, basic_deliver, properties, event):
     if isinstance(event, Event):
-      # print("heard {} from {}".format(event.signal_name, event.payload))
+      #print("heard {} from {}".format(event.signal_name, event.payload))
       if event.payload != self.name:
         self.post_fifo(event)
     else:
