@@ -1577,6 +1577,7 @@ To build a NetworkedFactory:
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
         '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 class SimplePikaTopicConsumer():
   """
@@ -2116,6 +2117,7 @@ class PikaTopicConsumer(SimplePikaTopicConsumer):
     return self._decryption_function(item)
 
   def on_message(self, unused_channel, basic_deliver, properties, xsbody):
+
     ignore = False
     try:
       sbody = self.decrypt(xsbody)
@@ -2129,14 +2131,14 @@ class PikaTopicConsumer(SimplePikaTopicConsumer):
       body = sbody
       ignore = True
     #  body = self.deserialize(self.decrypt(xsbody))
+    LOGGER.info('Received message # %s from %s: %s',
+          unused_channel.connection.params, properties.app_id, body)
     if not ignore:
+
       self._message_callback(unused_channel, basic_deliver, properties, body)
       self.acknowledge_message(basic_deliver.delivery_tag)
     else:
       self.nak_message(basic_deliver.delivery_tag)
-
-def pp(item):
-  pprint.pprint(item)
 
 class PID():
   def __init__(self, kp, kd, ki, i_max, i_min, dt):
@@ -2962,6 +2964,7 @@ class MirosNets:
     self.mesh.encryption_key = mesh_encryption_key
     self._rabbit_user = rabbit_user
     self._rabbit_password = rabbit_password
+    self._this_ip_address = LocalAreaNetwork.get_working_ip_address()
 
     if spy_snoop_encryption_key is None:
       self.snoop.spy.encryption_key = mesh_encryption_key
@@ -3000,19 +3003,21 @@ class MirosNets:
         custom_rx_callback=on_trace_rx)
 
     def custom_serializer(obj):
+      ip_address = self._this_ip_address
       if isinstance(obj, Event):
         obj = Event.dumps(obj)
-      pobj = pickle.dumps(obj)
+      pobj = pickle.dumps((ip_address, obj))
       return pobj
 
     def custom_deserializer(ppobj):
-      pobj = pickle.loads(ppobj)
+      tuple_ = pickle.loads(ppobj)
+      ip_address = tuple_[0]
+      pobj = tuple_[1]
       try:
         obj = Event.loads(pobj)
       except:
         obj = pobj
-
-      return obj
+      return ip_address, obj
 
     self.mesh.serializer   = custom_serializer
     self.mesh.deserializer = custom_deserializer
@@ -3208,9 +3213,10 @@ class AnsiColors:
 
 class MirosNetsInterface():
 
-  def on_network_message(self, unused_channel, basic_deliver, properties, event):
+  def on_network_message(self, unused_channel, basic_deliver, properties, payload):
+    ip_address, event = payload
     if isinstance(event, Event):
-      #print("heard {} from {}".format(event.signal_name, event.payload))
+      print("heard {} from {}".format(event.signal_name, ip_address))
       if event.payload != self.name:
         self.post_fifo(event)
     else:
