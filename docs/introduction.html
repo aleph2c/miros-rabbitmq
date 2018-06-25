@@ -53,7 +53,22 @@ Botnets.</p>
 <li>Replace your <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#creating-a-statechart-from-a-factory">miros Factory</a> class with a <a class="reference internal" href="example.html#example-networkedfactory"><span class="std std-ref">miros-rabbitmq NetworkedFactory</span></a> class.</li>
 <li>To transmit events between networked statecharts use the <a class="reference internal" href="recipes.html#recipes-transmitting-an-event"><span class="std std-ref">transmit</span></a> method.</li>
 <li>Debug/document your networked software using the <a class="reference internal" href="recipes.html#recipes-snoop-trace"><span class="std std-ref">snoop_trace</span></a> and the <a class="reference internal" href="recipes.html#recipes-snoop-spy"><span class="std std-ref">snoop_spy</span></a>.</li>
+<li>Once you are happy with your software, you can build a <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment procedure</span></a> so that you can install the required infrastructure, credentials and secrets on many different machines.</li>
 </ul>
+<p>This document was intended to guide someone who already understands how to use
+the miros statechart Python package.  If you don’t know anything about this, get a
+decent handle on the  <a class="reference external" href="https://aleph2c.github.io/miros/index.html">miros software</a> first,
+then come back and learn how to network it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If at any time you would like to navigate back to the top level of the
+documents, click on the rabbit in the top left corner.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If any of the documents are too small in your browser, click on them and you
+will see a full sized pdf version of the same image.</p>
+</div>
 <p>RabbitMQ is an open source networking library written in Erlang which supports
 the AMQP messaging protocol.  <a class="reference external" href="https://pika.readthedocs.io/en/0.11.2/">Pika</a> is a Python package that interfaces Python
 code with <a class="reference external" href="https://www.rabbitmq.com/">RabbitMQ</a>.  This miros-rabbitmq package uses pika to tie together miros

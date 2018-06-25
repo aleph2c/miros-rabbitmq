@@ -26,6 +26,7 @@ Contents
    recipes
    reflection
    docs
+   deployment
 
 Indices
 ^^^^^^^

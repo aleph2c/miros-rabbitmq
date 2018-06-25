@@ -27,6 +27,22 @@ To use the library:
 * Replace your `miros Factory <https://aleph2c.github.io/miros/recipes.html#creating-a-statechart-from-a-factory>`_ class with a :ref:`miros-rabbitmq NetworkedFactory<example-networkedfactory>` class.
 * To transmit events between networked statecharts use the :ref:`transmit<recipes-transmitting-an-event>` method.
 * Debug/document your networked software using the :ref:`snoop_trace<recipes-snoop-trace>` and the :ref:`snoop_spy <recipes-snoop-spy>`.
+* Once you are happy with your software, you can build a :ref:`deployment procedure <deployment-deployment>` so that you can install the required infrastructure, credentials and secrets on many different machines.
+
+This document was intended to guide someone who already understands how to use
+the miros statechart Python package.  If you don't know anything about this, get a
+decent handle on the  `miros software <https://aleph2c.github.io/miros/index.html>`_ first,
+then come back and learn how to network it.
+
+.. note:: 
+
+  If at any time you would like to navigate back to the top level of the
+  documents, click on the rabbit in the top left corner.
+
+.. note:: 
+
+  If any of the documents are too small in your browser, click on them and you
+  will see a full sized pdf version of the same image.
 
 RabbitMQ is an open source networking library written in Erlang which supports
 the AMQP messaging protocol.  `Pika <https://pika.readthedocs.io/en/0.11.2/>`_ is a Python package that interfaces Python
