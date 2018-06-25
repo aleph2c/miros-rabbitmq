@@ -694,6 +694,9 @@ miros-rabbitmq program looks like this:
     ]
   }
 
+This file will be written for you at your top level directory if you use this
+:ref:`deployment strategy<deployment-deployment>`.
+
 Node Discovery on your LAN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 This is taken care of by the library.  If your node is on your local area network
