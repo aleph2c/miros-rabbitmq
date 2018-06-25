@@ -3,7 +3,11 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 env_path = Path('.') / '.env'
-load_dotenv()
+if env_path.is_file():
+  load_dotenv(env_path)
+else:
+  # recurse outward to find .env file
+  load_dotenv()
 
 class EnvContractBroken(Exception):
   pass
@@ -39,9 +43,6 @@ class LoadEnvironmentalVariables():
     if not os.getenv('SNOOP_SPY_ENCRYPTION_KEY'):
       raise EnvContractBroken('SNOOP_SPY_ENCRYPTION_KEY is missing from your .env file')
 
-    # if not os.getenv('SNOOP_BOB'):
-    #   raise EnvContractBroken('SNOOP_BOB is missing from your .env file')
-
 LoadEnvironmentalVariables()
 
 RABBIT_USER = os.getenv('RABBIT_USER')
@@ -49,7 +50,6 @@ RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
 MESH_ENCRYPTION_KEY = os.getenv('MESH_ENCRYPTION_KEY')
 SNOOP_SPY_ENCRYPTION_KEY = os.getenv('SNOOP_SPY_ENCRYPTION_KEY')
 SNOOP_TRACE_ENCRYPTION_KEY = os.getenv('SNOOP_TRACE_ENCRYPTION_KEY')
-
 
 if __name__ == '__main__':
   # cache_chart = CacheFileChart(live_trace=True)

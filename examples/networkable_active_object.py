@@ -106,6 +106,7 @@ if __name__ == '__main__':
   # ao.enable_snoop_trace_no_color()
   # python3 networkable_active_object.py 2>&1 | sed -r 's/'$(echo -e "\033")'\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g' | tee log.txt
   # grep -F [+s] log.txt | grep <name>
+  ao.live_trace = True
   ao.start_at(outer)
   time.sleep(200)
 
