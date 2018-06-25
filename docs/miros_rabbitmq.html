@@ -157,7 +157,7 @@
 
 <dl class="class">
 <dt id="miros_rabbitmq.network.CacheFileChart">
-<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheFileChart</code><span class="sig-paren">(</span><em>file_path=None</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">CacheFileChart</code><span class="sig-paren">(</span><em>file_path=None</em>, <em>live_trace=None</em>, <em>live_spy=None</em>, <em>default_json=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.CacheFileChart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.CacheFile" title="miros_rabbitmq.network.CacheFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.CacheFile</span></code></a></p>
 <p>Provides the ability for multiple programs to the same JSON file.
 To see the documentation and the map for this statechart: <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#cfc">link</a></p>
@@ -329,6 +329,11 @@ To see the documentation and the map for this statechart: <a class="reference ex
 <p>The LanChart is responsible for finding other RabbitMQ servers on your
 Local Area Network</p>
 <p>To see it’s documentation and a map of this statechart, click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#lanchart">here</a></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.LanChart.DEFAULT_JSON">
+<code class="descname">DEFAULT_JSON</code><em class="property"> = '\n{\n  &quot;addresses&quot;: [\n  ],\n  &quot;amqp_urls&quot;: [\n  ],\n  &quot;time_out_in_minutes&quot;: 0\n}\n'</em><a class="headerlink" href="#miros_rabbitmq.network.LanChart.DEFAULT_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="staticmethod">
 <dt id="miros_rabbitmq.network.LanChart.dn_LAN_RECCE_COMPLETE">
 <em class="property">static </em><code class="descname">dn_LAN_RECCE_COMPLETE</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.LanChart.dn_LAN_RECCE_COMPLETE" title="Permalink to this definition">¶</a></dt>
@@ -563,6 +568,11 @@ Local Area Network</p>
 <dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.MirosRabbitManualNetwork" title="miros_rabbitmq.network.MirosRabbitManualNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.MirosRabbitManualNetwork</span></code></a></p>
 <p>The ManNetChart lets a user specify the addresses they want to use in their network.
 To see it’s documentation and diagrams click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#manual-network-chart">here</a>.</p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ManNetChart.DEFAULT_JSON">
+<code class="descname">DEFAULT_JSON</code><em class="property"> = '{\n  &quot;hosts&quot;: [\n  ]\n}\n'</em><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.DEFAULT_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="staticmethod">
 <dt id="miros_rabbitmq.network.ManNetChart.en_AMQP_CONSUMER_CHECK">
 <em class="property">static </em><code class="descname">en_AMQP_CONSUMER_CHECK</code><span class="sig-paren">(</span><em>chart</em>, <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ManNetChart.en_AMQP_CONSUMER_CHECK" title="Permalink to this definition">¶</a></dt>

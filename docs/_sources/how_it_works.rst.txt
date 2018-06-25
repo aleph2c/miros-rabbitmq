@@ -1010,7 +1010,6 @@ during each event:
 
 The Cache File Chart
 --------------------
-
 The CacheFileChart is used to read and write the network discovery cache
 information.  It was designed to:
 
@@ -1024,6 +1023,7 @@ information.  It was designed to:
 * Convert a file read into an asynchronous event which can be subscribed to
   by another statechart
 * be easy to debug/document
+* run even if the json file doesn't exist or is empty
 
 The network discovery process is expensive, so we will cache its results to a
 JSON file.
@@ -1067,7 +1067,7 @@ To construct the ``CacheFileChart`` with a live trace, for debugging:
 
 .. code-block:: python
 
-  cache_file = CacheFileChart(live_trace=True)
+  cache_file = CacheFileChart(live_trace=True, default_json="")
 
 To read the file, subscribe to the ``CACHE`` event, then publish a
 ``CACHE_FILE_READ`` event to the active fabric and wait for a ``CACHE`` event to
@@ -1154,7 +1154,7 @@ you want in your networks:
   {
     "hosts": [
       "192.168.1.75",
-      "my_host_as_a_url.com"
+      "www.my_host_as_a_url.com"
     ]
   }
 

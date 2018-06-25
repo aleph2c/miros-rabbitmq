@@ -29,6 +29,7 @@ def convert_uxf_to_other_format(filename, convertion_type):
     r"cmd.exe /C '{} -action=convert -format={} -filename={}'". \
       format(Windows_Path_To_UMLet, convertion_type, filename)
 
+  # print(cmd_string)
   p = subprocess.Popen(cmd_string,
                         stdout=subprocess.PIPE,
                         stdin=subprocess.PIPE,

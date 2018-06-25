@@ -869,6 +869,7 @@ programs running at the same time.</li>
 <li>Convert a file read into an asynchronous event which can be subscribed to
 by another statechart</li>
 <li>be easy to debug/document</li>
+<li>run even if the json file doesn’t exist or is empty</li>
 </ul>
 <p>The network discovery process is expensive, so we will cache its results to a
 JSON file.</p>
@@ -896,7 +897,7 @@ one:</p>
 <a class="reference external image-reference" href="_static/miros_rabbitmq_cache_file_chart.pdf"><div align="center" class="align-center"><img alt="_images/miros_rabbitmq_cache_file_chart.svg" src="_images/miros_rabbitmq_cache_file_chart.svg" /></div>
 </a>
 <p>To construct the <code class="docutils literal notranslate"><span class="pre">CacheFileChart</span></code> with a live trace, for debugging:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">CacheFileChart</span><span class="p">(</span><span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">CacheFileChart</span><span class="p">(</span><span class="n">live_trace</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">default_json</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To read the file, subscribe to the <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> event, then publish a
@@ -966,7 +967,7 @@ you want in your networks:</p>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="s2">&quot;192.168.1.75&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;my_host_as_a_url.com&quot;</span>
+    <span class="s2">&quot;www.my_host_as_a_url.com&quot;</span>
   <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>

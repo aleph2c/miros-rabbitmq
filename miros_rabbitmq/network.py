@@ -133,6 +133,7 @@ class RabbitHelper2():
 
 
 class CacheFile(Factory):
+
   def __init__(self, name, file_path, system_read_signal_name=None):
     '''A collection of attributes and worker methods that will be used by the
        CacheFileChart'''
@@ -187,11 +188,12 @@ class CacheFileChart(CacheFile):
   '''Provides the ability for multiple programs to the same JSON file.
   To see the documentation and the map for this statechart: `link <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#cfc>`_
   '''
-  def __init__(self, file_path=None, live_trace=None, live_spy=None):
+  def __init__(self, file_path=None, live_trace=None, live_spy=None, default_json=None):
     if file_path is None:
       file_path = str(Path('.') / '.miros_rabbitmq_cache.json')
     self.file_name = os.path.basename(file_path)
     super().__init__(self.file_name, file_path=file_path)
+    self.default_json = default_json
 
     self.file_access_waiting = self.create(state='file_access_waiting'). \
         catch(signal=signals.ENTRY_SIGNAL, handler=self.faw_entry). \
@@ -250,9 +252,14 @@ class CacheFileChart(CacheFile):
     cache.subscribe(Event(signal=signals.CACHE_FILE_READ))
     cache.subscribe(Event(signal=signals.CACHE_FILE_WRITE))
 
-    # check if file exists, if not make it with nothing in it
+    # check if file exists, if not make it the default json provided by our
+    # client
     if not os.path.isfile(cache.file_path):
-      open(cache.file_path, 'a').close()
+      f = open(cache.file_path, 'w')
+      f.write(cache.default_json)
+      f.flush()
+      os.fsync(f.fileno())
+      f.close()
     return return_status.HANDLED
 
   @staticmethod
@@ -919,6 +926,17 @@ class LanChart(MirosRabbitLan):
 
   To see it's documentation and a map of this statechart, click `here
   <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#lanchart>`_'''
+
+  DEFAULT_JSON = '''
+{
+  "addresses": [
+  ],
+  "amqp_urls": [
+  ],
+  "time_out_in_minutes": 0
+}
+'''
+
   def __init__(self,
         routing_key, exchange_name, time_out_in_minutes=None,
         cache_file_path=None, live_trace=None, live_spy=None):
@@ -978,7 +996,8 @@ class LanChart(MirosRabbitLan):
         CacheFileChart(
           file_path=chart.file_path,
           live_trace=chart.live_trace,
-          live_spy=chart.live_spy
+          live_spy=chart.live_spy,
+          default_json=LanChart.DEFAULT_JSON
         )
     if not hasattr(chart, 'rabbitmq_lan_recce_chart'):
       chart.rabbit_lan_reccee_chart = LanRecceChart(
@@ -1059,6 +1078,12 @@ class ManNetChart(MirosRabbitManualNetwork):
   To see it's documentation and diagrams click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#manual-network-chart>`_.
   '''
 
+  DEFAULT_JSON = '''{
+  "hosts": [
+  ]
+}
+'''
+
   def __init__(self, routing_key, exchange_name, cache_file_path=None, live_trace=None, live_spy=None):
     if cache_file_path:
       self.cache_file_path = cache_file_path
@@ -1115,7 +1140,8 @@ class ManNetChart(MirosRabbitManualNetwork):
         CacheFileChart(
           file_path=chart.file_path,
           live_trace=chart.live_trace,
-          live_spy=chart.live_spy
+          live_spy=chart.live_spy,
+          default_json=ManNetChart.DEFAULT_JSON
         )
     chart.subscribe(Event(signal=signals.CACHE))
     chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))

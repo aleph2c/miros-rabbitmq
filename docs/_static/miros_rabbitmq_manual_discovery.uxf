@@ -4,8 +4,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>40</y>
+      <x>112</x>
+      <y>128</y>
       <w>232</w>
       <h>200</h>
     </coordinates>
@@ -35,8 +35,8 @@ manual_file_chart
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>64</x>
-      <y>384</y>
+      <x>160</x>
+      <y>552</y>
       <w>936</w>
       <h>480</h>
     </coordinates>
@@ -47,7 +47,7 @@ entry /
     chart.file_path = '.miros_rabbimq_hosts.json'
     chart.file_name = os.path.basename(chart.file_path)
     chart.manual_file_chart = CacheFileChart(
-      file_path=chart.file_path)
+      file_path=chart.file_path, default_json=ManNetChart.DEFAULT_JSON)
   chart.subscribe(Event(signal=signals.CACHE))
   chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
   chart.publish(Event(signals.CACHE_FILE_READ))
@@ -66,8 +66,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>128</x>
-      <y>360</y>
+      <x>224</x>
+      <y>528</y>
       <w>24</w>
       <h>48</h>
     </coordinates>
@@ -77,8 +77,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>120</x>
-      <y>328</y>
+      <x>216</x>
+      <y>496</y>
       <w>40</w>
       <h>48</h>
     </coordinates>
@@ -88,8 +88,8 @@ valign=top
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>56</x>
-      <y>296</y>
+      <x>152</x>
+      <y>464</y>
       <w>160</w>
       <h>48</h>
     </coordinates>
@@ -100,8 +100,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>184</x>
-      <y>776</y>
+      <x>280</x>
+      <y>944</y>
       <w>240</w>
       <h>56</h>
     </coordinates>
@@ -113,8 +113,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>64</x>
-      <y>728</y>
+      <x>160</x>
+      <y>896</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -125,8 +125,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>120</x>
-      <y>640</y>
+      <x>216</x>
+      <y>808</y>
       <w>320</w>
       <h>56</h>
     </coordinates>
@@ -138,8 +138,8 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>80</x>
-      <y>696</y>
+      <x>176</x>
+      <y>864</y>
       <w>328</w>
       <h>64</h>
     </coordinates>
@@ -155,8 +155,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>56</x>
-      <y>728</y>
+      <x>152</x>
+      <y>896</y>
       <w>408</w>
       <h>32</h>
     </coordinates>
@@ -167,8 +167,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>448</x>
-      <y>424</y>
+      <x>544</x>
+      <y>592</y>
       <w>536</w>
       <h>416</h>
     </coordinates>
@@ -212,8 +212,8 @@ valign=top
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>48</x>
-      <y>600</y>
+      <x>144</x>
+      <y>768</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -224,8 +224,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>464</x>
-      <y>856</y>
+      <x>560</x>
+      <y>1024</y>
       <w>600</w>
       <h>48</h>
     </coordinates>
@@ -235,8 +235,8 @@ bg=red</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>480</x>
-      <y>864</y>
+      <x>576</x>
+      <y>1032</y>
       <w>352</w>
       <h>24</h>
     </coordinates>
@@ -247,14 +247,20 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>256</y>
+      <x>112</x>
+      <y>344</y>
       <w>1008</w>
-      <h>656</h>
+      <h>736</h>
     </coordinates>
     <panel_attributes>*ManNetChart*
 --
-
+ManNetChart.DEFAULT_JSON = '''
+{
+  "hosts": [
+  ]
+}
+'''
+--
 
 
 
@@ -265,8 +271,8 @@ fg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>112</x>
-      <y>232</y>
+      <x>208</x>
+      <y>320</y>
       <w>24</w>
       <h>40</h>
     </coordinates>
@@ -276,8 +282,8 @@ fg=blue</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>48</x>
-      <y>504</y>
+      <x>144</x>
+      <y>672</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -288,8 +294,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>752</x>
-      <y>672</y>
+      <x>848</x>
+      <y>840</y>
       <w>224</w>
       <h>56</h>
     </coordinates>
@@ -302,8 +308,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>432</x>
-      <y>560</y>
+      <x>528</x>
+      <y>728</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -314,8 +320,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>768</x>
-      <y>472</y>
+      <x>864</x>
+      <y>640</y>
       <w>208</w>
       <h>56</h>
     </coordinates>
@@ -328,8 +334,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>656</x>
-      <y>512</y>
+      <x>752</x>
+      <y>680</y>
       <w>128</w>
       <h>32</h>
     </coordinates>
@@ -339,8 +345,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>832</x>
-      <y>520</y>
+      <x>928</x>
+      <y>688</y>
       <w>80</w>
       <h>144</h>
     </coordinates>
@@ -350,8 +356,8 @@ and will be destroyed after use
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>88</x>
-      <y>856</y>
+      <x>184</x>
+      <y>1024</y>
       <w>216</w>
       <h>48</h>
     </coordinates>
@@ -362,8 +368,8 @@ EVALUATE_HOSTS_FILE</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>96</x>
-      <y>864</y>
+      <x>192</x>
+      <y>1032</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -374,8 +380,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>24</x>
-      <y>448</y>
+      <x>120</x>
+      <y>616</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -385,8 +391,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>24</x>
-      <y>448</y>
+      <x>120</x>
+      <y>616</y>
       <w>56</w>
       <h>24</h>
     </coordinates>
@@ -396,8 +402,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>48</x>
-      <y>16</y>
+      <x>144</x>
+      <y>104</y>
       <w>24</w>
       <h>40</h>
     </coordinates>
@@ -407,8 +413,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>0</y>
+      <x>112</x>
+      <y>88</y>
       <w>80</w>
       <h>24</h>
     </coordinates>
