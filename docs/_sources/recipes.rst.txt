@@ -725,7 +725,24 @@ To force your program to update this cache, change the ``time_out_in_minutes``
 setting to 0 and re-run your program.  Your application will cause another LAN
 search and update the ``time_out_in_minutes`` back to it's default setting.
 
+.. _recipes-aliens,-and-what-to-do-about-them:
 
+Aliens, and what to do about them
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An Alien is a node that can talk to you, but that you didn't know about when
+your program started.  There are many reasons why you might not know about a
+node that knows about you:
+
+* Your LAN cache hadn't expired while a new node was added to your LAN
+* The Alien machine does not respond to ping requests
+* the machine is beyond your LAN and you don't have it's address in your
+  ``.miros_rabbit_hosts`` file.
+
+The Alien policy is, if it can talk to us we will talk to it too.  If the node
+knows about us, has the correct encryption keys and RabbitMQ credentials, then
+it's secure and we can work with it.   So, if an Alien is discovered, the
+miros-rabbitmq package will respond by building producers to talk to it.  To see
+how this is done you can read :ref:`this <how_it_works2_aliens>`.
 
 :ref:`prev <example>`, :ref:`top <top>`, :ref:`next <reflection>`
 

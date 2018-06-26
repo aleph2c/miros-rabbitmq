@@ -18,6 +18,13 @@ I found the installation documentation on the RabbitMQ website to be mostly
 illegible to me as a new user, so I wrote this guide to save you the pain which
 I went through.
 
+Once you are familiar with the miros-rabbitmq library, you can reference this
+full :ref:`deployment procedure <deployment-deployment>` for setting up your
+distributed system.  
+
+For now, in this section, we will describe procedures for setting up RabbitMQ so
+that our miros-rabbitmq derived programs can talk to each other through it.
+
 .. _installing_infrastructure-installing-on-windows:
 
 RabbitMQ On Windows and the WLS

@@ -561,6 +561,8 @@ After successfully putting the new producer information into the queue, the
 statechart posts a ``ready`` signal to itself.  This will allow it to process
 any pending ``CONNECTION_DISCOVERY`` events.
 
+.. _how_it_works2_aliens:
+
 The ProducerFactoryChart also has a way of reacting to a previously unknown
 machine sending messages with the correct mesh encryption key, and using the
 correct RabbitMQ credentials.  For lack of a better word, let's call these nodes
@@ -592,7 +594,6 @@ ProducerFactoryChart.  At this point, the Alien node is no longer really an
 Alien anymore, because the node is known and it is being spoken too.
 
 .. _how_it_works2-mirosrabbitlanchart:
-
 
 LanChart
 --------

@@ -1,9 +1,11 @@
 {
   "addresses": [
-    "192.168.1.75"
+    "192.168.1.75",
+    "192.168.1.71"
   ],
   "amqp_urls": [
-    "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
+    "amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&heartbeat_interval=3600",
+    "amqp://bob:dobbs@192.168.1.71:5672/%2F?connection_attempts=3&heartbeat_interval=3600"
   ],
   "time_out_in_minutes": 30
 }

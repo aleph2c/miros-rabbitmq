@@ -479,7 +479,7 @@ queue can extract the new producer information as it sees fit.</p>
 <p>After successfully putting the new producer information into the queue, the
 statechart posts a <code class="docutils literal notranslate"><span class="pre">ready</span></code> signal to itself.  This will allow it to process
 any pending <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
-<p>The ProducerFactoryChart also has a way of reacting to a previously unknown
+<p id="how-it-works2-aliens">The ProducerFactoryChart also has a way of reacting to a previously unknown
 machine sending messages with the correct mesh encryption key, and using the
 correct RabbitMQ credentials.  For lack of a better word, let’s call these nodes
 Aliens.  A machine that will not respond to a ping on the LAN and who’s address

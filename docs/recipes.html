@@ -597,6 +597,23 @@ which looks something like this:</p>
 <p>To force your program to update this cache, change the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code>
 setting to 0 and re-run your program.  Your application will cause another LAN
 search and update the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code> back to it’s default setting.</p>
+</div>
+<div class="section" id="aliens-and-what-to-do-about-them">
+<span id="recipes-aliens-and-what-to-do-about-them"></span><h3>Aliens, and what to do about them<a class="headerlink" href="#aliens-and-what-to-do-about-them" title="Permalink to this headline">¶</a></h3>
+<p>An Alien is a node that can talk to you, but that you didn’t know about when
+your program started.  There are many reasons why you might not know about a
+node that knows about you:</p>
+<ul class="simple">
+<li>Your LAN cache hadn’t expired while a new node was added to your LAN</li>
+<li>The Alien machine does not respond to ping requests</li>
+<li>the machine is beyond your LAN and you don’t have it’s address in your
+<code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts</span></code> file.</li>
+</ul>
+<p>The Alien policy is, if it can talk to us we will talk to it too.  If the node
+knows about us, has the correct encryption keys and RabbitMQ credentials, then
+it’s secure and we can work with it.   So, if an Alien is discovered, the
+miros-rabbitmq package will respond by building producers to talk to it.  To see
+how this is done you can read <a class="reference internal" href="how_it_works.html#how-it-works2-aliens"><span class="std std-ref">this</span></a>.</p>
 <p><a class="reference internal" href="example.html#example"><span class="std std-ref">prev</span></a>, <a class="reference internal" href="index.html#top"><span class="std std-ref">top</span></a>, <a class="reference internal" href="reflection.html#reflection"><span class="std std-ref">next</span></a></p>
 </div>
 </div>
@@ -638,6 +655,7 @@ search and update the <code class="docutils literal notranslate"><span class="pr
 <li><a class="reference internal" href="#networking">Networking</a><ul>
 <li><a class="reference internal" href="#manually-setting-node-addresses">Manually setting Node Addresses</a></li>
 <li><a class="reference internal" href="#node-discovery-on-your-lan">Node Discovery on your LAN</a></li>
+<li><a class="reference internal" href="#aliens-and-what-to-do-about-them">Aliens, and what to do about them</a></li>
 </ul>
 </li>
 </ul>
