@@ -149,4 +149,27 @@ fg=black</panel_attributes>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;50.0;120.0;10.0</additional_attributes>
   </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>286</x>
+      <y>99</y>
+      <w>264</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>MirosNets
+fg=black</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>407</x>
+      <y>121</y>
+      <w>33</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;10.0;10.0</additional_attributes>
+  </element>
 </diagram>

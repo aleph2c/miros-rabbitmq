@@ -2,6 +2,7 @@
 import time
 import uuid
 import random
+import logging
 from miros import spy_on
 from miros import signals, Event, return_status
 from miros_rabbitmq import NetworkedActiveObject
@@ -92,6 +93,10 @@ def outer(chart, e):
 
 
 if __name__ == '__main__':
+  LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
+          '-35s %(lineno) -5d: %(message)s')
+  LOGGER = logging.getLogger(__name__)
+  logging.basicConfig(level=logging.CRITICAL, format=LOG_FORMAT)
   random.seed()
   ao = NetworkedActiveObject(make_name('ao'),
                               rabbit_user=RABBIT_USER,

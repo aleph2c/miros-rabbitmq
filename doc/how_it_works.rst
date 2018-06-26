@@ -394,6 +394,8 @@ all of this complexity from the user.  It was designed to:
 
 * Initiate a search for other RabbitMQ servers on the LAN, using the :ref:`LanChart <how_it_works2-the-lanreccechart>`
 * Initiate a search based on the user's manual network settings, using the :ref:`ManNetChart<how_it_works2-manual-netword-chart>`
+* Respond to messages from unknown hosts with the correct encryption credentials
+  (Aliens).
 * React to the discovery of servers running RabbitMQ instances with the correct
   encryption and RabbitMQ credentials by building up instances of three
   different producers per discovery: a mesh producer and a snoop trace and snoop
@@ -559,7 +561,38 @@ After successfully putting the new producer information into the queue, the
 statechart posts a ``ready`` signal to itself.  This will allow it to process
 any pending ``CONNECTION_DISCOVERY`` events.
 
+The ProducerFactoryChart also has a way of reacting to a previously unknown
+machine sending messages with the correct mesh encryption key, and using the
+correct RabbitMQ credentials.  For lack of a better word, let's call these nodes
+Aliens.  A machine that will not respond to a ping on the LAN and who's address
+we forgot to add to our ``.miros_rabbitmq_hosts`` file, but who still knows
+about us, is an example of an Alien.
+
+.. image:: _static/medium_context_miros_nets.svg
+    :target: _static/medium_context_miros_nets.pdf
+    :align: center
+
+It is the MirosNets class that can discover Aliens.  It has a list of
+``ip_addresses`` that it updates when it receives items in it's
+``producers_queue``.
+
+It also receives messages from other nodes, and after it has decrypted the
+message, it can look to see who sent the message during it's deserialization
+step.
+
+If it hasn't seen this address before, it constructs a
+ConnectionDiscoveryPayload, adds it to a ``CONNECTION_DISCOVERY`` event and
+feeds this to the ProducerFactoryChart.
+
+The ProducerFactoryChart uses this information to create the three different
+producers, and then feeds this information back to the MirosNets object using
+the producers_queue.  The MirosNet's updates its list of known ``ip_addresses``
+and starts communicating to the Alien using the producers provided to it by the
+ProducerFactoryChart.  At this point, the Alien node is no longer really an
+Alien anymore, because the node is known and it is being spoken too.
+
 .. _how_it_works2-mirosrabbitlanchart:
+
 
 LanChart
 --------

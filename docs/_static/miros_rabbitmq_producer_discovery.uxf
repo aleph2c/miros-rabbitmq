@@ -384,11 +384,12 @@ bg=red</panel_attributes>
       <x>812</x>
       <y>896</y>
       <w>329</w>
-      <h>49</h>
+      <h>56</h>
     </coordinates>
     <panel_attributes>ProducerQueue = \
   namedtuple('ProducerQueue',
-    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers'])
+    ['mesh_producers', 'snoop_trace_producers', 
+     'snoop_spy_producers', 'ip_addresses'])
 </panel_attributes>
     <additional_attributes/>
   </element>

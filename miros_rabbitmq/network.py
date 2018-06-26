@@ -1291,12 +1291,12 @@ class SnoopSpyProducerFactory(ProducerFactory):
 
 ProducerQueue = \
   namedtuple('ProducerQueue',
-    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers'])
+    ['mesh_producers', 'snoop_trace_producers', 'snoop_spy_producers', 'ip_addresses'])
 
 class ProducerFactoryAggregator(Factory):
   def __init__(self,
                name,
-               producer_queue,
+               producers_queue,
                mesh_routing_key,
                mesh_exchange_name,
                mesh_serialization_function,
@@ -1307,7 +1307,7 @@ class ProducerFactoryAggregator(Factory):
 
     super().__init__(name)
 
-    self.producer_queue = producer_queue
+    self.producers_queue = producers_queue
     self.mesh_routing_key = mesh_routing_key
     self.mesh_exchange_name = mesh_exchange_name
     self.mesh_serialization_function = mesh_serialization_function
@@ -1355,7 +1355,7 @@ class ProducerFactoryChart(ProducerFactoryAggregator):
 
   To read the documentation and see diagrams for this statechart click `here <https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#the-producer-factory-chart>`_.'''
   def __init__(self,
-               producer_queue,
+               producers_queue,
                mesh_routing_key,
                mesh_exchange_name,
                mesh_serialization_function,
@@ -1369,7 +1369,7 @@ class ProducerFactoryChart(ProducerFactoryAggregator):
     chart_name = to_snake(str(self.__class__.__name__))
     super().__init__(
       chart_name,
-      producer_queue,
+      producers_queue,
       mesh_routing_key,
       mesh_exchange_name,
       mesh_serialization_function,
@@ -1440,7 +1440,11 @@ class ProducerFactoryChart(ProducerFactoryAggregator):
   @staticmethod
   def pd_CONNECTION_DISCOVERY(chart, e):
     status = return_status.HANDLED
-    set_of_payload_ips = set(chart.get_ip_for_hostname(host) for host in e.payload.hosts)
+    try:
+      set_of_payload_ips = set(chart.get_ip_for_hostname(host) for host in e.payload.hosts)
+    except:
+      return status
+
     chart.set_of_new_ips = set_of_payload_ips - chart.set_of_ips
     chart.set_of_ips |= set_of_payload_ips
 
@@ -1500,10 +1504,11 @@ class ProducerFactoryChart(ProducerFactoryAggregator):
     payload = ProducerQueue(
       mesh_producers=chart.mesh_producers,
       snoop_trace_producers=chart.snoop_trace_producers,
-      snoop_spy_producers=chart.snoop_spy_producers)
+      snoop_spy_producers=chart.snoop_spy_producers,
+      ip_addresses=new_ips)
 
     try:
-      chart.producer_queue.put(payload, block=False)
+      chart.producers_queue.put(payload, block=False)
     except queue.Full:
       chart.post_fifo(Event(signal=signals.ips_discovered), times=1, period=1, deferred=True)
     else:
@@ -3002,6 +3007,8 @@ class MirosNets:
       functools.partial(MirosNets.on_snoop_trace_message_callback,
         custom_rx_callback=on_trace_rx)
 
+    self.ip_addresses = []
+
     def custom_serializer(obj):
       ip_address = self._this_ip_address
       if isinstance(obj, Event):
@@ -3013,6 +3020,24 @@ class MirosNets:
       tuple_ = pickle.loads(ppobj)
       ip_address = tuple_[0]
       pobj = tuple_[1]
+
+      # search for aliens (SETI)
+      if ip_address not in self.ip_addresses:
+        print('Alien!: {}'.format(ip_address))
+        hosts = [ip_address]
+        amqp_urls = [RabbitHelper.make_amqp_url(
+          ip_address=ip_address,
+          rabbit_user=self._rabbit_user,
+          rabbit_password=self._rabbit_password,
+          connection_attempts=self.CONNECTION_ATTEMPTS,
+          heartbeat_interval=self.HEARTBEAT_INTERVAL_SEC)]
+        dispatcher = 'alien'
+        payload = ConnectionDiscoveryPayload(
+          hosts=hosts,
+          amqp_urls=amqp_urls,
+          dispatcher=dispatcher)
+        self.producer_factory_chart.post_fifo(Event(signal=signals.CONNECTION_DISCOVERY, payload=payload))
+
       try:
         obj = Event.loads(pobj)
       except:
@@ -3035,7 +3060,7 @@ class MirosNets:
     # The producer factory chart will update the producers_queue with new
     # producers as they are found
     self.producer_factory_chart = ProducerFactoryChart(
-      producer_queue=self.producers_queue,
+      producers_queue=self.producers_queue,
       mesh_routing_key=self.mesh.tx_routing_key,
       mesh_exchange_name=self.mesh.exchange_name,
       mesh_serialization_function=self.mesh.serializer,
@@ -3163,6 +3188,9 @@ class MirosNets:
     discovered = False
     if not self.producers_queue.empty():
       q = self.producers_queue.get(block=False)
+      for ip in q.ip_addresses:
+        if ip not in self.ip_addresses:
+          self.ip_addresses.append(ip)
       # if we have made producers before stop them now
       if self.mesh.producers:
         self.stop_threads()
@@ -3216,7 +3244,7 @@ class MirosNetsInterface():
   def on_network_message(self, unused_channel, basic_deliver, properties, payload):
     ip_address, event = payload
     if isinstance(event, Event):
-      print("heard {} from {}".format(event.signal_name, ip_address))
+      #print("heard {} from {}".format(event.signal_name, ip_address))
       if event.payload != self.name:
         self.post_fifo(event)
     else:

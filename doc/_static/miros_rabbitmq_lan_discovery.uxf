@@ -29,8 +29,8 @@ time_out_in_minutes
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>216</x>
-      <y>544</y>
+      <x>184</x>
+      <y>432</y>
       <w>936</w>
       <h>496</h>
     </coordinates>
@@ -63,8 +63,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>320</x>
-      <y>520</y>
+      <x>288</x>
+      <y>408</y>
       <w>24</w>
       <h>48</h>
     </coordinates>
@@ -74,19 +74,19 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>312</x>
-      <y>488</y>
+      <x>280</x>
+      <y>352</y>
       <w>40</w>
-      <h>48</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=[^]-(</panel_attributes>
-    <additional_attributes>20.0;10.0;20.0;30.0</additional_attributes>
+    <additional_attributes>20.0;10.0;20.0;60.0</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>248</x>
-      <y>456</y>
+      <x>224</x>
+      <y>320</y>
       <w>160</w>
       <h>48</h>
     </coordinates>
@@ -97,8 +97,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>424</x>
-      <y>856</y>
+      <x>392</x>
+      <y>744</y>
       <w>240</w>
       <h>56</h>
     </coordinates>
@@ -110,8 +110,8 @@ Event Processor</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>352</x>
-      <y>1040</y>
+      <x>320</x>
+      <y>928</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -122,8 +122,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>208</x>
-      <y>944</y>
+      <x>176</x>
+      <y>832</y>
       <w>560</w>
       <h>24</h>
     </coordinates>
@@ -133,8 +133,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>216</x>
-      <y>936</y>
+      <x>184</x>
+      <y>824</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -145,8 +145,8 @@ bg=green</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>296</x>
-      <y>968</y>
+      <x>264</x>
+      <y>856</y>
       <w>320</w>
       <h>56</h>
     </coordinates>
@@ -158,8 +158,8 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>232</x>
-      <y>920</y>
+      <x>200</x>
+      <y>808</y>
       <w>328</w>
       <h>32</h>
     </coordinates>
@@ -174,8 +174,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>752</x>
-      <y>936</y>
+      <x>720</x>
+      <y>824</y>
       <w>32</w>
       <h>32</h>
     </coordinates>
@@ -185,8 +185,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
-      <y>824</y>
+      <x>728</x>
+      <y>712</y>
       <w>112</w>
       <h>128</h>
     </coordinates>
@@ -197,8 +197,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>680</x>
-      <y>608</y>
+      <x>648</x>
+      <y>496</y>
       <w>360</w>
       <h>224</h>
     </coordinates>
@@ -228,8 +228,8 @@ valign=top
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>664</x>
-      <y>632</y>
+      <x>632</x>
+      <y>520</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -240,8 +240,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>752</x>
-      <y>464</y>
+      <x>720</x>
+      <y>352</y>
       <w>208</w>
       <h>64</h>
     </coordinates>
@@ -256,8 +256,8 @@ bg=red</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>664</x>
-      <y>672</y>
+      <x>632</x>
+      <y>560</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -268,8 +268,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>776</x>
-      <y>944</y>
+      <x>744</x>
+      <y>832</y>
       <w>336</w>
       <h>24</h>
     </coordinates>
@@ -279,8 +279,8 @@ bg=green</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>800</x>
-      <y>904</y>
+      <x>768</x>
+      <y>792</y>
       <w>296</w>
       <h>56</h>
     </coordinates>
@@ -293,8 +293,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>1096</x>
-      <y>944</y>
+      <x>1064</x>
+      <y>832</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -304,8 +304,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>848</x>
-      <y>520</y>
+      <x>816</x>
+      <y>408</y>
       <w>96</w>
       <h>168</h>
     </coordinates>
@@ -315,8 +315,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>200</x>
-      <y>800</y>
+      <x>168</x>
+      <y>688</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -327,8 +327,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>384</x>
-      <y>944</y>
+      <x>352</x>
+      <y>832</y>
       <w>32</w>
       <h>40</h>
     </coordinates>
@@ -338,8 +338,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>344</x>
-      <y>1032</y>
+      <x>312</x>
+      <y>920</y>
       <w>904</w>
       <h>64</h>
     </coordinates>
@@ -349,8 +349,8 @@ bg=red</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>352</x>
-      <y>1056</y>
+      <x>320</x>
+      <y>944</y>
       <w>352</w>
       <h>24</h>
     </coordinates>
@@ -361,8 +361,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>528</x>
-      <y>816</y>
+      <x>496</x>
+      <y>704</y>
       <w>24</w>
       <h>56</h>
     </coordinates>
@@ -372,8 +372,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>624</x>
-      <y>904</y>
+      <x>592</x>
+      <y>792</y>
       <w>24</w>
       <h>168</h>
     </coordinates>
@@ -383,8 +383,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>968</x>
-      <y>464</y>
+      <x>936</x>
+      <y>352</y>
       <w>224</w>
       <h>64</h>
     </coordinates>
@@ -395,8 +395,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>984</x>
-      <y>520</y>
+      <x>952</x>
+      <y>408</y>
       <w>112</w>
       <h>256</h>
     </coordinates>
@@ -406,8 +406,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>664</x>
-      <y>784</y>
+      <x>632</x>
+      <y>672</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -419,22 +419,13 @@ bg=red</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>120</x>
-      <y>280</y>
-      <w>1080</w>
-      <h>824</h>
+      <y>288</y>
+      <w>1048</w>
+      <h>704</h>
     </coordinates>
     <panel_attributes>*LanChart*
 --
-LanChart.DEFAULT_JSON = '''
-{
-  "addresses": [
-  ],
-  "amqp_urls": [
-  ],
-  "time_out_in_minutes": 0
-}
-'''
---
+
 
 
 
@@ -449,16 +440,16 @@ fg=blue</panel_attributes>
       <x>216</x>
       <y>256</y>
       <w>24</w>
-      <h>40</h>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>200</x>
-      <y>704</y>
+      <x>168</x>
+      <y>592</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -469,8 +460,8 @@ bg=red</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>896</x>
-      <y>824</y>
+      <x>864</x>
+      <y>712</y>
       <w>344</w>
       <h>56</h>
     </coordinates>
@@ -503,8 +494,8 @@ CACHE_FILE_WRITE(&lt;CacheWritePayload&gt;)</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>160</x>
-      <y>640</y>
+      <x>128</x>
+      <y>528</y>
       <w>16</w>
       <h>16</h>
     </coordinates>
@@ -514,12 +505,32 @@ CACHE_FILE_WRITE(&lt;CacheWritePayload&gt;)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>640</y>
+      <x>136</x>
+      <y>528</y>
       <w>64</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>392</x>
+      <y>312</y>
+      <w>280</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>LanChart.DEFAULT_JSON = '''
+{
+  "addresses": [
+  ],
+  "amqp_urls": [
+  ],
+  "time_out_in_minutes": 0
+}
+'''
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

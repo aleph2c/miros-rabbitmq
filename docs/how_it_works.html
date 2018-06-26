@@ -344,6 +344,8 @@ all of this complexity from the user.  It was designed to:</p>
 <ul class="simple">
 <li>Initiate a search for other RabbitMQ servers on the LAN, using the <a class="reference internal" href="#how-it-works2-the-lanreccechart"><span class="std std-ref">LanChart</span></a></li>
 <li>Initiate a search based on the user’s manual network settings, using the <a class="reference internal" href="#how-it-works2-manual-netword-chart"><span class="std std-ref">ManNetChart</span></a></li>
+<li>Respond to messages from unknown hosts with the correct encryption credentials
+(Aliens).</li>
 <li>React to the discovery of servers running RabbitMQ instances with the correct
 encryption and RabbitMQ credentials by building up instances of three
 different producers per discovery: a mesh producer and a snoop trace and snoop
@@ -477,6 +479,29 @@ queue can extract the new producer information as it sees fit.</p>
 <p>After successfully putting the new producer information into the queue, the
 statechart posts a <code class="docutils literal notranslate"><span class="pre">ready</span></code> signal to itself.  This will allow it to process
 any pending <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> events.</p>
+<p>The ProducerFactoryChart also has a way of reacting to a previously unknown
+machine sending messages with the correct mesh encryption key, and using the
+correct RabbitMQ credentials.  For lack of a better word, let’s call these nodes
+Aliens.  A machine that will not respond to a ping on the LAN and who’s address
+we forgot to add to our <code class="docutils literal notranslate"><span class="pre">.miros_rabbitmq_hosts</span></code> file, but who still knows
+about us, is an example of an Alien.</p>
+<a class="reference external image-reference" href="_static/medium_context_miros_nets.pdf"><div align="center" class="align-center"><img alt="_images/medium_context_miros_nets.svg" src="_images/medium_context_miros_nets.svg" /></div>
+</a>
+<p>It is the MirosNets class that can discover Aliens.  It has a list of
+<code class="docutils literal notranslate"><span class="pre">ip_addresses</span></code> that it updates when it receives items in it’s
+<code class="docutils literal notranslate"><span class="pre">producers_queue</span></code>.</p>
+<p>It also receives messages from other nodes, and after it has decrypted the
+message, it can look to see who sent the message during it’s deserialization
+step.</p>
+<p>If it hasn’t seen this address before, it constructs a
+ConnectionDiscoveryPayload, adds it to a <code class="docutils literal notranslate"><span class="pre">CONNECTION_DISCOVERY</span></code> event and
+feeds this to the ProducerFactoryChart.</p>
+<p>The ProducerFactoryChart uses this information to create the three different
+producers, and then feeds this information back to the MirosNets object using
+the producers_queue.  The MirosNet’s updates its list of known <code class="docutils literal notranslate"><span class="pre">ip_addresses</span></code>
+and starts communicating to the Alien using the producers provided to it by the
+ProducerFactoryChart.  At this point, the Alien node is no longer really an
+Alien anymore, because the node is known and it is being spoken too.</p>
 </div>
 <div class="section" id="lanchart">
 <span id="how-it-works2-mirosrabbitlanchart"></span><h2>LanChart<a class="headerlink" href="#lanchart" title="Permalink to this headline">¶</a></h2>

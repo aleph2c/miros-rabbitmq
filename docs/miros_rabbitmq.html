@@ -774,7 +774,7 @@ To see it’s documentation and diagrams click <a class="reference external" hre
 
 <dl class="method">
 <dt id="miros_rabbitmq.network.MirosNetsInterface.on_network_message">
-<code class="descname">on_network_message</code><span class="sig-paren">(</span><em>unused_channel</em>, <em>basic_deliver</em>, <em>properties</em>, <em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.on_network_message" title="Permalink to this definition">¶</a></dt>
+<code class="descname">on_network_message</code><span class="sig-paren">(</span><em>unused_channel</em>, <em>basic_deliver</em>, <em>properties</em>, <em>payload</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.MirosNetsInterface.on_network_message" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1123,7 +1123,7 @@ serializing messages.</p>
 
 <dl class="class">
 <dt id="miros_rabbitmq.network.ProducerFactoryAggregator">
-<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryAggregator</code><span class="sig-paren">(</span><em>name</em>, <em>producer_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryAggregator</code><span class="sig-paren">(</span><em>name</em>, <em>producers_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">miros.activeobject.Factory</span></code></p>
 <dl class="method">
 <dt id="miros_rabbitmq.network.ProducerFactoryAggregator.get_ip_for_hostname">
@@ -1149,7 +1149,7 @@ serializing messages.</p>
 
 <dl class="class">
 <dt id="miros_rabbitmq.network.ProducerFactoryChart">
-<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryChart</code><span class="sig-paren">(</span><em>producer_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerFactoryChart</code><span class="sig-paren">(</span><em>producers_queue</em>, <em>mesh_routing_key</em>, <em>mesh_exchange_name</em>, <em>mesh_serialization_function</em>, <em>snoop_trace_routing_key</em>, <em>snoop_trace_exchange_name</em>, <em>snoop_spy_routing_key</em>, <em>snoop_spy_exchange_name</em>, <em>live_trace=None</em>, <em>live_spy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerFactoryChart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactoryAggregator" title="miros_rabbitmq.network.ProducerFactoryAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactoryAggregator</span></code></a></p>
 <p>The ProducerFactoryChart is used to build RabbitMQ producers as they are discovered by the miros-rabbitmq library.</p>
 <p>To read the documentation and see diagrams for this statechart click <a class="reference external" href="https://aleph2c.github.io/miros-rabbitmq/how_it_works.html#the-producer-factory-chart">here</a>.</p>
@@ -1197,8 +1197,14 @@ serializing messages.</p>
 
 <dl class="class">
 <dt id="miros_rabbitmq.network.ProducerQueue">
-<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerQueue</code><span class="sig-paren">(</span><em>mesh_producers</em>, <em>snoop_trace_producers</em>, <em>snoop_spy_producers</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">ProducerQueue</code><span class="sig-paren">(</span><em>mesh_producers</em>, <em>snoop_trace_producers</em>, <em>snoop_spy_producers</em>, <em>ip_addresses</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="miros_rabbitmq.network.ProducerQueue.ip_addresses">
+<code class="descname">ip_addresses</code><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue.ip_addresses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="miros_rabbitmq.network.ProducerQueue.mesh_producers">
 <code class="descname">mesh_producers</code><a class="headerlink" href="#miros_rabbitmq.network.ProducerQueue.mesh_producers" title="Permalink to this definition">¶</a></dt>
@@ -2182,11 +2188,6 @@ and stop the thread, use the ‘stop’ api</p>
 <em class="property">class </em><code class="descclassname">miros_rabbitmq.network.</code><code class="descname">SnoopTraceProducerFactory</code><span class="sig-paren">(</span><em>ip_address</em>, <em>routing_key</em>, <em>exchange_name</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.SnoopTraceProducerFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#miros_rabbitmq.network.ProducerFactory" title="miros_rabbitmq.network.ProducerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">miros_rabbitmq.network.ProducerFactory</span></code></a></p>
 </dd></dl>
-
-<dl class="function">
-<dt id="miros_rabbitmq.network.pp">
-<code class="descclassname">miros_rabbitmq.network.</code><code class="descname">pp</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#miros_rabbitmq.network.pp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="function">
 <dt id="miros_rabbitmq.network.to_snake">
