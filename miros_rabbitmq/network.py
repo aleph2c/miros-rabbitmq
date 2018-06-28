@@ -2952,8 +2952,8 @@ class MirosNets:
                 on_mesh_rx=None,
                 on_spy_rx=None,
                 on_trace_rx=None,
-                spy_snoop_encryption_key=None,
-                trace_snoop_encryption_key=None,
+                snoop_spy_encryption_key=None,
+                snoop_trace_encryption_key=None,
                 addresses=None):
 
     self.name = miros_object.name
@@ -2971,15 +2971,15 @@ class MirosNets:
     self._rabbit_password = rabbit_password
     self._this_ip_address = LocalAreaNetwork.get_working_ip_address()
 
-    if spy_snoop_encryption_key is None:
+    if snoop_spy_encryption_key is None:
       self.snoop.spy.encryption_key = mesh_encryption_key
     else:
-      self.snoop.spy.encryption_key = spy_snoop_encryption_key
+      self.snoop.spy.encryption_key = snoop_spy_encryption_key
 
-    if trace_snoop_encryption_key is None:
+    if snoop_trace_encryption_key is None:
       self.snoop.trace.encryption_key = mesh_encryption_key
     else:
-      self.snoop.trace.encryption_key = trace_snoop_encryption_key
+      self.snoop.trace.encryption_key = snoop_trace_encryption_key
 
     self.mesh.tx_routing_key = tx_routing_key
 
@@ -3373,8 +3373,8 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
                 mesh_encryption_key,
                 tx_routing_key=None,
                 rx_routing_key=None,
-                spy_snoop_encryption_key=None,
-                trace_snoop_encryption_key=None):
+                snoop_spy_encryption_key=None,
+                snoop_trace_encryption_key=None):
     super().__init__(name)
     self.lan = LocalAreaNetwork()
 
@@ -3388,18 +3388,18 @@ class NetworkedActiveObject(ActiveObject, MirosNetsInterface):
     if rx_routing_key is None:
       rx_routing_key = tx_routing_key
 
-    if trace_snoop_encryption_key is None:
-      trace_snoop_encryption_key = mesh_encryption_key
+    if snoop_trace_encryption_key is None:
+      snoop_trace_encryption_key = mesh_encryption_key
 
-    if spy_snoop_encryption_key is None:
-      spy_snoop_encryption_key = mesh_encryption_key
+    if snoop_spy_encryption_key is None:
+      snoop_spy_encryption_key = mesh_encryption_key
 
     self.nets = MirosNets(miros_object = self,
                  rabbit_user=rabbit_user,
                  rabbit_password=rabbit_password,
                  mesh_encryption_key=mesh_encryption_key,
-                 trace_snoop_encryption_key=trace_snoop_encryption_key,
-                 spy_snoop_encryption_key=spy_snoop_encryption_key,
+                 snoop_trace_encryption_key=snoop_trace_encryption_key,
+                 snoop_spy_encryption_key=snoop_spy_encryption_key,
                  tx_routing_key=tx_routing_key,
                  rx_routing_key=rx_routing_key,
                  on_mesh_rx=on_message_callback,
@@ -3440,8 +3440,8 @@ class NetworkedFactory(Factory, MirosNetsInterface):
                 mesh_encryption_key,
                 tx_routing_key=None,
                 rx_routing_key=None,
-                spy_snoop_encryption_key=None,
-                trace_snoop_encryption_key=None):
+                snoop_spy_encryption_key=None,
+                snoop_trace_encryption_key=None):
     super().__init__(name)
 
     on_message_callback = functools.partial(self.on_network_message)
@@ -3454,18 +3454,18 @@ class NetworkedFactory(Factory, MirosNetsInterface):
     if rx_routing_key is None:
       rx_routing_key = tx_routing_key
 
-    if trace_snoop_encryption_key is None:
-      trace_snoop_encryption_key = mesh_encryption_key
+    if snoop_trace_encryption_key is None:
+      snoop_trace_encryption_key = mesh_encryption_key
 
-    if spy_snoop_encryption_key is None:
-      spy_snoop_encryption_key = mesh_encryption_key
+    if snoop_spy_encryption_key is None:
+      snoop_spy_encryption_key = mesh_encryption_key
 
     self.nets = MirosNets(miros_object = self,
                  rabbit_user=rabbit_user,
                  rabbit_password=rabbit_password,
                  mesh_encryption_key=mesh_encryption_key,
-                 trace_snoop_encryption_key=trace_snoop_encryption_key,
-                 spy_snoop_encryption_key=spy_snoop_encryption_key,
+                 snoop_trace_encryption_key=snoop_trace_encryption_key,
+                 snoop_spy_encryption_key=snoop_spy_encryption_key,
                  tx_routing_key=tx_routing_key,
                  rx_routing_key=rx_routing_key,
                  on_mesh_rx=on_message_callback,

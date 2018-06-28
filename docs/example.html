@@ -255,8 +255,8 @@ connected in the same TCP/IP network.</p>
 <p>Each of the networks can have their own encryption key, but if you only specify
 the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> in the NetworkedActiveObject constructor it will be
 used by all of the networks.  The snoop_trace and snoop_spy encryption handles
-for the NetworkedActiveObject constructor, are <code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> and
-<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code>.</p>
+for the NetworkedActiveObject constructor, are <code class="docutils literal notranslate"><span class="pre">snoop_trace_encryption_key</span></code> and
+<code class="docutils literal notranslate"><span class="pre">snoop_spy_encryption_key</span></code>.</p>
 <p>To build an encryption key for your distributed system:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
 <span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>

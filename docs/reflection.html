@@ -69,7 +69,7 @@ the same symmetric encryption key, and the snoop_trace network can have a
 different symmetric encryption key from the mesh and the snoop_spy networks.
 You would set this encryption key in the initialization call of the
 NetworkedActiveObject or the NetworkedFactory, using the
-<code class="docutils literal notranslate"><span class="pre">trace_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
+<code class="docutils literal notranslate"><span class="pre">snoop_trace_encryption_key</span></code> named attribute.  If you do not explicitly set
 this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
 information.</p>
 <p>To create an encryption key which will be accepted by this library, use Fernet:</p>
@@ -129,7 +129,7 @@ the same symmetric encryption key, and the snoop_spy network can have a
 different symmetric encryption key from the mesh and the snoop_trace networks.
 You would set this encryption key in the initialization call of the
 NeNetworkedActiveObject or the NetworkedFactory, using the
-<code class="docutils literal notranslate"><span class="pre">spy_snoop_encryption_key</span></code> named attribute.  If you do not explicitly set
+<code class="docutils literal notranslate"><span class="pre">snoop_spy_encryption_key</span></code> named attribute.  If you do not explicitly set
 this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
 information.</p>
 <p>To create an encryption key which will be accepted by this library, use Fernet:</p>

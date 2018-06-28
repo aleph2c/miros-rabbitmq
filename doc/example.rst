@@ -264,8 +264,8 @@ connected in the same TCP/IP network.
 Each of the networks can have their own encryption key, but if you only specify
 the ``mesh_encryption_key`` in the NetworkedActiveObject constructor it will be
 used by all of the networks.  The snoop_trace and snoop_spy encryption handles
-for the NetworkedActiveObject constructor, are ``trace_snoop_encryption_key`` and
-``spy_snoop_encryption_key``.
+for the NetworkedActiveObject constructor, are ``snoop_trace_encryption_key`` and
+``snoop_spy_encryption_key``.
 
 To build an encryption key for your distributed system:
 

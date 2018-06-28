@@ -91,8 +91,8 @@ networks:</p>
         <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
         <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
         <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
-        <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
-        <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
         <span class="p">)</span>
 </pre></div>
 </div>
@@ -137,8 +137,8 @@ networks:</p>
         <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
         <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
         <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
-        <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
-        <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
         <span class="p">)</span>
 </pre></div>
 </div>
@@ -482,8 +482,8 @@ directly into our code base.</p>
   <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
   <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
   <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="n">MESH_ENCRYPTION_KEY</span><span class="p">,</span>
-  <span class="n">spy_snoop_encryption_key</span><span class="o">=</span><span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="p">,</span>
-  <span class="n">trace_snoop_encryption_key</span><span class="o">=</span><span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p">)</span>
+  <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="p">,</span>
+  <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If we set up our environment variables the same on all of our machines, our

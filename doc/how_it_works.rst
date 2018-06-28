@@ -82,7 +82,7 @@ encryption key(s) for the three different networks.
     :align: center
 
 The snoop_trace and snoop_spy networks will use the ``mesh_encryption_key`` if a
-``trace_snoop_encryption_key`` or a ``spy_snoop_encryption_key`` are not
+``snoop_trace_encryption_key`` or a ``snoop_spy_encryption_key`` are not
 provided.
 
 The NetworkedActiveObject and NetworkedFactory have a MirosNets object.

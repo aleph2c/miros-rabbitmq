@@ -49,7 +49,7 @@ the same symmetric encryption key, and the snoop_trace network can have a
 different symmetric encryption key from the mesh and the snoop_spy networks.
 You would set this encryption key in the initialization call of the
 NetworkedActiveObject or the NetworkedFactory, using the
-``trace_snoop_encryption_key`` named attribute.  If you do not explicitly set
+``snoop_trace_encryption_key`` named attribute.  If you do not explicitly set
 this key, the ``mesh_encryption_key`` will be used to encrypt the snoop trace
 information.
 
@@ -123,7 +123,7 @@ the same symmetric encryption key, and the snoop_spy network can have a
 different symmetric encryption key from the mesh and the snoop_trace networks.
 You would set this encryption key in the initialization call of the
 NeNetworkedActiveObject or the NetworkedFactory, using the
-``spy_snoop_encryption_key`` named attribute.  If you do not explicitly set
+``snoop_spy_encryption_key`` named attribute.  If you do not explicitly set
 this key, the ``mesh_encryption_key`` will be used to encrypt the snoop trace
 information.
 

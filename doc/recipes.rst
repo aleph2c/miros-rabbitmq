@@ -87,8 +87,8 @@ networks:
             tx_routing_key="heya.man",
             rx_routing_key="#.man",
             mesh_encryption_key=b'u3u...',
-            trace_snoop_encryption_key=b'u4f...',  
-            spy_snoop_encryption_key=b's44...',  
+            snoop_trace_encryption_key=b'u4f...',  
+            snoop_spy_encryption_key=b's44...',  
             )
 
 The ``nao`` object will have a ``transmit`` method that can be used to put event's
@@ -143,8 +143,8 @@ networks:
             tx_routing_key="heya.man",
             rx_routing_key="#.man",
             mesh_encryption_key=b'u3u...',
-            trace_snoop_encryption_key=b'u4f...',  
-            spy_snoop_encryption_key=b's44...',  
+            snoop_trace_encryption_key=b'u4f...',  
+            snoop_spy_encryption_key=b's44...',  
             )
 
 The ``nf`` object will have a ``transmit`` method that can be used to put event's
@@ -590,8 +590,8 @@ directly into our code base.
     tx_routing_key='heya.man',
     rx_routing_key='#.man',
     mesh_encryption_key=MESH_ENCRYPTION_KEY,
-    spy_snoop_encryption_key=SNOOP_SPY_ENCRYPTION_KEY,
-    trace_snoop_encryption_key=SNOOP_TRACE_ENCRYPTION_KEY)
+    snoop_spy_encryption_key=SNOOP_SPY_ENCRYPTION_KEY,
+    snoop_trace_encryption_key=SNOOP_TRACE_ENCRYPTION_KEY)
 
 If we set up our environment variables the same on all of our machines, our
 distributed system will work.
