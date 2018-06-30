@@ -46,6 +46,7 @@ class LoadEnvironmentalVariables():
 LoadEnvironmentalVariables()
 
 RABBIT_USER = os.getenv('RABBIT_USER')
+RABBIT_PORT = os.getenv('RABBIT_PORT')
 RABBIT_PASSWORD = os.getenv('RABBIT_PASSWORD')
 MESH_ENCRYPTION_KEY = os.getenv('MESH_ENCRYPTION_KEY')
 SNOOP_SPY_ENCRYPTION_KEY = os.getenv('SNOOP_SPY_ENCRYPTION_KEY')
