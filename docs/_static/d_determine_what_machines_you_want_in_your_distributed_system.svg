@@ -264,7 +264,7 @@
       >in it's /etc/ansible/hosts:</text
       ><path fill="none" d="M1 39.9375 L309 39.9375" clip-path="url(#clipPath11)"
       /><text x="5" font-size="14px" y="54.9062" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >[scotty]</text
+      >[miros-rabbitmq]</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >192.168.0.71 ansible_user=pi</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -280,7 +280,7 @@
       >example inventory name:</text
       ><path fill="none" d="M1 23.9688 L179 23.9688" clip-path="url(#clipPath12)"
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath12)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >scotty</text
+      >miros-rabbitmq</text
     ></g
     ><g transform="translate(350,280)"
     ><circle r="8.75" clip-path="url(#clipPath7)" cx="10.25" cy="10.25" stroke="none"

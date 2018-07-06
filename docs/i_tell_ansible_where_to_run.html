@@ -31,12 +31,12 @@
           <div class="body" role="main">
             
   <p><a class="reference external" href="http://docs.ansible.com/">Ansible</a> needs to know what machines to ssh into and with what usernames.  This information is kept in the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file; it is called an inventory.  To tell Ansible what machines you want it to run its scripts on, you first create a named configuration item, and below it place the contact information (IP/URL address and username) for each of the machines in that group.  Your deployment script references this name to know what computers to log in to and run on.</p>
-<p>Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group <code class="docutils literal notranslate"><span class="pre">scotty</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same username, but they are on addresses, 192.168.0.71 and 192.168.0.169.  So, on the Linux machine that I will run my deployment scripts from, I would edit the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
+<p>Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same username, but they are on addresses, 192.168.0.71 and 192.168.0.169.  So, on the Linux machine that I will run my deployment scripts from, I would edit the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pico</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ansible</span><span class="o">/</span><span class="n">hosts</span>
 </pre></div>
 </div>
 <p>Then I would change the file to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">scotty</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">miros</span><span class="o">-</span><span class="n">rabbitmq</span><span class="p">]</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.71</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.169</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 </pre></div>

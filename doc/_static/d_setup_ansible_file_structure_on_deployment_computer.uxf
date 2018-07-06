@@ -91,7 +91,7 @@ mkdir templates
 ---
 .
 ├── group_vars
-│   └── scotty
+│   └── miros-rabbitmq
 │       ├── vars
 └── templates
   
@@ -170,7 +170,7 @@ valign=top
     <panel_attributes>example:
 --
 $ mv fake_vault ./global_vars/scotty/vault
-$ ansible-vault encrypt ./global_vars/scotty/vault
+$ ansible-vault encrypt ./global_vars/miros-rabbitmq/vault
 
 </panel_attributes>
     <additional_attributes/>
@@ -196,7 +196,7 @@ $ ansible-vault encrypt ./global_vars/scotty/vault
     </coordinates>
     <panel_attributes>example:
 --
-$ cat ./global_vars/scotty/vault
+$ cat ./global_vars/miros-rabbitmq/vault
 
 $ANSIBLE_VAULT;1.1;AES256
 34363736353133336561626464646437613...
@@ -224,7 +224,7 @@ $ANSIBLE_VAULT;1.1;AES256
     </coordinates>
     <panel_attributes>example:
 --
-$ ansible-vault edit ./global_vars/scotty/vault
+$ ansible-vault edit ./global_vars/miros_rabbitmq/vault
 
 ---
 vault_MESH_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
@@ -327,7 +327,7 @@ valign=top
     </coordinates>
     <panel_attributes>example:
 --
-$ touch ./global_vars/scotty/var
+$ touch ./global_vars/miros-rabbitmq/var
 
 
 </panel_attributes>
@@ -410,7 +410,7 @@ rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
 -
 .
 ├── group_vars
-│   └── scotty
+│   └── miros-rabbitmq
 │       ├── vars
 │       ├── vault
 └── templates</panel_attributes>
@@ -656,7 +656,7 @@ RABBIT_GUEST_USER={{rabbit_guest_user}}
 -
 .
 ├── group_vars
-│   └── scotty
+│   └── miros-rabbitmq
 │       ├── vars
 │       └── vault
 └── templates
@@ -782,7 +782,7 @@ bg=red</panel_attributes>
     <panel_attributes>example ./miros_rabbitmq_install.yml
 --
 ---
-- hosts: scotty
+- hosts: miros-rabbitmq
   vars:
     miros_rabbitmq_project_directory: '~/miros-rabbitmq'
   tasks:

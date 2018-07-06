@@ -68,7 +68,7 @@ valign=top
     </coordinates>
     <panel_attributes>example inventory name:
 --
-scotty</panel_attributes>
+miros-rabbitmq</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -93,7 +93,7 @@ scotty</panel_attributes>
     <panel_attributes>example inventory, on deployment machine 
 in it's /etc/ansible/hosts:
 --
-[scotty]
+[miros-rabbitmq]
 192.168.0.71 ansible_user=pi
 192.168.0.169 ansible_user=pi</panel_attributes>
     <additional_attributes/>

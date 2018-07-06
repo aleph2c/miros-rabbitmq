@@ -331,7 +331,7 @@
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath7)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >---</text
       ><text x="5" font-size="14px" y="54.9062" clip-path="url(#clipPath7)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >- hosts: scotty</text
+      >- hosts: miros-rabbitmq</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath7)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >  vars:</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath7)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -441,7 +441,7 @@
       ><text x="5" font-size="14px" y="54.9062" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >├── group_vars</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >│   └── scotty</text
+      >│   └── miros-rabbitmq</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >│       ├── vars</text
       ><text x="5" font-size="14px" y="102.8125" clip-path="url(#clipPath11)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -600,7 +600,7 @@
       ><text x="5" font-size="14px" y="54.9062" clip-path="url(#clipPath18)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >├── group_vars</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath18)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >│   └── scotty</text
+      >│   └── miros-rabbitmq</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath18)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >│       ├── vars</text
       ><text x="5" font-size="14px" y="102.8125" clip-path="url(#clipPath18)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -662,7 +662,7 @@
       >example:</text
       ><path fill="none" d="M1 23.9688 L309 23.9688" clip-path="url(#clipPath20)"
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath20)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >$ touch ./global_vars/scotty/var</text
+      >$ touch ./global_vars/miros-rabbitmq/var</text
     ></g
     ><g fill="rgb(255,255,255)" fill-opacity="0" transform="translate(210,970)" stroke-opacity="0" stroke="rgb(255,255,255)"
     ><rect x="0.5" y="0.5" clip-path="url(#clipPath7)" width="478.5" rx="20" ry="20" height="258.5" stroke="none"
@@ -730,7 +730,7 @@
       >example:</text
       ><path fill="none" d="M1 23.9688 L659 23.9688" clip-path="url(#clipPath21)"
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath21)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >$ ansible-vault edit ./global_vars/scotty/vault</text
+      >$ ansible-vault edit ./global_vars/miros_rabbitmq/vault</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath21)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >---</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath21)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -762,7 +762,7 @@
       >example:</text
       ><path fill="none" d="M1 23.9688 L309 23.9688" clip-path="url(#clipPath22)"
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath22)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >$ cat ./global_vars/scotty/vault</text
+      >$ cat ./global_vars/miros-rabbitmq/vault</text
       ><text x="5" font-size="14px" y="70.875" clip-path="url(#clipPath22)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >$ANSIBLE_VAULT;1.1;AES256</text
       ><text x="5" font-size="14px" y="86.8438" clip-path="url(#clipPath22)" font-family="sans-serif" stroke="none" xml:space="preserve"
@@ -780,7 +780,7 @@
       /><text x="5" font-size="14px" y="38.9375" clip-path="url(#clipPath20)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >$ mv fake_vault ./global_vars/scotty/vault</text
       ><text x="5" font-size="14px" y="54.9062" clip-path="url(#clipPath20)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >$ ansible-vault encrypt ./global_vars/scotty/vault</text
+      >$ ansible-vault encrypt ./global_vars/miros-rabbitmq/vault</text
     ></g
     ><g fill="rgb(255,255,255)" fill-opacity="0" transform="translate(220,580)" stroke-opacity="0" stroke="rgb(255,255,255)"
     ><rect x="0.5" y="0.5" clip-path="url(#clipPath23)" width="478.5" rx="20" ry="20" height="148.5" stroke="none"
@@ -843,7 +843,7 @@
       ><text x="5" font-size="14px" y="134.75" clip-path="url(#clipPath25)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >├── group_vars</text
       ><text x="5" font-size="14px" y="150.7188" clip-path="url(#clipPath25)" font-family="sans-serif" stroke="none" xml:space="preserve"
-      >│   └── scotty</text
+      >│   └── miros-rabbitmq</text
       ><text x="5" font-size="14px" y="166.6875" clip-path="url(#clipPath25)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >│       ├── vars</text
       ><text x="5" font-size="14px" y="182.6562" clip-path="url(#clipPath25)" font-family="sans-serif" stroke="none" xml:space="preserve"

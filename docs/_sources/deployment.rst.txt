@@ -191,7 +191,7 @@ Name the Collection of Addresses and Usernames
 The Ansible inventory file can be used for many different deployments, so it is
 organized into named groups.  Come up with a named group for your miros-rabbitmq
 deployment, what would you like to call your distributed system?.  Mine is
-called ``scotty`` because that is the name of the raspberry pi it runs from.
+called ``miros-rabbitmq``.
 
 Collect the IP addresses, or URLs of all of the machines that you want in your
 distributed system.  Then collect the user names for each machine.
@@ -398,7 +398,7 @@ Ansible let's you assign your settings to variables which can be used to either
 fill in a template file or run a playbook.  A playbook is a YAML file which
 lists a series of deployment instructions, run against an inventory.  In our
 case the inventory consists of the addresses and names we wrote into our
-``/etc/ansible/hosts`` file.  Its name was ``scotty``.
+``/etc/ansible/hosts`` file.  Its name was ``miros-rabbitmq``.
 
 Ansible has developed some customs since its inception.  If you have an encrypted vault file they
 want you to organize your variable files as:
@@ -424,8 +424,8 @@ Now that we understand this stuff, let's setup our directory structure:
 .. code-block:: bash
 
   $ mkdir group_vars
-  $ mkdir ./group_vars/scotty
-  $ touch ./group_vars/scotty/vars
+  $ mkdir ./group_vars/miros-rabbitmq
+  $ touch ./group_vars/miros-rabbitmq/vars
   $ mkdir ./templates
 
 Our deployment directory structure will now look something like:
@@ -434,7 +434,7 @@ Our deployment directory structure will now look something like:
 
     .
     ├── group_vars
-    │   └── scotty
+    │   └── miros_rabbitmq
     │       └── vars
     └── templates
 
@@ -462,7 +462,7 @@ To confirm that the file was encrypted, you can just look at it:
 
 .. code-block:: python
 
-  $ cat ./global_vars/scotty/vault
+  $ cat ./global_vars/miros_rabbitmq/vault
 
   $ANSIBLE_VAULT;1.1;AES256
   34363736353133336561626464646437613...
@@ -475,7 +475,7 @@ file:
 
 .. code-block:: yaml
 
-  $ ansible-vault edit ./global_vars/scotty/vault
+  $ ansible-vault edit ./global_vars/miros_rabbitmq/vault
 
   ---
   vault_MESH_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
@@ -495,7 +495,7 @@ Close the file.  This will automatically re-encrypt it.
 
 .. code-block:: python
 
-  pico ./global_vars/scotty/vars
+  pico ./global_vars/miros_rabbitmq/vars
 
 Now add your settings information to the vars file:
 
@@ -649,7 +649,7 @@ When we have finished this step our deployment directory will look like:
 
   .
   ├── group_vars
-  │   └── scotty
+  │   └── miros_rabbitmq
   │       ├── vars
   │       └── vault
   └── templates
@@ -677,16 +677,35 @@ The play book it yet another YAML file.  Now let's write the file:
 .. code-block:: yaml
 
   ---
-  - hosts: scotty
+  - hosts: miros-rabbitmq
     vars:
-      miros_rabbitmq_project_directory: '~/miros-rabbitmq'
+      miros_rabbitmq_project_directory: '~/miros-rabbitmq-deployment'
+
     tasks:
+      #- name: 
+      #- debug:
+      #-  msg: "{{ansible_date_time}}"
+
      - name: Install rabbitmq-server
        become: true
        apt: name={{ item }} state=present update_cache=false
        with_items:
          - erlang
          - rabbitmq-server
+
+     - name: Setup environment variables
+       become: true
+       template:
+         src: ./rabbitmq-env.conf.j2
+         dest: /etc/rabbitmq/rabbitmq-env.conf
+         mode: 0644
+
+     - name: Setup configuration file
+       become: true
+       template:
+         src: ./rabbitmq.config.j2
+         dest: /etc/rabbitmq/rabbitmq.config
+         mode: 0644
 
      - name: Remove user
        become: true 
@@ -713,19 +732,6 @@ The play book it yet another YAML file.  Now let's write the file:
        shell: rabbitmqctl change_password guest {{guest_password}}
        ignore_errors: True
 
-     - name: Setup environment variables
-       become: true
-       template:
-         src: ./rabbitmq-env.conf.j2
-         dest: /etc/rabbitmq/rabbitmq-env.conf
-         mode: 644
-
-     - name: Setup configuration file
-       become: true
-       template:
-         src: ./rabbitmq.config.j2
-         dest: /etc/rabbitmq/rabbitmq.config
-         mode: 644
 
      - name: Enable the management plugin
        become: true
@@ -734,30 +740,34 @@ The play book it yet another YAML file.  Now let's write the file:
 
      - name: Restart the rabbitmq-server service
        become: true
-       shell: service rabbitmq-server restart
+       service:
+         name: rabbitmq-server
+         state: restarted
        ignore_errors: True
 
      - name: Write the .env file
        template:
-         src: ./.env.j2
+         src: .env.j2
          dest: "{{ miros_rabbitmq_project_directory }}/.env"
          mode: "u=rw,g=r,o=r"
+       tags:
+         - '.env'
 
      - name: Write the .miros_rabbitlan_cache.json file
-         template:
-           src: .miros_rabbitlan_cache.json.j2
-           dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbitlan_cache.json"
-           mode: "u=rw,g=r,o=r"
-         tags:
-           - 'cache'
+       template:
+         src: .miros_rabbitlan_cache.json.j2
+         dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbitlan_cache.json"
+         mode: "u=rw,g=r,o=r"
+       tags:
+         - 'cache'
 
-       - name: Write the .miros_rabbit_hosts.json file
-         template:
-           src: .miros_rabbit_hosts.json.j2
-           dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbit_hosts.json"
-           mode: "u=rw,g=rw,o=r"
-         tags:
-           - 'hosts'
+     - name: Write the .miros_rabbit_hosts.json file
+       template:
+         src: .miros_rabbit_hosts.json.j2
+         dest: "{{ miros_rabbitmq_project_directory }}/.miros_rabbit_hosts.json"
+         mode: "u=rw,g=rw,o=r"
+       tags:
+         - 'hosts'
 
 .. note:: 
   
@@ -779,7 +789,7 @@ Our deployment directory will look like this:
 .. code-block:: text
 
     ├── group_vars
-    │   └── scotty
+    │   └── miros-rabbitmq
     │       ├── vars
     │       └── vault
     ├── miros_rabbitmq_install.yml
@@ -787,7 +797,7 @@ Our deployment directory will look like this:
       ├── .miros_rabbitlan_cache.json.j2
       ├── .miros_rabbit_hosts.json.j2
       ├── rabbitmq.config.j2
-      ├── rabbitmq-env.conf.j2
+      ├── rabbitmq-env.conf.j3
       └── .env.j2
 
 .. _deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines:

@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=miros
+set SPHINXPROJ=miros-rabbitmq
 
 if "%1" == "" goto help
 
@@ -36,7 +36,7 @@ goto end
 :end
 popd
 
-REM Added this to make this repo with with github pages on windows
+REM Added this to make this repo with github pages on windows
 RMDIR .\..\docs /S /Q
 MKDIR .\..\docs
 XCOPY .\_build\html .\..\docs /s /e

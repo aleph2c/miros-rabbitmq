@@ -216,19 +216,19 @@ should not be the root user.</p>
 <p>The Ansible inventory file can be used for many different deployments, so it is
 organized into named groups.  Come up with a named group for your miros-rabbitmq
 deployment, what would you like to call your distributed system?.  Mine is
-called <code class="docutils literal notranslate"><span class="pre">scotty</span></code> because that is the name of the raspberry pi it runs from.</p>
+called <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code>.</p>
 <p>Collect the IP addresses, or URLs of all of the machines that you want in your
 distributed system.  Then collect the user names for each machine.</p>
 </div>
 <div class="section" id="create-ansible-inventory-file">
 <span id="deployment-create-ansbile-inventory-file"></span><h3>Create Ansible Inventory File<a class="headerlink" href="#create-ansible-inventory-file" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://docs.ansible.com/">Ansible</a> needs to know what machines to ssh into and with what usernames.  This information is kept in the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file; it is called an inventory.  To tell Ansible what machines you want it to run its scripts on, you first create a named configuration item, and below it place the contact information (IP/URL address and username) for each of the machines in that group.  Your deployment script references this name to know what computers to log in to and run on.</p>
-<p>Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group <code class="docutils literal notranslate"><span class="pre">scotty</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same username, but they are on addresses, 192.168.0.71 and 192.168.0.169.  So, on the Linux machine that I will run my deployment scripts from, I would edit the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
+<p>Suppose I have a bunch of raspberry pi computers on my network, I might want to name their group <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code> in my <a class="reference external" href="http://docs.ansible.com/">Ansible</a> inventory.  They all have the same username, but they are on addresses, 192.168.0.71 and 192.168.0.169.  So, on the Linux machine that I will run my deployment scripts from, I would edit the <code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pico</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ansible</span><span class="o">/</span><span class="n">hosts</span>
 </pre></div>
 </div>
 <p>Then I would change the file to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">scotty</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">miros</span><span class="o">-</span><span class="n">rabbitmq</span><span class="p">]</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.71</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.169</span> <span class="n">ansible_user</span><span class="o">=</span><span class="n">pi</span>
 </pre></div>
@@ -391,7 +391,7 @@ These instructions will be dependent upon some of our settings.</li>
 fill in a template file or run a playbook.  A playbook is a YAML file which
 lists a series of deployment instructions, run against an inventory.  In our
 case the inventory consists of the addresses and names we wrote into our
-<code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file.  Its name was <code class="docutils literal notranslate"><span class="pre">scotty</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">/etc/ansible/hosts</span></code> file.  Its name was <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code>.</p>
 <p>Ansible has developed some customs since its inception.  If you have an encrypted vault file they
 want you to organize your variable files as:</p>
 <div class="highlight-code notranslate"><div class="highlight"><pre><span></span># plain text settings assigned to variables
@@ -409,15 +409,15 @@ into a templates directory, you don’t have to explicitly define the path to th
 in your playbook, Ansible knows where they are.</p>
 <p>Now that we understand this stuff, let’s setup our directory structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mkdir group_vars
-$ mkdir ./group_vars/scotty
-$ touch ./group_vars/scotty/vars
+$ mkdir ./group_vars/miros-rabbitmq
+$ touch ./group_vars/miros-rabbitmq/vars
 $ mkdir ./templates
 </pre></div>
 </div>
 <p>Our deployment directory structure will now look something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>.
 ├── group_vars
-│   └── scotty
+│   └── miros_rabbitmq
 │       └── vars
 └── templates
 </pre></div>
@@ -439,7 +439,7 @@ $ ansible-vault ./group_vars/&lt;inventory_name&gt;/vault
 <p class="last">Make sure you remember your vault encryption key ;)</p>
 </div>
 <p>To confirm that the file was encrypted, you can just look at it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ cat ./global_vars/scotty/vault
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ cat ./global_vars/miros_rabbitmq/vault
 
 $ANSIBLE_VAULT;1.1;AES256
 34363736353133336561626464646437613...
@@ -449,7 +449,7 @@ $ANSIBLE_VAULT;1.1;AES256
 <p><strong>Edit your encypted vault file:</strong>  Let’s confirm we can re-open this file and
 then copy it’s variable names, so that we can reference them in our <code class="docutils literal notranslate"><span class="pre">vars</span></code>
 file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ ansible-vault edit ./global_vars/scotty/vault</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">$ ansible-vault edit ./global_vars/miros_rabbitmq/vault</span>
 
 <span class="nn">---</span>
 <span class="l l-Scalar l-Scalar-Plain">vault_MESH_ENCRYPTION_KEY</span><span class="p p-Indicator">:</span> <span class="s">&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
@@ -466,7 +466,7 @@ file:</p>
 <p>Copy the variable names, you will be using them in the next step.
 Close the file.  This will automatically re-encrypt it.</p>
 <p><strong>Add vars file</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pico</span> <span class="o">./</span><span class="n">global_vars</span><span class="o">/</span><span class="n">scotty</span><span class="o">/</span><span class="nb">vars</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pico</span> <span class="o">./</span><span class="n">global_vars</span><span class="o">/</span><span class="n">miros_rabbitmq</span><span class="o">/</span><span class="nb">vars</span>
 </pre></div>
 </div>
 <p>Now add your settings information to the vars file:</p>
@@ -597,7 +597,7 @@ run your program after you have deployed it.  Here is its template file:</p>
 <p>When we have finished this step our deployment directory will look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>.
 ├── group_vars
-│   └── scotty
+│   └── miros_rabbitmq
 │       ├── vars
 │       └── vault
 └── templates
@@ -619,16 +619,35 @@ our Ansible playbook, so Ansible can deploy our system.</p>
 </div>
 <p>The play book it yet another YAML file.  Now let’s write the file:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
-<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">scotty</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">miros-rabbitmq</span>
   <span class="l l-Scalar l-Scalar-Plain">vars</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">miros_rabbitmq_project_directory</span><span class="p p-Indicator">:</span> <span class="s">&#39;~/miros-rabbitmq&#39;</span>
+    <span class="l l-Scalar l-Scalar-Plain">miros_rabbitmq_project_directory</span><span class="p p-Indicator">:</span> <span class="s">&#39;~/miros-rabbitmq-deployment&#39;</span>
+
   <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+    <span class="c1">#- name:</span>
+    <span class="c1">#- debug:</span>
+    <span class="c1">#-  msg: &quot;{{ansible_date_time}}&quot;</span>
+
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Install rabbitmq-server</span>
      <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
      <span class="l l-Scalar l-Scalar-Plain">apt</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">name={{ item }} state=present update_cache=false</span>
      <span class="l l-Scalar l-Scalar-Plain">with_items</span><span class="p p-Indicator">:</span>
        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">erlang</span>
        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmq-server</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup environment variables</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq-env.conf.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq-env.conf</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0644</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup configuration file</span>
+     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq.config.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq.config</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0644</span>
 
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Remove user</span>
      <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -655,19 +674,6 @@ our Ansible playbook, so Ansible can deploy our system.</p>
      <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmqctl change_password guest {{guest_password}}</span>
      <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 
-   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup environment variables</span>
-     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
-       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq-env.conf.j2</span>
-       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq-env.conf</span>
-       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">644</span>
-
-   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Setup configuration file</span>
-     <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
-       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./rabbitmq.config.j2</span>
-       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/rabbitmq/rabbitmq.config</span>
-       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">644</span>
 
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Enable the management plugin</span>
      <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -676,30 +682,34 @@ our Ansible playbook, so Ansible can deploy our system.</p>
 
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Restart the rabbitmq-server service</span>
      <span class="l l-Scalar l-Scalar-Plain">become</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-     <span class="l l-Scalar l-Scalar-Plain">shell</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">service rabbitmq-server restart</span>
+     <span class="l l-Scalar l-Scalar-Plain">service</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">rabbitmq-server</span>
+       <span class="l l-Scalar l-Scalar-Plain">state</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">restarted</span>
      <span class="l l-Scalar l-Scalar-Plain">ignore_errors</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .env file</span>
      <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
-       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">./.env.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.env.j2</span>
        <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.env&quot;</span>
        <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
+     <span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
+       <span class="p p-Indicator">-</span> <span class="s">&#39;.env&#39;</span>
 
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .miros_rabbitlan_cache.json file</span>
-       <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
-         <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbitlan_cache.json.j2</span>
-         <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbitlan_cache.json&quot;</span>
-         <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
-     <span class=" -Error">  </span><span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
-         <span class="p p-Indicator">-</span> <span class="s">&#39;cache&#39;</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbitlan_cache.json.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbitlan_cache.json&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=r,o=r&quot;</span>
+     <span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
+       <span class="p p-Indicator">-</span> <span class="s">&#39;cache&#39;</span>
 
-     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .miros_rabbit_hosts.json file</span>
-       <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
-         <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbit_hosts.json.j2</span>
-         <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbit_hosts.json&quot;</span>
-         <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=rw,o=r&quot;</span>
-       <span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
-         <span class="p p-Indicator">-</span> <span class="s">&#39;hosts&#39;</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Write the .miros_rabbit_hosts.json file</span>
+     <span class="l l-Scalar l-Scalar-Plain">template</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">src</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">.miros_rabbit_hosts.json.j2</span>
+       <span class="l l-Scalar l-Scalar-Plain">dest</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">miros_rabbitmq_project_directory</span><span class="nv"> </span><span class="s">}}/.miros_rabbit_hosts.json&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">mode</span><span class="p p-Indicator">:</span> <span class="s">&quot;u=rw,g=rw,o=r&quot;</span>
+     <span class="l l-Scalar l-Scalar-Plain">tags</span><span class="p p-Indicator">:</span>
+       <span class="p p-Indicator">-</span> <span class="s">&#39;hosts&#39;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -715,7 +725,7 @@ ready to be deployed to the system:</p>
 </a>
 <p>Our deployment directory will look like this:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>├── group_vars
-│   └── scotty
+│   └── miros-rabbitmq
 │       ├── vars
 │       └── vault
 ├── miros_rabbitmq_install.yml
@@ -723,7 +733,7 @@ ready to be deployed to the system:</p>
   ├── .miros_rabbitlan_cache.json.j2
   ├── .miros_rabbit_hosts.json.j2
   ├── rabbitmq.config.j2
-  ├── rabbitmq-env.conf.j2
+  ├── rabbitmq-env.conf.j3
   └── .env.j2
 </pre></div>
 </div>
