@@ -142,7 +142,7 @@ systems because UMLet is written in Java.  It's fast and ugly, so you don't fall
 in love with your pictures.  It has a command line program that can be used to
 export its drawings into SVG and PDF formats.
 
-Keep your pictures ugly.  You and everyone on your team will be
+Keep your pictures ugly -- 差不多.  You and everyone on your team will be
 effected by the Sunk Cost Fallacy:  "Your decisions are tainted by the emotional
 investments you accumulate, and the more you invest in something the harder it
 becomes to abandon it". [#]_  If you build beautiful drawings using a graphic
