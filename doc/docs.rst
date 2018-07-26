@@ -145,7 +145,7 @@ oriented software systems.
 UML has a PR problem.
 
 It was probably the UML class diagrams that did the most to harm the UML brand.
-They emphasize classes over objects, and they are fragile to design changes.
+They emphasize classes over objects, and they are fragile in the face of design changes.
 
 There is a myriad of different arrows that are used differently in different
 situations.  It's needlessly confusing, and it probably resulted from people
