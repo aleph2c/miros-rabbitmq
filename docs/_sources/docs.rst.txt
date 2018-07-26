@@ -133,27 +133,36 @@ information to the picture by numbering the event signal names.  Under this
 numbered diagram, you can write what each number signifies and describe how the
 various node interactions work.  These sequence diagrams quickly become very big
 and unwieldy.  They will not be able to explain everything, and they don't have
-to.  Your Harel Statechart pictures capture your system.
+to.  Your Harel Statechart pictures capture your system specification.
 
-Another thing worth noting is that UML has a PR problem.  
+The Harel statechart picture, the sequence diagram and the class diagrams used
+by this framework are just a few of the different picture types described by
+UML.  But what is UML anyway?
+
+It's just a collection of standards about how to draw some pictures of object
+oriented software systems.
+
+UML has a PR problem.
 
 It was probably the UML class diagrams that did the most to harm the UML brand.
 They emphasize classes over objects, and they are fragile to design changes.
+
 There is a myriad of different arrows that are used differently in different
-situations.  But, they can provide context, they can be useful for describing
-how you have adjusted a base NetworkedFactory or NetworkedActiveObject class to
-match your design specification.
+situations.  It's needlessly confusing, and it probably resulted from people
+wanting to turn UML into a programming language on it's own, instead of a way of
+sketching out some pictures.
+
+But, these class diagrams can provide some useful context, they can be useful
+for describing how you have adjusted a base NetworkedFactory or
+NetworkedActiveObject class to match your design specification.
 
 Nobody really understands UML; UML has contradictions in its specification.  If
 it were understood, its authors would have removed the inconsistencies before it
 was released.  So don't worry about being entirely faithful to UML as a formal
-system; you can't, it is impossible.  When UML was being conceived, they took a
-lot of the different diagramming approaches being used by people writing
-software at the time and incorporated them into their standard.
-
-So use the good parts of UML; use its diagrams as sketches, not as the software
-itself.  Ensure that new team members of your technical team understand what
-your pictures mean;  don't build a priesthood.
+system; you can't, it is impossible.  You have a programming language; Python,
+just use the good parts of UML; use its diagrams as sketches.  Ensure that new
+team members of your technical team understand what your pictures mean;  don't
+build a priesthood.
 
 You will be fighting your drawing tools (unless you use Miro Samek's c/C++
 framework).  Since UML became undead, not a lot of work has been done to improve
