@@ -142,47 +142,50 @@ UML.  But what is UML anyway?
 It's just a collection of standards about how to draw some pictures of object
 oriented software systems.
 
-UML has a PR problem.
+UML has a PR problem, and it was probably the UML class diagrams that did the
+most to harm the UML brand.  They emphasize classes over objects, and they are
+fragile in the face of design changes.
 
-It was probably the UML class diagrams that did the most to harm the UML brand.
-They emphasize classes over objects, and they are fragile in the face of design changes.
+But, these class diagrams can provide some useful pictures.  In the context of
+this library they are useful for describing how you have adjusted a base
+NetworkedFactory or NetworkedActiveObject class to match your specific design
+specification.
 
 There is a myriad of different arrows that are used differently in different
-situations.  It's needlessly confusing, and it probably resulted from people
-wanting to turn UML into a programming language on it's own, instead of a way of
-sketching out some pictures.
-
-But, these class diagrams can provide some useful context, they can be useful
-for describing how you have adjusted a base NetworkedFactory or
-NetworkedActiveObject class to match your design specification.
+situations.  UML is needlessly confusing, and it probably resulted from people
+wanting to turn UML into a programming language on it's own.  They should have
+left it as a collection of guidelines for sketching out some pictures that can
+be understood by other people.
 
 Nobody really understands UML; UML has contradictions in its specification.  If
 it were understood, its authors would have removed the inconsistencies before it
 was released.  So don't worry about being entirely faithful to UML as a formal
-system; you can't, it is impossible.  You have a programming language; Python,
-just use the good parts of UML; use its diagrams as sketches.  Ensure that new
-team members of your technical team understand what your pictures mean;  don't
-build a priesthood.
+system; you can't, it is impossible.  You have a programming language already:
+Python. UML can't even come close to describing what Python can do, so you don't
+need to program with UML, just use its diagram recommendations as sketches.
+Ensure that new team members understand what your pictures mean; don't build a
+priesthood.
 
 You will be fighting your drawing tools (unless you use Miro Samek's c/C++
-framework).  Since UML became undead, not a lot of work has been done to improve
-its picture drawing software.  But there are still some free tools you can use
-to avoid Vendor lock-in.  I use UMLet.  It allows you to build your own
-templates, based on theirs and you can use it on all operating systems because
-UMLet is written in Java.  It's fast and ugly, so you don't fall in love with
-your pictures.  It has a command line program that can be used to export its
-drawings into SVG and PDF formats; it is easy to automate.
+framework).  Since UML became undead, not a lot of work has been put into
+writing drawing packages that will let you make UML sketches.  But there are
+still some free tools you can use to avoid Vendor lock-in.  I use UMLet.  It
+allows you to build your own templates, based on theirs and you can use it on
+all operating systems because UMLet is written in Java.  It's fast and ugly, so
+you don't fall in love with your pictures.  It has a command line interface that
+can be used to export its drawings into SVG and PDF formats; it is easy to
+automate.
 
 Keep your internal pictures ugly -- 差不多.  You and everyone on your team will
 be effected by the Sunk Cost Fallacy:  "Your decisions are tainted by the
 emotional investments you accumulate, and the more you invest in something the
 harder it becomes to abandon it". [#]_  If you build beautiful drawings with a
-graphic design application; you will need to put time and effort into them.  You
-will become emotionally attached to them.  Remember, they are just mistakes in
-the right direction. UML can't even come close to describing what Python can do.
-You need to be able to destroy these pictures to find a better way.
+graphic design application; you will need to put time and effort into them and
+you will probably become emotionally attached to them.  Remember, they are just
+mistakes in the right direction. You need to be able to destroy these pictures
+to find a better way.
 
-Create beautiful, slow changing external documentation.  If you are talking to
+Create beautiful, slow changing, external documentation.  If you are talking to
 investors or senior managers, they will not know how to evaluate your position
 based on its technical merits.  Instead, they will assign you prestige based on
 emotional cues.  They will not understand what you are talking about, so you
@@ -190,8 +193,8 @@ need to address this as a marketing problem; make things look good. Your
 audience will use their emotionally subjective experience to evaluate your more
 profound work.  Even with this effect taking place, genuinely try to explain
 your system in plain language -- try not to become a priest, even as you become
-a priest.  We are working within political environments, so treat that as part
-of your engineering problem.
+a priest in their eyes.  We are working within political environments, so treat
+that as part of your engineering problem.
 
 As for where to keep your documents, I vote that you keep them as close as plain
 text as possible and in your revision control system.  Add a simple build
@@ -201,7 +204,7 @@ information.  HTML works just fine.
 
 Videos!  It is easy to make a video; so use them to capture your system
 dynamics.  They catch tremendous amounts of information, and they are cheap and
-easy to make -- they are easy to keep ugly too (see above).
+easy to make.
 
 In summary.  Accept that the system will never be adequately described.  Focus
 on the economics of describing enough of it so that you can see what is going
