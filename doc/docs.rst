@@ -23,33 +23,32 @@ if you do know how to read them.  So to explain a feature you will have to
 translate it into another set of diagrams; which in turn, will have to be
 explained with words.
 
-But the smallest change in the code could wipe out pages and pages of this
+But the smallest change in the design could wipe out pages and pages of this
 carefully written documentation.  It might not be worth your time to write
 everything down.
 
 I'll explore this idea using a topographical map as an analogy.  A topographical
 map describes the landscape from a bird's eye view, where each contour line is
 drawn at a specific elevation.  It was invented by the British mathematician,
-Charles Hutton in 1774.  It was a huge innovation.
+Charles Hutton in 1774.  This was a huge innovation that not a lot of people
+know about.
 
 To see what this landscape would look like while on the ground, you would need
-to make a topographical projection.
+to make a topographical projection.  To simplify our language a bit -- we will
+call a topographical projection a projection.
 
-The diagram below [#]_ demonstrates how to map a topographical projection from a
-topographical map.  In the bottom box of the picture, we see a topographical map
-of a volcano.  In the top box we see it's topographical projection, or what it
-would look like while walking toward it from the south:
+The diagram below [#]_ demonstrates how to map a projection from a topographical
+map.  In the bottom box of the picture, we see a topographical map of a volcano.
+In the top box we see it's projection, or what it would look like while walking
+toward it from the south:
 
 .. image:: _static/topographical_projection.gif
     :align: center
 
 If you were to approach this same mountain from the west instead, you would need
-to make a new topographical projection.   In fact, you could make many many
-different topographical projections of this one diagram, each describing a
-different directional approach to the same mountain.
-
-Let's simplify our language -- we will call a topographical projection a
-projection.
+to make a new projection.   In fact, you could make many many different
+projections of this one diagram, each describing a different directional
+approach to the same volcano.
 
 Your statechart diagram is like a topographical map.  
 
@@ -102,7 +101,7 @@ Good luck with that.  That doesn't mean that it isn't your responsibility to
 explain things in a way that she can understand them.  She needs to know how the
 system works so that she can do her job.  So you use what she already knows:
 how to understand stories.  You can provide her with a set of sequence diagrams
-describing how a story changes over time.
+describing how their story changes over time.
 
 The sequence diagrams are just projections of a statechart.  They are generative.
 
@@ -153,11 +152,11 @@ this library they are useful for describing how you have adjusted a base
 NetworkedFactory or NetworkedActiveObject class to match your specific design
 specification.
 
-There is a myriad of different arrows that are used differently in different
-situations.  UML is needlessly confusing, and it probably resulted from people
-wanting to turn UML into a programming language on it's own.  They should have
-left it as a collection of guidelines for sketching out some pictures that can
-be understood by other people.
+The UML class diagram has a myriad of different arrows that are used differently
+in different situations.  UML is needlessly confusing, and it probably resulted
+from people wanting to turn UML into a programming language on it's own.  They
+should have left it as a collection of guidelines for sketching out some
+pictures that can be understood by other people.
 
 Nobody really understands UML; UML has contradictions in its specification.  If
 it were understood, its authors would have removed the inconsistencies before it
