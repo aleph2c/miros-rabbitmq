@@ -106,11 +106,13 @@ describing how a story changes over time.
 
 The sequence diagrams are just projections of a statechart.  They are generative.
 
-I wrote the sequence tool to draw your sequence diagrams for you.  It takes trace
-instrumentation from multiple nodes and renders it into ASCII sequence diagrams so that
-they can be dropped into the code as comments, or written into markdown, sphinx, or
-where ever you put your information.  Instead of spending time drawing a custom sequence
-diagram, you select your trace instrumentation and let the tool draw a picture for you.
+I wrote the sequence tool to `draw your sequence diagrams for you
+<https://aleph2c.github.io/miros/recipes.html#drawing-a-sequence-diagram>`_.  It
+takes trace instrumentation from multiple nodes and renders it into ASCII
+sequence diagrams so that they can be dropped into the code as comments, or
+written into markdown, sphinx, or where ever you put your information.  Instead
+of spending time drawing a custom sequence diagram, you select your trace
+instrumentation and let the tool draw a picture for you.
 
 This means that you have to write working code before you can document it with words.
 If you are like me, your first map will be wrong and your code's behavior as seen
