@@ -26,7 +26,7 @@ the NetworkedFactory class.
 
 .. image:: _static/miros_rabbitmq_0.svg
     :target: _static/miros_rabbitmq_0.pdf
-    :align: center
+    :class: noscale-center
 
 To build a state chart you would follow all of the same `rules that you learned
 before <https://aleph2c.github.io/miros/recipes.html>`_ and you would get some
