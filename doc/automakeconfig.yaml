@@ -1,3 +1,0 @@
----
-root_file:      "atlas.tex"
-change_filters: ['*.rst','*.xml','*.gif','*.jpg', '*.png', '*.uxf']

@@ -1,5 +1,0 @@
-To install `Ansible <http://docs.ansible.com/>`_:
-
-.. code-block:: python
-
-  > sudo apt-get install ansible
