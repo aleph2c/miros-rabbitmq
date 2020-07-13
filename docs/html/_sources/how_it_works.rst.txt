@@ -64,7 +64,7 @@ the same interface.
 
 .. image:: _static/miros_rabbitmq_1.svg
     :target: _static/miros_rabbitmq_1.pdf
-    :class: scale-to-fit
+    :class: noscale-center
 
 The ``transmit`` is used to send out an event to the mesh network.  When it is
 received by another statechart, it's event is place in it's FIFO queue for
