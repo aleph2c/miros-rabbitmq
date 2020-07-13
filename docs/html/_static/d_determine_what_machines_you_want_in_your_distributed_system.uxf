@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>270</x>
+      <y>171</y>
+      <w>549</w>
+      <h>513</h>
+    </coordinates>
+    <panel_attributes>*determine what machines you want in your distributed system*
+--
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>297</x>
+      <y>531</y>
+      <w>504</w>
+      <h>117</h>
+    </coordinates>
+    <panel_attributes>*Create Ansible Inventory File*
+--
+entry /
+  under your inventory name
+  for each machine in machines:
+    add machine address and ansible_user to your inventory
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>315</x>
+      <y>252</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>531</x>
+      <y>495</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>450</y>
+      <w>162</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>example inventory name:
+--
+miros-rabbitmq</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>585</x>
+      <y>459</y>
+      <w>270</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;280.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>531</y>
+      <w>279</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>example inventory, on deployment machine 
+in it's /etc/ansible/hosts:
+--
+[miros-rabbitmq]
+192.168.0.71 ansible_user=pi
+192.168.0.169 ansible_user=pi</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>792</x>
+      <y>576</y>
+      <w>63</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>639</y>
+      <w>27</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>216</y>
+      <w>117</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+machine          user
+192.168.0.71     pi
+192.168.0.169   pi</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>702</x>
+      <y>252</y>
+      <w>153</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>918</x>
+      <y>54</y>
+      <w>126</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>EXAMPLES
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>468</x>
+      <y>45</y>
+      <w>126</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>WORKFLOW
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>108</y>
+      <w>351</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>Assumption:
+--
+This procedure assumes sudo password the 
+same on all machines in your distributed system
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>756</x>
+      <y>126</y>
+      <w>99</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;50.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>216</x>
+      <y>99</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>225</x>
+      <y>99</y>
+      <w>63</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>270</x>
+      <y>81</y>
+      <w>432</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>*set up deployment computer*
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>270</x>
+      <y>711</y>
+      <w>432</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>*invent credentials and secrets*
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>756</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>270</x>
+      <y>792</y>
+      <w>432</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>*setup ansible file structure on deployment computer*
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>837</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>270</x>
+      <y>873</y>
+      <w>432</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>*deploy your infrastructure, credentials and secret to all machines*
+symbol=substate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>351</x>
+      <y>225</y>
+      <w>441</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>*Collect the addresses and ssh usernames for all remote machines*
+--
+# addresses can be IP addresses or URLs that work with DNS
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>306</x>
+      <y>432</y>
+      <w>504</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>*Name this collection of addresses and user names*
+--
+# come up with name for this ansible 'inventory'
+
+    
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>315</x>
+      <y>252</y>
+      <w>54</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>306</x>
+      <y>315</y>
+      <w>504</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>*Ensure SSH passwordless access on all machines from deployment computer*
+--
+entry /
+  for each machine in machines:
+    place deployment computer's public key into ~/.ssh/authorized_keys
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>360</y>
+      <w>135</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>837</x>
+      <y>342</y>
+      <w>423</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.169 'cat &gt;&gt; .ssh/authorized_keys'</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>531</x>
+      <y>396</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>531</x>
+      <y>279</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>126</y>
+      <w>27</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+</diagram>

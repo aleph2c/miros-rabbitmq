@@ -1,0 +1,471 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html  lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Reflection | docs</title>
+    <link rel="shortcut icon" href="_static/favicon.ico">
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+    <link rel="stylesheet" href="_static/theme.css" type="text/css">
+    
+      
+    <link rel="stylesheet" type="text/css" href="_static/css/miros_docs.css" />
+      
+    
+    
+
+    
+    <script type="text/javascript" src="_static/theme.js" defer></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    
+    <script src="_static/jquery.js"></script>
+    
+    <script src="_static/underscore.js"></script>
+    
+    <script src="_static/doctools.js"></script>
+    
+    <script src="_static/language_data.js"></script>
+    
+    
+
+    
+      
+      
+    <link rel="index" title="Index" href="genindex.html">
+      
+      
+    <link rel="search" title="Search" href="search.html">
+      
+      
+      
+    <link rel="next" title="Documenting" href="docs.html">
+      
+      
+    <link rel="prev" title="Recipes" href="recipes.html">
+      
+    
+
+    
+
+    
+
+    
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="navbar">
+        <div id="js-sidebar-mask" class="sidebar-mask"></div>
+        <div id="js-sidebar-menu-button" class="sidebar-menu-button">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg>
+        </div>
+        <a href="index.html" class="site-link">
+          
+          miros rabbit-mq
+          
+        </a>
+        <div class="navbar-links">
+          <a href="introduction.html" class="navbar-link">Docs</a>
+          
+          <a href="https://github.com/aleph2c/miros-rabbitmq" class="navbar-link">GitHub</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="external-link-icon"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+          
+        </div>
+      </div>
+    </header>
+
+    <main class="main-wrapper">
+      
+      <div id="js-main-sidebar" class="main-sidebar">
+        
+        <div class="sidebar-content sidebar-content--divider sidebar-navbar-links">
+          <a href="https://github.com/aleph2c/miros-rabbitmq" class="sidebar-navbar-link">GitHub</a>
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="external-link-icon"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+        </div>
+        
+        
+        <div class="sidebar-content sidebar-logo">
+    <a href="index.html">
+      <img class="logo" src="_static/miros_rabbitmq_logo_v2.svg" alt="miros" >
+    </a>
+</div>
+        
+        
+
+<h2 class="sidebar-heading">Contents</h2>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing_infrastructure.html">DevOps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_it_works.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documenting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+</ul>
+
+        
+        <h3 class="sidebar-heading">About</h3>
+<p class="sidebar-content">
+  A networking plugin for miros
+</p>
+<h3 class="sidebar-heading">Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/aleph2c/miros-rabbitmq">miros-rabbitmq on Github</a></li>
+  <li><a href="https://aleph2c.github.io/miros/index.html">miros</a></li>
+  <li><a href="https://github.com/aleph2c/miros">miros on Github</a></li>
+  <li><a href="https://github.com/aleph2c/sequence">sequence on Github</a></li>
+  <li><a href="http://www.umlet.com">UMLet (drawing tool)</a></li>
+</ul>
+
+<h3 class="sidebar-heading">Tutorials</h3>
+<ul>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-one-python.html">basics</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-two-python.html">work queues</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-three-python.html">publish subscribe</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-four-python.html">routing</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-five-python.html">topics</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-six-python.html">remote procedure calls (rpc)</a></li>
+</ul>
+
+<h3 class="sidebar-heading">Videos</h3>
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=deG25y_r6OY">RabbitMQ in Five Minutes</a></li>
+  <li><a href="https://www.youtube.com/watch?v=gKzKUmtOwR4">RabbitMQ Windows Install</a></li>
+</ul>
+        
+        
+
+<div id="searchbox" style="display: none" role="search">
+  <h2 id="searchlabel" class="sidebar-heading">Quick search</h2>
+  <div class="searchformwrapper sidebar-content">
+    <form class="search" action="search.html" method="get">
+      <input class="sidebar-search sidebar-search--input" type="text" name="q" aria-labelledby="searchlabel"><input class="sidebar-search sidebar-search--btn" type="submit" value="Go">
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+        
+      </div>
+      
+
+      
+      <div class="main-content main-content--sidebar">
+      
+        
+          
+  <div class="toctree-wrapper compound" id="reflection">
+</div>
+<div class="section" id="id1">
+<h1>Reflection<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h1>
+<blockquote class="epigraph">
+<div><p><em>We cannot solve our problems with the same thinking we used when we created
+them.</em></p>
+<p class="attribution">—Albert Einstein</p>
+</div></blockquote>
+<p>If you build a complex distributed system using a statechart you will need some
+way to debug it.  The miros-rabbitmq library provides two different encrypted
+topic based networks called the
+<a class="reference internal" href="#reflection-snoop-trace-network"><span class="std std-ref">snoop_trace</span></a> and the
+<a class="reference internal" href="#reflection-snoop-spy-network"><span class="std std-ref">snoop_spy</span></a> network.  To turn a network on,
+you enable it <cite>before</cite> calling <code class="docutils literal notranslate"><span class="pre">start_at</span></code> in your statechart.</p>
+<p>RabbitMQ has <a class="reference internal" href="#reflection-rabbitmq-management"><span class="std std-ref">management plugin</span></a> which can
+be viewed to understand it’s infrastruture.</p>
+<div class="section" id="snoop-trace-network">
+<span id="reflection-snoop-trace-network"></span><h2>Snoop Trace Network<a class="headerlink" href="#snoop-trace-network" title="Permalink to this headline">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span> <span class="c1"># enable snoop trace network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>      <span class="c1"># the start the chart</span>
+</pre></div>
+</div>
+<p>To use this network, call <code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code> on your NetworkedActiveObject
+or NetworkedFactory prior to calling the <code class="docutils literal notranslate"><span class="pre">start_at</span></code> method of the statechart.</p>
+<p>Enabling the trace does two things, a program instance will:</p>
+<ul class="simple">
+<li><p>send it’s trace information to every other enabled-snoop-trace-instance in
+the distributed system.</p></li>
+<li><p>receive the trace information from every other enabled-snoop-trace-instance in
+the distributed system.</p></li>
+</ul>
+<p>For the snoop network to work all of the enabled-snoop-trace-instances will need
+the same symmetric encryption key, and the snoop_trace network can have a
+different symmetric encryption key from the mesh and the snoop_spy networks.
+You would set this encryption key in the initialization call of the
+NetworkedActiveObject or the NetworkedFactory, using the
+<code class="docutils literal notranslate"><span class="pre">snoop_trace_encryption_key</span></code> named attribute.  If you do not explicitly set
+this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
+information.</p>
+<p>To create an encryption key which will be accepted by this library, use Fernet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+</pre></div>
+</div>
+<p>Your snoop trace stream will have a lot of information coming back from each of
+the contributing nodes in the distributed system. The library colours the names
+in the trace stream to help you distinguish where the log data is coming from:
+the local process names are blue, and the names of the logs coming from other
+nodes are purple.</p>
+<p>While this colouring is helpful in your terminal, it can become problematic when
+trying to log; the ANSI colour codes look like garbage in your log file. For
+this reason, an enable_snoop_trace_no_color API is provided in both of the
+NetworkedActiveObject and NetworkedFactory classes. You would use the
+<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace_no_color</span></code> call on the node where you would redirect the
+snoop_trace output to a log file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then you could redirect the trace streams into your log file in your call to the
+program:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed_trace</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
+make print statements into the snoop_trace_network. To write custom information
+into the snoop trace network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="snoop-spy-network">
+<span id="reflection-snoop-spy-network"></span><h2>Snoop Spy Network<a class="headerlink" href="#snoop-spy-network" title="Permalink to this headline">#</a></h2>
+<p>The snoop spy network behaves the same as the snoop trace network.  But it
+outputs a lot more information than the trace; the kind that would be useful
+while debugging a local statechart; but would quickly become overwhelming in a
+distributed system.  For this reason, you will want to log this information to
+file, then examine this file after the fact using filters (grep).</p>
+<p>Like the snoop trace, the snoop spy must be enabled to participate in the snoop
+network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>   <span class="c1"># enable the snoop spy network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>               <span class="c1"># the start the chart</span>
+</pre></div>
+</div>
+<p>By enabling the snoop spy, a program instance will:</p>
+<ul class="simple">
+<li><p>send it’s spy information to every other enabled-snoop-spy-instance in
+the distributed system.</p></li>
+<li><p>receive the spy information from every other enabled-snoop-spy-instance in
+the distributed system.</p></li>
+</ul>
+<p>For the snoop network to work all of the enabled-snoop-spy-instances will need
+the same symmetric encryption key, and the snoop_spy network can have a
+different symmetric encryption key from the mesh and the snoop_trace networks.
+You would set this encryption key in the initialization call of the
+NeNetworkedActiveObject or the NetworkedFactory, using the
+<code class="docutils literal notranslate"><span class="pre">snoop_spy_encryption_key</span></code> named attribute.  If you do not explicitly set
+this key, the <code class="docutils literal notranslate"><span class="pre">mesh_encryption_key</span></code> will be used to encrypt the snoop trace
+information.</p>
+<p>To create an encryption key which will be accepted by this library, use Fernet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span> <span class="c1"># =&gt; b&#39;u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=&#39;</span>
+</pre></div>
+</div>
+<p>If you would like to debug your local statechart while seeing how it behaves
+with the other nodes in your distributed system, you might enabled the snoop spy
+on one machine and the snoop trace on the rest of the machines.  This would
+output the spy log peppered with trace information describing the state changes
+of the other contributing members.  If you were to debug this way you might want
+the colored turned on, so that the name of the spy information of your local
+instance is blue:</p>
+<p>On the machine where you will monitor the spy information:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On machine where you want to see it&#39;s spy information</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># enable the snoop spy network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># enable the snoop trace network</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>       <span class="c1"># the start the chart</span>
+</pre></div>
+</div>
+<p>On the other machines (or processes) in your distributed system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The spy information will be invisible to all machines which have not turned it
+on.  Only the first machine will have spy information written to it’s terminal.</p>
+<p>If you wanted to output all spy information, on all machines, then log it to
+file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># On every other machine to provide context for the spy trace</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>    <span class="c1"># everyone outputs and receives the spy</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>  <span class="c1"># (optional)</span>
+<span class="n">chart</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then in the terminal you would redirect this stream to a log file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name_of_distrubed_instance</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>To view the spy information for one instance in the log, say it was called
+<code class="docutils literal notranslate"><span class="pre">2771f_ao</span></code>, you could use grep to first find your spy logs then to find this
+name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="o">-</span><span class="n">F</span> <span class="p">[</span><span class="o">+</span><span class="n">s</span><span class="p">]</span> <span class="n">distributed</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">2771</span><span class="n">f_ao</span>
+</pre></div>
+</div>
+<p>The result would look like a typical non-networked, spy log of that machine as
+if you were looking at it within it’s instance alone.</p>
+<p>Both the NetworkedActiveObject and the NetworkedFactory classes provide a way to
+make print statements into the snoop_spy_network. To write custom information
+into the snoop spy network, you would call the <code class="docutils literal notranslate"><span class="pre">snoop_scribble</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;Some message to be seen by all monitoring nodes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-instrumentation">
+<span id="reflection-local-instrumentation"></span><h2>Local Instrumentation<a class="headerlink" href="#local-instrumentation" title="Permalink to this headline">#</a></h2>
+<p>In many situations you might want to mix a local trace or spy with their
+networked version.</p>
+<p>For instance, you may want to do this if you using the orthogonal component
+pattern.  The orthogonal component will not output it’s trace or spy information
+into the managing thread’s instrumentation stream; so to see if you will have to
+explicitly write it to the screen.</p>
+<p>There is nothing stopping you from turning on your local instrumentation while
+participating with the snoop networks.</p>
+</div>
+<div class="section" id="rabbitmq-management">
+<span id="reflection-rabbitmq-management"></span><h2>RabbitMQ Management<a class="headerlink" href="#rabbitmq-management" title="Permalink to this headline">#</a></h2>
+<p>To see what your RabbitMQ server is doing, you can run it’s management web app
+by typing <a class="reference external" href="http://localhost:15672/#/">&lt;IP Address&gt;:15672</a> into your browser.
+Then log into it using the rabbit_name and rabbit_password you used in your
+installation process.  If you installed your rabbitMQ server using the
+<span class="xref std std-ref">ansible script in the DevOps section</span>, the expected
+Username is <strong>peter</strong> and the Password is <strong>rabbit</strong>.</p>
+<p>Once you have logged in, you should see this page:</p>
+<img alt="_images/RabbitMQ.PNG" class="scale-to-fit" src="_images/RabbitMQ.PNG" />
+<p>From this portal you can change your user name and password (then make sure to
+update the credentials in your miros-rabbitmq calls).</p>
+</div>
+<div class="section" id="reflecting-upon-the-network-information">
+<span id="reflection-network-information"></span><h2>Reflecting upon the Network Information<a class="headerlink" href="#reflecting-upon-the-network-information" title="Permalink to this headline">#</a></h2>
+<div class="section" id="accessing-all-ip-address-seen-on-the-lan">
+<span id="reflection-accessing-all-ip-address-seen-on-the-lan"></span><h3>Accessing all IP address seen on the LAN<a class="headerlink" href="#accessing-all-ip-address-seen-on-the-lan" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">other</span><span class="o">.</span><span class="n">addresses</span><span class="p">)</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;192.168.1.66&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.69&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.70&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.71&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;192.168.1.254&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="this-ip-address">
+<span id="reflection-this-ip-address"></span><h3>This IP address<a class="headerlink" href="#this-ip-address" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">lan</span><span class="o">.</span><span class="n">this</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="c1"># =&gt; 192.168.1.75</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viewing-other-node-amqp-urls">
+<span id="reflection-viewing-other-node-amqp-urls"></span><h3>Viewing Other Node AMQP URLs<a class="headerlink" href="#viewing-other-node-amqp-urls" title="Permalink to this headline">#</a></h3>
+<p>To view the AMQP URLS used by the mesh, snoop_trace and snoop_spy networks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">other_urls</span><span class="p">())</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;amqp://bob:dobbs@192.168.1.69:5672/</span><span class="si">%2F</span><span class="s1">?connection_attempts=3&amp;heartbeat_interval=3600&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viewing-this-node-s-amqp-url">
+<span id="reflection-thisnodeampqpurl"></span><h3>Viewing this Node’s AMQP URL<a class="headerlink" href="#viewing-this-node-s-amqp-url" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">nao</span><span class="o">.</span><span class="n">this_url</span><span class="p">())</span> <span class="c1"># =&gt; \\</span>
+  <span class="p">[</span><span class="s1">&#39;amqp://bob:dobbs@192.168.1.75:5672/</span><span class="si">%2F</span><span class="s1">?connection_attempts=3&amp;heartbeat_interval=3600&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        
+        <div class="main-content__right-sidebar">
+          <h2 class="sidebar-heading">On this page:</h2>
+        </div>
+      </div>
+    </main>
+
+    <div class="footer-wrapper">
+      
+      <footer class="main-footer main-footer--sidebar">
+      
+        <div class="relational-links">
+          <div>
+            
+            ← <a class="relational-link" href="recipes.html" title="previous chapter">Recipes</a>
+            
+          </div>
+          <div>
+            
+             <a class="relational-link" href="docs.html" title="next chapter">Documenting</a> →
+            
+          </div>
+        </div>
+        
+        <div class="copyright">
+          © Copyright <span class="js-year"></span>,
+          
+          <a href="https://github.com/aleph2c" class="copyright_link">Scott Volk</a>.
+          
+        </div>
+        
+        
+        <div class="last-updated">
+          <span class="prefix">Last updated:</span>
+          <span class="time">Jul 12, 2020 10:10 PM</span>
+        </div>
+        
+        
+        <div class="created-with">
+          Created using <a href="http://sphinx-doc.org/" class="copyright_link">Sphinx</a> 3.1.2 with <span class="theme">13ds_theme_one</span>.
+        </div>
+        
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>96</x>
+      <y>104</y>
+      <w>232</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>*MirosRabbitManualNetwork*
+--
+make_amqp_url(ip_address)
+--
+routing_key
+exchange_name
+dict
+--
+hosts
+live_hosts
+dead_hosts
+live_amqp_urls
+dead_amqp_urls
+--
+file_name
+file_path
+manual_file_chart
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>144</x>
+      <y>448</y>
+      <w>936</w>
+      <h>480</h>
+    </coordinates>
+    <panel_attributes>*read_and_evaluate_network_details*
+--
+entry /
+  if not hasattr(chart, 'manual_file_chart'):
+    chart.file_path = '.miros_rabbimq_hosts.json'
+    chart.file_name = os.path.basename(chart.file_path)
+    chart.manual_file_chart = CacheFileChart(
+      file_path=chart.file_path, default_json=ManNetChart.DEFAULT_JSON)
+  chart.subscribe(Event(signal=signals.CACHE))
+  chart.subscribe(Event(signal=signals.AMQP_CONSUMER_CHECK))
+  chart.publish(Event(signals.CACHE_FILE_READ))
+
+network_evaluated /
+  payload = ConnectionDiscoveryPayload(
+    ip_addresses=chart.live_hosts,
+    amqp_urls=chart.live_amqp_urls,
+    from=chart.name)
+  chart.publish(
+    Event(signal=signals.CONNECTION_DISCOVERY, payload=payload)
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>208</x>
+      <y>424</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=()-[v]</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>392</y>
+      <w>40</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=[^]-(</panel_attributes>
+    <additional_attributes>20.0;10.0;20.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>136</x>
+      <y>360</y>
+      <w>160</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+Event Processor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>264</x>
+      <y>840</y>
+      <w>240</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>ConnectionDiscoveryPayload = \
+  namedtuple('ConnectionDiscoveryPayload',
+    ['hosts', 'amqp_urls', 'dispatcher'])</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>144</x>
+      <y>792</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>200</x>
+      <y>704</y>
+      <w>320</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>CacheReadPayload = \
+  namedtuple('CacheReadPayload',
+    ['dict', 'last_modified', 'created_at', 'expired', 'file_name'])</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>160</x>
+      <y>760</y>
+      <w>328</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>CACHE as e: \
+  [e.payload.file_name == chart.file_name]
+  chart.hosts = e.payload.dict['hosts']
+
+    
+  
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>136</x>
+      <y>792</y>
+      <w>408</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+</panel_attributes>
+    <additional_attributes>10.0;20.0;490.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>528</x>
+      <y>488</y>
+      <w>536</w>
+      <h>416</h>
+    </coordinates>
+    <panel_attributes>*evaluate_network*
+--
+entry /
+  chart.candidates = {}
+  for host_address in chart.hosts:
+    chart.candidates[host_address] = \
+      RecceNode(searched=False, 
+        result=False
+        scout=RabbitConsumerScoutChart(
+          host_address, chart.routing_key, chart.exchange_name))
+
+AMQP_CONSUMER_CHECK as e with payload /
+  h, result = e.payload.ip_address, e.payload.result
+  is_one_of_my_hosts = h in chart.hosts
+  is_my_routing_key = e.payload.routing_key is chart.routing_key
+  is_my_exchange_name = e.payload.exchange_name is chart.exchange_name
+
+  if is_one_of_my_hosts and is_my_routing_key and is_my_exchange_name:
+    chart.candidates[h] = RecceNode(searched=True, result=result, scout=None)
+    if result:
+      chart.live_hosts.append(h)
+      chart.live_amqp_urls.append(chart.make_amqp_url(h))
+    else
+      chart.dead_hosts.append(h)
+      chart.dead_amqp_urls.append(h)
+    search_complete = all([node.searched for node in chart.candidates.values()])
+
+    if search_complete:
+      chart.post_fifo(Event(signals.network_evaluated))
+               
+CACHE / {}
+  
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>128</x>
+      <y>664</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>544</x>
+      <y>920</y>
+      <w>600</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;730.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>560</x>
+      <y>928</y>
+      <w>352</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>CONNECTION_DISCOVERY(&lt;ConnectionDiscoveryPayload&gt;)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>96</x>
+      <y>320</y>
+      <w>1008</w>
+      <h>656</h>
+    </coordinates>
+    <panel_attributes>*ManNetChart*
+--
+
+
+
+
+
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>192</x>
+      <y>296</y>
+      <w>24</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>128</x>
+      <y>568</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>832</x>
+      <y>736</y>
+      <w>224</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>RecceNode
+  namedtuple(
+    'RecceNode', ['searched', 'result', 'scout'])
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>512</x>
+      <y>624</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>848</x>
+      <y>536</y>
+      <w>208</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>each scout will produce
+an AMQP_CONSUMER_CHECK event
+and will be destroyed after use
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>736</x>
+      <y>576</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>584</y>
+      <w>80</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;160.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>168</x>
+      <y>920</y>
+      <w>216</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+EVALUATE_HOSTS_FILE</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;250.0;40.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>176</x>
+      <y>928</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>104</x>
+      <y>512</y>
+      <w>16</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>104</x>
+      <y>512</y>
+      <w>56</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>128</x>
+      <y>80</y>
+      <w>24</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>96</x>
+      <y>64</y>
+      <w>80</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>Factory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>312</x>
+      <y>352</y>
+      <w>280</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>ManNetChart.DEFAULT_JSON = '''
+{
+  "hosts": [
+  ]
+}
+'''
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

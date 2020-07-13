@@ -1,0 +1,802 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html  lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Recipes | docs</title>
+    <link rel="shortcut icon" href="_static/favicon.ico">
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+    <link rel="stylesheet" href="_static/theme.css" type="text/css">
+    
+      
+    <link rel="stylesheet" type="text/css" href="_static/css/miros_docs.css" />
+      
+    
+    
+
+    
+    <script type="text/javascript" src="_static/theme.js" defer></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    
+    <script src="_static/jquery.js"></script>
+    
+    <script src="_static/underscore.js"></script>
+    
+    <script src="_static/doctools.js"></script>
+    
+    <script src="_static/language_data.js"></script>
+    
+    
+
+    
+      
+      
+    <link rel="index" title="Index" href="genindex.html">
+      
+      
+    <link rel="search" title="Search" href="search.html">
+      
+      
+      
+    <link rel="next" title="Reflection" href="reflection.html">
+      
+      
+    <link rel="prev" title="Example" href="example.html">
+      
+    
+
+    
+
+    
+
+    
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="navbar">
+        <div id="js-sidebar-mask" class="sidebar-mask"></div>
+        <div id="js-sidebar-menu-button" class="sidebar-menu-button">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg>
+        </div>
+        <a href="index.html" class="site-link">
+          
+          miros rabbit-mq
+          
+        </a>
+        <div class="navbar-links">
+          <a href="introduction.html" class="navbar-link">Docs</a>
+          
+          <a href="https://github.com/aleph2c/miros-rabbitmq" class="navbar-link">GitHub</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="external-link-icon"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+          
+        </div>
+      </div>
+    </header>
+
+    <main class="main-wrapper">
+      
+      <div id="js-main-sidebar" class="main-sidebar">
+        
+        <div class="sidebar-content sidebar-content--divider sidebar-navbar-links">
+          <a href="https://github.com/aleph2c/miros-rabbitmq" class="sidebar-navbar-link">GitHub</a>
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="external-link-icon"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg>
+        </div>
+        
+        
+        <div class="sidebar-content sidebar-logo">
+    <a href="index.html">
+      <img class="logo" src="_static/miros_rabbitmq_logo_v2.svg" alt="miros" >
+    </a>
+</div>
+        
+        
+
+<h2 class="sidebar-heading">Contents</h2>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing_infrastructure.html">DevOps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_it_works.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reflection.html">Reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documenting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+</ul>
+
+        
+        <h3 class="sidebar-heading">About</h3>
+<p class="sidebar-content">
+  A networking plugin for miros
+</p>
+<h3 class="sidebar-heading">Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/aleph2c/miros-rabbitmq">miros-rabbitmq on Github</a></li>
+  <li><a href="https://aleph2c.github.io/miros/index.html">miros</a></li>
+  <li><a href="https://github.com/aleph2c/miros">miros on Github</a></li>
+  <li><a href="https://github.com/aleph2c/sequence">sequence on Github</a></li>
+  <li><a href="http://www.umlet.com">UMLet (drawing tool)</a></li>
+</ul>
+
+<h3 class="sidebar-heading">Tutorials</h3>
+<ul>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-one-python.html">basics</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-two-python.html">work queues</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-three-python.html">publish subscribe</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-four-python.html">routing</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-five-python.html">topics</a></li>
+  <li><a href="https://www.rabbitmq.com/tutorials/tutorial-six-python.html">remote procedure calls (rpc)</a></li>
+</ul>
+
+<h3 class="sidebar-heading">Videos</h3>
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=deG25y_r6OY">RabbitMQ in Five Minutes</a></li>
+  <li><a href="https://www.youtube.com/watch?v=gKzKUmtOwR4">RabbitMQ Windows Install</a></li>
+</ul>
+        
+        
+
+<div id="searchbox" style="display: none" role="search">
+  <h2 id="searchlabel" class="sidebar-heading">Quick search</h2>
+  <div class="searchformwrapper sidebar-content">
+    <form class="search" action="search.html" method="get">
+      <input class="sidebar-search sidebar-search--input" type="text" name="q" aria-labelledby="searchlabel"><input class="sidebar-search sidebar-search--btn" type="submit" value="Go">
+    </form>
+  </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+        
+      </div>
+      
+
+      
+      <div class="main-content main-content--sidebar">
+      
+        
+          
+  <div class="section" id="recipes">
+<span id="recipes-recipes"></span><h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">#</a></h1>
+<blockquote class="epigraph">
+<div><p><em>MacArthur! I can’t even get McDonald’s!</em></p>
+<p class="attribution">—Julian Simon</p>
+</div></blockquote>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="networked-statecharts">
+<span id="recipes-networked-statecharts"></span><h2>Networked Statecharts<a class="headerlink" href="#networked-statecharts" title="Permalink to this headline">#</a></h2>
+<div class="section" id="drawing-statecharts">
+<span id="recipes-drawing-statecharts"></span><h3>Drawing Statecharts<a class="headerlink" href="#drawing-statecharts" title="Permalink to this headline">#</a></h3>
+<p><a class="reference external" href="http://www.umlet.com/">UMLet</a> is a free tool that can be used to make
+statechart diagrams (see their statemachine panel).  You can run UMLet from
+most operating systems or from your web browser using <a class="reference external" href="http://www.umlet.com/umletino/umletino.html">UMLetino</a>. Here is their training video:</p>
+<div class="video-content">
+  <iframe src="https://www.youtube.com/embed/3UHZedDtr28" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div><p>You can adjust their default templates to improve your drawing experience.</p>
+<p>To export an UMLet picture from their native uxf to other formats:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">umlet</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">action</span><span class="o">=</span><span class="n">convert</span> <span class="o">-</span><span class="n">format</span><span class="o">=</span><span class="n">pdf</span> <span class="o">-</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">your_file_name</span><span class="o">&gt;.</span><span class="n">uxf</span>
+<span class="n">umlet</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">action</span><span class="o">=</span><span class="n">convert</span> <span class="o">-</span><span class="n">format</span><span class="o">=</span><span class="n">svg</span> <span class="o">-</span><span class="n">filename</span><span class="o">=&lt;</span><span class="n">your_file_name</span><span class="o">&gt;.</span><span class="n">uxf</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="making-a-networkedactiveobject">
+<span id="recipes-making-a-networkedactiveobject"></span><h3>Making a NetworkedActiveObject<a class="headerlink" href="#making-a-networkedactiveobject" title="Permalink to this headline">#</a></h3>
+<p>If you would like to make <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#what-a-state-does-and-how-to-structure-it">polyamorous statecharts</a>
+using the flat method technique then the NetworkedActiveObject is for you.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To make your <a class="reference internal" href="#recipes-snoop-trace"><span class="std std-ref">instrumentation</span></a> easier to understand, ensure that all the nodes in
+your distributed system have <a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">different names</span></a>.</p>
+<p>The rabbit_user and rabbit_password credentials need to match that of your
+<a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">RabbitMQ server</span></a>.</p>
+<p>To build your own encryption key(s) see
+<a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">this</span></a>.  You can set different encryption
+keys for your instrumentation networks; the snoop trace network and the snoop
+spy network.  If you do not specify these keys, these networks will use the
+mesh_encryption_key.</p>
+<p>If you want to specify different encryption keys for your instrumentation
+networks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">nao</span></code> object will have a <code class="docutils literal notranslate"><span class="pre">transmit</span></code> method that can be used to put event’s
+into all of the other subscribed statecharts across the network.  To build your
+statechart using the <code class="docutils literal notranslate"><span class="pre">nao</span></code> object, you would follow the rules used by
+an <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#states">ActiveObject</a>.</p>
+</div>
+<div class="section" id="making-a-networkedfactory">
+<span id="recipes-networkedfactory"></span><h3>Making a NetworkedFactory<a class="headerlink" href="#making-a-networkedfactory" title="Permalink to this headline">#</a></h3>
+<p>If you have a preference to build up statecharts using a Factory, but you want
+your statecharts to work together across a network, then the NetworkedFactory is
+for you:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedFactory</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">NetworkedActiveFactory</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To make your <a class="reference internal" href="#recipes-snoop-trace"><span class="std std-ref">instrumentation</span></a> easier to understand, ensure that all the nodes in
+your distributed system have <a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">different names</span></a>.</p>
+<p>The rabbit_user and rabbit_password credentials need to match that of your
+<a class="reference internal" href="#recipes-making-unique-names"><span class="std std-ref">RabbitMQ server</span></a>.</p>
+<p>To build your own encryption key(s) see
+<a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">this</span></a>.  You can set different encryption
+keys for your instrumentation networks; the snoop trace network and the snoop
+spy network.  If you do not specify these keys, these networks will use the
+mesh_encryption_key.</p>
+<p>If you want to specify different encryption keys for your instrumentation
+networks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros_rabbitmq</span> <span class="kn">import</span> <span class="n">NetworkedActiveObject</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">NetworkedFactory</span><span class="p">(</span>
+        <span class="s2">&quot;name_of_statechart&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_user</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_user_name&gt;&quot;</span><span class="p">,</span>
+        <span class="n">rabbit_password</span><span class="o">=</span><span class="s2">&quot;&lt;rabbitmq_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">tx_routing_key</span><span class="o">=</span><span class="s2">&quot;heya.man&quot;</span><span class="p">,</span>
+        <span class="n">rx_routing_key</span><span class="o">=</span><span class="s2">&quot;#.man&quot;</span><span class="p">,</span>
+        <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u3u...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;u4f...&#39;</span><span class="p">,</span>
+        <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;s44...&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">nf</span></code> object will have a <code class="docutils literal notranslate"><span class="pre">transmit</span></code> method that can be used to put event’s
+into all of the other subscribed statecharts across the network.  To build your
+statechart using the <code class="docutils literal notranslate"><span class="pre">nf</span></code> object, you would follow the rules used by
+a miros <a class="reference external" href="https://aleph2c.github.io/miros/recipes.html#creating-a-statechart-from-a-factory">Factory</a>.</p>
+</div>
+<div class="section" id="making-unique-names">
+<span id="recipes-making-unique-names"></span><h3>Making Unique Names<a class="headerlink" href="#making-unique-names" title="Permalink to this headline">#</a></h3>
+<p>A simple way to make a unique name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">post</span><span class="p">):</span>
+  <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">post</span>
+
+<span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;bob&#39;</span><span class="p">)</span> <span class="c1"># =&gt; 0ca32_bob</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="transmitting-an-event">
+<span id="recipes-transmitting-an-event"></span><h3>Transmitting an Event<a class="headerlink" href="#transmitting-an-event" title="Permalink to this headline">#</a></h3>
+<p>To transmit an event to other connected statecharts use the <code class="docutils literal notranslate"><span class="pre">transmit</span></code> method.
+This method works the same for a NetworkedActiveObject and a NetworkedFactory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros.event</span> <span class="kn">import</span> <span class="n">signals</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">return_status</span>
+
+<span class="c1"># where &#39;chart&#39; is a NetworkedFactory or NetworkedActiveObject object</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_name_of_signal</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+</pre></div>
+</div>
+<p>When a networked statechart receives this event, it will be posted into it’s first
+in first out queue.  The statechart will not be able to distinguish that
+it was an event coming back from the network.</p>
+<p>Follow some sort of signal naming-standard so that you know if your events are
+generated locally or from somewhere else on the network.  In this example, the
+signal is pre-pended with the word <code class="docutils literal notranslate"><span class="pre">other_</span></code>, for this reason.</p>
+</div>
+<div class="section" id="transmitting-a-payload-in-an-event">
+<span id="recipes-transmitting-a-payload-in-an-event"></span><h3>Transmitting a Payload in an Event<a class="headerlink" href="#transmitting-a-payload-in-an-event" title="Permalink to this headline">#</a></h3>
+<p>All information that is passed between networked nodes is serialized, encrypted, decrypted
+and de-serialized.  Therefore you can pass an object into your payload that can
+be serialized using the standard pickle algorithm for python 3.  So to pass
+objects between your statecharts, you can just put them into the payload of an
+event.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">miros.event</span> <span class="kn">import</span> <span class="n">signals</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">return_status</span>
+
+<span class="c1"># where &#39;chart&#39; is a NetworkedFactory or NetworkedActiveObject object</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">chart</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="n">chart</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">signals</span><span class="o">.</span><span class="n">other_with_payload</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="s2">&quot;a string&quot;</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">return_status</span><span class="o">.</span><span class="n">HANDLED</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="making-an-encryption-key">
+<span id="recipes-making-an-encryption-key"></span><h3>Making an Encryption Key<a class="headerlink" href="#making-an-encryption-key" title="Permalink to this headline">#</a></h3>
+<p>The miro-rabbitmq library uses Fernet symmetric encryption.  The same keys need
+to be used by all nodes.</p>
+<p>To make a new key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cryptography</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">new_encryption_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">new_encryption_key</span><span class="p">)</span> <span class="c1"># =&gt; b&#39;u3u...&#39; # =&gt; copy this</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="snoop-trace">
+<span id="recipes-snoop-trace"></span><h3>Snoop Trace<a class="headerlink" href="#snoop-trace" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Trace instrumentation is useful for seeing what events caused what state
+transitions. They provide you with information about how your design is reacting
+to its incoming events.</p>
+<p>The snoop trace is an extension of this idea.  It is a network which connects
+all of the live trace streams of all of the statecharts that are working
+together.  You can see the live trace instrumentation of all of the contributing
+nodes, by opting into this snoop trace network.  To do this, you call
+<code class="docutils literal notranslate"><span class="pre">enable_snoop_trace</span></code> prior to starting your statechart (see the code listing
+above).</p>
+<p>It doesn’t take long before this information is hard to see. For this reason, I
+coloured the node names. The name of your local machine’s statechart will be
+blue, and any other name will be purple in your snoop trace output. You can see
+this colouring in the following video:</p>
+<div class="video-content">
+  <iframe src="https://www.youtube.com/embed/MI8Sym3rCO0?start=36" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div><p>In the video, I have logged into two different computers that are running the
+same statechart program as part of a distributed system.  You can see that the
+blue names are different in each terminal window, because we are viewing the
+system from two different computers who’s statecharts have their own local name.</p>
+<p>To print something into the snoop trace use the <a class="reference internal" href="#recipes-snoop-scribble"><span class="std std-ref">snoop_scribble</span></a>.</p>
+<p>If you want to <a class="reference internal" href="#recipes-logging-the-snoop-spy"><span class="std std-ref">log your snoop trace</span></a> enable
+your trace without the ANSI color codes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use the results of your snoop trace to <a class="reference internal" href="#recipes-drawing-sequence-diagrams"><span class="std std-ref">generate network sequence
+diagrams</span></a> for you.</p>
+<p>The trace output hides a lot of the details about how your event processor is
+searching your statechart to determine how to react to an event.  For this
+reason, some statechart dynamics will be invisible to the trace stream; like a
+<a class="reference external" href="https://aleph2c.github.io/miros/patterns.html#patterns-ultimate-hook">hook</a>.
+If you want to see everything that your statechart is doing, or if you want to
+see everything that your entire network is doing turn on the <a class="reference internal" href="#recipes-snoop-spy"><span class="std std-ref">snoop_spy</span></a>.</p>
+</div>
+<div class="section" id="snoop-scribble">
+<span id="recipes-snoop-scribble"></span><h3>Snoop Scribble<a class="headerlink" href="#snoop-scribble" title="Permalink to this headline">#</a></h3>
+<p>Use the snoop scribble to output custom strings into the snoop trace and snoop
+spy networks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;broadcast to all monitoring snoop programs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The snoop_scribble output is coloured a dark grey so it can be distinguished
+from the other parts of the network instrumentation.</p>
+<p>If you want to turn off this colouring:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ao</span><span class="o">.</span><span class="n">snoop_scribble</span><span class="p">(</span><span class="s2">&quot;broadcast to all monitoring snoop programs&quot;</span><span class="p">,</span>
+                   <span class="n">enable_color</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="drawing-sequence-diagrams">
+<span id="recipes-drawing-sequence-diagrams"></span><h3>Drawing Sequence Diagrams<a class="headerlink" href="#drawing-sequence-diagrams" title="Permalink to this headline">#</a></h3>
+<p>The text output of a snoop trace can be used to generate sequence diagrams using
+the <a class="reference external" href="https://github.com/aleph2c/sequence">sequence tool</a>:</p>
+<div class="video-content">
+  <iframe src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div></div>
+<div class="section" id="snoop-spy">
+<span id="recipes-snoop-spy"></span><h3>Snoop Spy<a class="headerlink" href="#snoop-spy" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># nsc could be a NetworkedActiveObject or a NetworkedFactory</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_spy</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The spy instrumentation shows you <em>all of the work done</em> by an event processor.
+This really isn’t that useful since you will be drown in information.  If you
+are having issues with your statechart, you should debug it as a singular
+instance before you connect it to a distributed system.  But, if your problem
+demands that you see everything that is going on at once, the snoop spy network
+provides this capability.</p>
+<p>Instead of viewing everything, you could turn on the spy instrumentation on one
+machine and have it routed to another machine.  The snoop spy network has an opt
+in model, to snoop on others, you need to let them snoop on you.  So to route
+another machine’s snoop information onto your machine, you will need to release
+your information into the snoop spy network.  This may clutter your log stream
+with unwanted information.  If this is a concern, you can create a grep filter
+using the name of the other node that you are trying to monitor.</p>
+<p>It is easy to lose track of the context of what is going on while viewing a
+snoop spy, for this reason you might want to enable the snoop spy and snoop
+trace at the same time.  You can use the snoop trace output to delimit the
+deluge of spy information within the context of state transitions.</p>
+<div class="video-content">
+  <iframe src="https://www.youtube.com/embed/U_F5icOP87w?start=8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div><p>The name of the local nodes in the distributed system will appear blue and
+the names of other nodes will appear purple.</p>
+</div>
+<div class="section" id="logging-the-snoop-trace">
+<span id="recipes-logging-the-snoop-trace"></span><h3>Logging The Snoop Trace<a class="headerlink" href="#logging-the-snoop-trace" title="Permalink to this headline">#</a></h3>
+<p>To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>python3 networkable_active_object.py 2&gt;&amp;1 | \
+   sed -r &#39;s/&#39;$(echo -e &quot;\033&quot;)&#39;\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g&#39; | \
+   tee log.txt grep -F [+s] log.txt | grep &lt;name&gt;
+</pre></div>
+</div>
+<p>Or, turn the colour off when you enable the snoop trace in your code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_trace_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then write your trace information to the log.txt without the command-line complexity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">networkable_active_object</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logging-the-snoop-spy">
+<span id="recipes-logging-the-snoop-spy"></span><h3>Logging the Snoop Spy<a class="headerlink" href="#logging-the-snoop-spy" title="Permalink to this headline">#</a></h3>
+<p>To removed the ANSI clutter from your log.txt file you can do something like
+this (cargo-culted from stack overflow):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>python3 networkable_active_object.py 2&gt;&amp;1 | \
+   sed -r &#39;s/&#39;$(echo -e &quot;\033&quot;)&#39;\[[0-9]{1,2}(;([0-9]{1,2})?)?[mK]//g&#39; | \
+   tee log.txt grep -F [+s] log.txt | grep &lt;name&gt;
+</pre></div>
+</div>
+<p>Or, turn the colour off when you enable the snoop spy in your code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nsc</span><span class="o">.</span><span class="n">enable_snoop_spy_no_color</span><span class="p">()</span>
+<span class="n">nsc</span><span class="o">.</span><span class="n">start_at</span><span class="p">(</span><span class="o">&lt;</span><span class="n">state_you_want_to_start_at</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then write your spy information to the log.txt without the command-line complexity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">networkable_active_object</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="credentials-and-encryption-keys">
+<span id="recipes-credentials-and-encryption-keys"></span><h2>Credentials and Encryption Keys<a class="headerlink" href="#credentials-and-encryption-keys" title="Permalink to this headline">#</a></h2>
+<div class="section" id="changing-your-rabbitmq-credentials">
+<span id="recipes-hiding-your-encryption-data-and-user-credentials"></span><h3>Changing your RabbitMQ credentials<a class="headerlink" href="#changing-your-rabbitmq-credentials" title="Permalink to this headline">#</a></h3>
+<p>If you are installing RabbitMQ using the <span class="xref std std-ref">ansible script in the DevOps section</span>, set the
+<code class="docutils literal notranslate"><span class="pre">rabbit_name</span></code> to the username you want, and the <code class="docutils literal notranslate"><span class="pre">rabbit_password</span></code> to
+whatever you want your password to be.  Update your code to use your new
+credentials.</p>
+<p>You can also change your user name and password with the <a class="reference internal" href="reflection.html#reflection-rabbitmq-management"><span class="std std-ref">RabbitMQ
+management GUI</span></a>.</p>
+</div>
+<div class="section" id="managing-your-encryption-keys-and-rabbitmq-credentials-short-version">
+<span id="recipes-managing-your-encryption-keys-and-rabbitmq-credentials-short-version"></span><h3>Managing your Encryption Keys and RabbitMQ Credentials (Short Version)<a class="headerlink" href="#managing-your-encryption-keys-and-rabbitmq-credentials-short-version" title="Permalink to this headline">#</a></h3>
+<p>Use this <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment strategy</span></a> to ensure a <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+file is in your top level directory of your application (the same directory you
+would find your .git directory).  Your RabbitMQ credentials and your
+miros-rabbitmq <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> will be in this <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+file,  which will look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">RABBIT_USER</span><span class="o">=</span><span class="n">peter</span>
+<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="n">rabbit</span>
+<span class="n">RABBIT_PORT</span><span class="o">=</span><span class="mi">5672</span>
+<span class="n">RABBIT_HEARTBEAT_INTERVAL</span><span class="o">=</span><span class="mi">3600</span>
+<span class="n">CONNECTION_ATTEMPTS</span><span class="o">=</span><span class="mi">3</span>
+<span class="n">RABBIT_GUEST_USER</span><span class="o">=</span><span class="n">rabbit567</span>
+</pre></div>
+</div>
+<p>Then in your setup.py or your actual application code, include the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># write .env items to the environment</span>
+<span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
+<span class="k">if</span> <span class="n">env_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+  <span class="n">load_dotenv</span><span class="p">(</span><span class="n">env_path</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="c1"># recurse outward to find .env file</span>
+  <span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="n">RABBIT_USER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_USER&#39;</span><span class="p">)</span>
+<span class="n">RABBIT_PASSWORD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_PASSWORD&#39;</span><span class="p">)</span>
+<span class="n">MESH_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MESH_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_TRACE_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="c1"># .. etc</span>
+</pre></div>
+</div>
+<p>For details about how to set up your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file without the mentioned
+deployment procedure read the next section.</p>
+</div>
+<div class="section" id="managing-your-encryption-keys-and-rabbitmq-credentials-long-verion">
+<span id="recipes-encryption-keys-in-your-environment"></span><h3>Managing your Encryption Keys and RabbitMQ Credentials (Long Verion)<a class="headerlink" href="#managing-your-encryption-keys-and-rabbitmq-credentials-long-verion" title="Permalink to this headline">#</a></h3>
+<p>To keep your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ
+credentials out of your source code, you can put them into environment variables,
+then load the contents of these environment variables into your program.</p>
+<p>A slight extension of this idea is to put your keys into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, then load its
+contents into environment variables, then load these variables into your program.  By
+placing your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ
+credentials into a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, it makes it easier to transfer them between the
+machines in your distributed system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By convention the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file is kept in the outermost directory of your project,
+the same directory that you would find your .git folder.</p>
+</div>
+<p>The <a class="reference external" href="https://github.com/theskumar/python-dotenv">python-dotenv</a> package
+converts the contents of a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file into environment variables.  We will
+use it in this recipe.  If you have installed <code class="docutils literal notranslate"><span class="pre">miros-rabbitmq</span></code>, you will have this
+package installed on your system already.</p>
+<p>In the outermost directory of your project, create a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file and add the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># write .env items to the environment</span>
+<span class="n">env_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;.env&#39;</span>
+<span class="k">if</span> <span class="n">env_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+  <span class="n">load_dotenv</span><span class="p">(</span><span class="n">env_path</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="c1"># recurse outward to find .env file</span>
+  <span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="c1"># get RabbitMQ credentials and encryption keys from the environment</span>
+<span class="n">RABBIT_USER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_USER&#39;</span><span class="p">)</span>
+<span class="n">RABBIT_PASSWORD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;RABBIT_PASSWORD&#39;</span><span class="p">)</span>
+<span class="n">MESH_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MESH_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_TRACE_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOOP_SPY_ENCRYPTION_KEY&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This program will be able to read your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a> and RabbitMQ credentials, from either your shell’s
+environment variables or from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> program to work there needs to be a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, so let’s
+make an empty one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ touch .env
+</pre></div>
+</div>
+<p>Now we have options.  We can put our keys into our environment using shell
+commands, or we can put them into the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
+<p>Let’s explore these options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>I will add the encryption keys to the shell’s environment</p></li>
+<li><p>Get the program working</p></li>
+<li><p>Remove the encryption keys from the shell’s environment</p></li>
+<li><p>Show that the program crashes</p></li>
+<li><p>Add the encryption keys to the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file</p></li>
+<li><p>Show that the program works</p></li>
+<li><p>Talk about how to transfer the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file securely.</p></li>
+</ul>
+</div></blockquote>
+<p>To create an environment variable we use the shell’s <code class="docutils literal notranslate"><span class="pre">export</span></code> command.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ export MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+$ export RABBIT_USER=peter
+$ export RABBIT_PASSWORD=rabbit
+</pre></div>
+</div>
+<p>In our main program, we can access these encryption keys by importing them from
+our <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in miros-rabbitmq file</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">MESH_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">SNOOP_SPY_ENCRYPTION_KEY</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">RABBIT_USER</span>
+<span class="kn">from</span> <span class="nn">setup</span> <span class="kn">import</span> <span class="n">RABBIT_PASSWORD</span>
+</pre></div>
+</div>
+<p>Now, when we construct a <code class="docutils literal notranslate"><span class="pre">NetworkedActiveObject</span></code> or a <code class="docutils literal notranslate"><span class="pre">NetworkedFactory</span></code>
+object we can use our environment variables rather than writing our secret encryption keys
+directly into our code base.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in miros-rabbitmq file</span>
+<span class="n">ao</span> <span class="o">=</span> <span class="n">NetworkedActiveObject</span><span class="p">(</span>
+  <span class="n">make_name</span><span class="p">(</span><span class="s1">&#39;ao&#39;</span><span class="p">),</span>
+  <span class="n">rabbit_user</span><span class="o">=</span><span class="n">RABBIT_USER</span><span class="p">,</span>
+  <span class="n">rabbit_password</span><span class="o">=</span><span class="n">RABBIT_PASSWORD</span><span class="p">,</span>
+  <span class="n">tx_routing_key</span><span class="o">=</span><span class="s1">&#39;heya.man&#39;</span><span class="p">,</span>
+  <span class="n">rx_routing_key</span><span class="o">=</span><span class="s1">&#39;#.man&#39;</span><span class="p">,</span>
+  <span class="n">mesh_encryption_key</span><span class="o">=</span><span class="n">MESH_ENCRYPTION_KEY</span><span class="p">,</span>
+  <span class="n">snoop_spy_encryption_key</span><span class="o">=</span><span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="p">,</span>
+  <span class="n">snoop_trace_encryption_key</span><span class="o">=</span><span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we set up our environment variables the same on all of our machines, our
+distributed system will work.</p>
+<p>Before we add our encryption keys to our <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, lets first confirm that
+we can break our program by removing them from our shell environment.  In your
+shell type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>$ unset RABBIT_USER
+$ unset RABBIT_PASSWORD
+$ unset MESH_ENCRYPTION_KEY
+$ unset SNOOP_TRACE_ENCRYPTION_KEY
+$ unset TRACE_TRACE_ENCRYPTION_KEY
+</pre></div>
+</div>
+<p>Then if we re-run the program we will see that it crashes for lack of
+encryption keys.  By confirming that our program has crashed, we can trust that
+the information that we will put into our <code class="docutils literal notranslate"><span class="pre">.env</span></code> file will be used rather than
+the information we had previously placed in our environmental variables (we
+won’t fool ourselves into thinking are <code class="docutils literal notranslate"><span class="pre">.env</span></code> file is working if it isn’t).</p>
+<p>Let’s move our encryption keys into the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in .env file</span>
+<span class="n">MESH_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_TRACE_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">SNOOP_SPY_ENCRYPTION_KEY</span><span class="o">=</span><span class="n">u3Uc</span><span class="o">-</span><span class="n">qAi9iiCv3fkBfRUAKrM1gH8w51</span><span class="o">-</span><span class="n">nVU8M8A73Jg</span><span class="o">=</span>
+<span class="n">RABBIT_USER</span><span class="o">=</span><span class="n">peter</span>
+<span class="n">RABBIT_PASSWORD</span><span class="o">=</span><span class="n">rabbit</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don’t put the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file into your code revision system.  If you do, you
+might as well leave the encryption keys in your source code.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">.env</span></code> to your <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> file so you don’t accidentally add it in
+the future.</p>
+<p>If you have added <code class="docutils literal notranslate"><span class="pre">.env</span></code> to git, remove it: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rm</span> <span class="pre">--cached</span> <span class="pre">.env</span></code>, then
+change your <a class="reference internal" href="#recipes-making-an-encryption-key"><span class="std std-ref">encryption keys</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There <em>is</em> a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the examples directory of this code base.  It was
+included so you can see how to do things.</p>
+</div>
+<p>Now we re-run our program and confirm that it works.</p>
+<p>This <code class="docutils literal notranslate"><span class="pre">.env</span></code> file can be shared between machines, but transfer it using scp, or
+using a flash key or in other ways that you can keep your secrets, secret.
+Don’t use email.</p>
+<p>Here is a reminder about how to use scp:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># scp &lt;source&gt; &lt;destination&gt;</span>
+$ scp /path/to/.env &lt;username&gt;@ip/path/to/destination/.env
+</pre></div>
+</div>
+<p>If you use this <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment strategy</span></a>, the <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+files will be placed at the top level of all of working directory on all of the
+machines in your distributed system.</p>
+</div>
+</div>
+<div class="section" id="networking">
+<span id="recipes-networking"></span><h2>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">#</a></h2>
+<p>The problem of how to network your distributed system can be broken into two different pieces:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>how to deploy your servers, code, secrets and infrastructure</p></li>
+<li><p>how a node can discover other nodes in the same system</p></li>
+</ul>
+</div></blockquote>
+<p>To read about a deployment strategy see <a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">this deployment example</span></a>.</p>
+<p>A node determines what other nodes it can talk to, by using two different strategies:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>it uses a list of addresses in the <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> file.</p></li>
+<li><p>it automatically discovers other nodes like itself on your LAN, then it caches this information into the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache.json</span></code> file.</p></li>
+</ul>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> and <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache.json</span></code> files are kept in the same directory as the code that is using the miros-rabbitmq package.</p>
+<div class="section" id="manually-setting-node-addresses">
+<span id="recipes-manually-setting-node-addresses"></span><span id="recipes-node-discovery"></span><h3>Manually setting Node Addresses<a class="headerlink" href="#manually-setting-node-addresses" title="Permalink to this headline">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts.json</span></code> file in the same directory as your
+miros-rabbitmq program looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.71&quot;</span><span class="p">,</span>
+    <span class="n">www</span><span class="o">.</span><span class="n">myurl</span><span class="o">.</span><span class="n">xyz</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This file will be written for you at your top level directory if you use this
+<a class="reference internal" href="deployment.html#deployment-deployment"><span class="std std-ref">deployment strategy</span></a>.</p>
+</div>
+<div class="section" id="node-discovery-on-your-lan">
+<h3>Node Discovery on your LAN<a class="headerlink" href="#node-discovery-on-your-lan" title="Permalink to this headline">#</a></h3>
+<p>This is taken care of by the library.  If your node is on your local area network
+and it’s IP address is in the ARP table or it’s computer will respond to a ping;
+The miros-rabbitmq library should find it.  If two nodes are on the same network
+and share encryption and rabbit credentials they will be able to communicate.</p>
+<p>The results of the process are cached in the <code class="docutils literal notranslate"><span class="pre">.miros_rabbitlan_cache</span></code> file
+which looks something like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;192.168.1.75&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;192.168.1.71&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;amqp_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.75:5672/%2F?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;amqp://bob:dobbs@192.168.1.71:5672/%2F?connection_attempts=3&amp;heartbeat_interval=3600&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;time_out_in_minutes&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To force your program to update this cache, change the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code>
+setting to 0 and re-run your program.  Your application will cause another LAN
+search and update the <code class="docutils literal notranslate"><span class="pre">time_out_in_minutes</span></code> back to it’s default setting.</p>
+</div>
+<div class="section" id="aliens-and-what-to-do-about-them">
+<span id="recipes-aliens-and-what-to-do-about-them"></span><h3>Aliens, and what to do about them<a class="headerlink" href="#aliens-and-what-to-do-about-them" title="Permalink to this headline">#</a></h3>
+<p>An Alien is a node that can talk to you, but that you didn’t know about when
+your program started.  There are many reasons why you might not know about a
+node that knows about you:</p>
+<ul class="simple">
+<li><p>Your LAN cache hadn’t expired while a new node was added to your LAN</p></li>
+<li><p>The Alien machine does not respond to ping requests</p></li>
+<li><p>the machine is beyond your LAN and you don’t have it’s address in your
+<code class="docutils literal notranslate"><span class="pre">.miros_rabbit_hosts</span></code> file.</p></li>
+</ul>
+<p>The Alien policy is, if it can talk to us we will talk to it too.  If the node
+knows about us, has the correct encryption keys and RabbitMQ credentials, then
+it’s secure and we can work with it.   So, if an Alien is discovered, the
+miros-rabbitmq package will respond by building producers to talk to it.  To see
+how this is done you can read <a class="reference internal" href="how_it_works.html#how-it-works2-aliens"><span class="std std-ref">this</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+        
+        <div class="main-content__right-sidebar">
+          <h2 class="sidebar-heading">On this page:</h2>
+        </div>
+      </div>
+    </main>
+
+    <div class="footer-wrapper">
+      
+      <footer class="main-footer main-footer--sidebar">
+      
+        <div class="relational-links">
+          <div>
+            
+            ← <a class="relational-link" href="example.html" title="previous chapter">Example</a>
+            
+          </div>
+          <div>
+            
+             <a class="relational-link" href="reflection.html" title="next chapter">Reflection</a> →
+            
+          </div>
+        </div>
+        
+        <div class="copyright">
+          © Copyright <span class="js-year"></span>,
+          
+          <a href="https://github.com/aleph2c" class="copyright_link">Scott Volk</a>.
+          
+        </div>
+        
+        
+        <div class="last-updated">
+          <span class="prefix">Last updated:</span>
+          <span class="time">Jul 12, 2020 10:09 PM</span>
+        </div>
+        
+        
+        <div class="created-with">
+          Created using <a href="http://sphinx-doc.org/" class="copyright_link">Sphinx</a> 3.1.2 with <span class="theme">13ds_theme_one</span>.
+        </div>
+        
+      </footer>
+    </div>
+  </body>
+</html>

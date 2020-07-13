@@ -1,0 +1,1696 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>5</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>440</x>
+      <y>175</y>
+      <w>305</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>*determine what machines do you want in your distributed system*
+--
+entry /
+  come up with name for your inventory
+  for each machine in machines:
+    collect ip address/urls
+    collect user name
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>455</x>
+      <y>235</y>
+      <w>280</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>*Ensure SSH passwordless access on all machines from deployment computer*
+--
+entry /
+  for each machine in machines:
+    place deployment computer's public key into ~/.ssh/authorized_keys
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>440</x>
+      <y>15</y>
+      <w>265</w>
+      <h>145</h>
+    </coordinates>
+    <panel_attributes>*set up deployment computer*
+--
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>415</x>
+      <y>65</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>415</x>
+      <y>65</y>
+      <w>35</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>525</x>
+      <y>130</y>
+      <w>15</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>315</y>
+      <w>245</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>*Create Ansible Inventory File*
+--
+entry /
+  under your inventory name
+  for each machine in machines:
+    add machine address and ansible_user to your inventory
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>460</x>
+      <y>300</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>460</x>
+      <y>320</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>545</x>
+      <y>300</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>575</x>
+      <y>75</y>
+      <w>185</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;350.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>250</y>
+      <w>50</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>575</x>
+      <y>45</y>
+      <w>185</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;350.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>245</y>
+      <w>235</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.69 'cat &gt;&gt; .ssh/authorized_keys'</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>40</y>
+      <w>105</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>example of installing ansible:
+--
+sudo apt-get ansible</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>70</y>
+      <w>180</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>example of setting local ssh keys:
+--
+$ sudo ssh-keygen
+$ sudo cat '~/.ssh/id_rsa.pub' &gt;&gt; '~/.ssh/authorized_keys'</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>190</y>
+      <w>90</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>example inventory name:
+--
+scotty</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>560</x>
+      <y>195</y>
+      <w>200</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;380.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>315</y>
+      <w>155</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>example inventory, on deployment machine 
+in it's /etc/ansible/hosts:
+--
+[scotty]
+192.168.1.71 ansible_user=pi
+192.168.1.69 ansible_user=pi</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>340</y>
+      <w>30</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>400</x>
+      <y>1300</y>
+      <w>310</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*determine where you want your software on your machines*
+--
+entry /
+  determine where you want your miros-rabbitmq working files to be
+  this will be assigned to
+  
+  miros_rabbitmq_project_directory in your playbook
+  
+  
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1345</y>
+      <w>180</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+  miros_rabbitmq_project_directory: '~/miros-rabbitmq'
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>440</x>
+      <y>420</y>
+      <w>305</w>
+      <h>375</h>
+    </coordinates>
+    <panel_attributes>*invent credentials and secrets*
+--
+entry /
+  in your deployment directory
+  create a file called fake_vault
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>465</y>
+      <w>205</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>*RabbitMQ server credentials and settings*
+--
+/entry 
+  invent the following:
+    RABBIT_USER
+    RABBIT_PASSWORD
+    RABBIT_PORT
+    RABBIT_GUEST_PASSWORD
+
+  prepend the names with vault and put in your fake_vault
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>460</x>
+      <y>475</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>460</x>
+      <y>475</y>
+      <w>40</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>575</y>
+      <w>205</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>*RabbitMQ connection parameters*
+--
+entry /
+  invent the following
+    rabbit_heartbeat_interval
+    connection_attempts
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>555</x>
+      <y>550</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>690</x>
+      <y>495</y>
+      <w>80</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>545</x>
+      <y>375</y>
+      <w>15</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>690</x>
+      <y>585</y>
+      <w>80</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;140.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>640</y>
+      <w>205</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*Invent miros-rabbitmq encryption keys*
+--
+entry /
+  create symmetric encryption keys for:
+    mesh_network
+    snoop_spy_network (can be the same as mesh)
+    snoop_trace_network (can be the same as mesh)
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>625</y>
+      <w>190</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>example of how to make keys:
+--
+$ python3
+from cryptography import Fernet
+
+# do this once per needed encryption keys
+encryption_key = Fernet.generate_key()
+print(encryption_key) # =&gt; b'u3u...' (copy the string part)
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>690</x>
+      <y>660</y>
+      <w>80</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>555</x>
+      <y>620</y>
+      <w>15</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>700</y>
+      <w>330</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>example fake_vault (yaml) file now:
+--
+---
+vault_MESH_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_SNOOP_TRACE_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_SNOOP_SPY_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_RABBIT_HEARTBEAT_INTERVAL: 3600
+vault_CONNECTION_ATTEMPTS: 3
+vault_RABBIT_USER: peter
+vault_RABBIT_PASSWORD: rabbit
+vault_RABBIT_PORT: 5672
+vault_RABBIT_GUEST_PASSWORD: rabbit567
+  
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>545</y>
+      <w>170</w>
+      <h>75</h>
+    </coordinates>
+    <panel_attributes>example fake_vault (yaml) file now:
+--
+---
+vault_RABBIT_HEARTBEAT_INTERVAL: 3600
+vault_CONNECTION_ATTEMPTS: 3
+vault_RABBIT_USER: peter
+vault_RABBIT_PASSWORD: rabbit
+vault_RABBIT_PORT: 5672
+vault_RABBIT_GUEST_PASSWORD: rabbit567
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>475</y>
+      <w>170</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>example fake_vault file:
+--
+---
+vault_RABBIT_USER: peter
+vault_RABBIT_PASSWORD: rabbit
+vault_RABBIT_PORT: 5672
+vault_RABBIT_GUEST_PASSWORD: rabbit567
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>720</y>
+      <w>205</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*Add Encryption keys to fake vault*
+--
+entry /
+  in your fake vault file assign your keys to
+    vault_MESH_ENCRYPTION_KEY
+    vault_SNOOP_TRACE_ENCRYPTION_KEY
+    vault_SNOOP_SPY_ENCRYPTION_KEY
+  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>555</x>
+      <y>695</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>690</x>
+      <y>745</y>
+      <w>80</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>965</x>
+      <y>655</y>
+      <w>125</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>Note..
+ make sure you put '' around your keys
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1010</x>
+      <y>685</y>
+      <w>15</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>855</x>
+      <y>190</y>
+      <w>65</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+machine        user
+192.168.1.71   pi
+192.168.1.69   pi</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>215</y>
+      <w>345</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;670.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>40</y>
+      <w>90</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>*install ansible*
+--
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>75</y>
+      <w>90</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>*set up private ssh keys*
+--
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>490</x>
+      <y>110</y>
+      <w>110</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>*make deployment directory*
+--
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>455</x>
+      <y>45</y>
+      <w>45</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>455</x>
+      <y>45</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>525</x>
+      <y>60</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>525</x>
+      <y>95</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>595</x>
+      <y>120</y>
+      <w>165</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;310.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>115</y>
+      <w>180</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>example of setting deployment directory:
+--
+$ mkdir ~/miros_rabbitmq_deployment
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>425</y>
+      <w>170</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ cd ~/miros_rabbitmq_deployment
+$ touch fake_vault # this is a yaml file
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>445</y>
+      <w>230</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;440.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>375</x>
+      <y>805</y>
+      <w>370</w>
+      <h>825</h>
+    </coordinates>
+    <panel_attributes>*setup ansible file structure on deployment computer*
+--
+entry /
+  ensure you are in your deployment directory
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>460</x>
+      <y>840</y>
+      <w>240</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*Setup Ansible Directory Structure*
+--
+entry/ 
+  # create a global_var folder with your inventory name as a subdirectory
+  # in this inventory named subdirectory create a vars file
+
+  # create a template directory
+  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>880</x>
+      <y>810</y>
+      <w>115</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>example
+--
+mkdir group_vars
+mkdir ./group_vars/scotty
+touch ./group_vars/scotty/var
+mkdir templates
+---
+.
+├── group_vars
+│   └── scotty
+│       ├── vars
+└── templates
+  
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>695</x>
+      <y>865</y>
+      <w>195</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;370.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>755</x>
+      <y>810</y>
+      <w>120</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ cd ~/miros_rabbitmq_deployment
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>525</x>
+      <y>820</y>
+      <w>240</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;460.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>460</x>
+      <y>930</y>
+      <w>240</w>
+      <h>75</h>
+    </coordinates>
+    <panel_attributes>*Encrypt credentials and secrets in vault*
+--
+entry/ 
+  move your fake_vault into your ./groups_var/&lt;inventory_name&gt; directory
+  change its name to vault
+  encrypt it using `ansible-value encrypt`
+  cat it to see it is encrypted
+  confirm you can open it with `ansible-vault edit`
+  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>915</y>
+      <w>155</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ mv fake_vault ./global_vars/scotty/vault
+$ ansible-vault encrypt ./global_vars/scotty/vault
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>680</x>
+      <y>925</y>
+      <w>90</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;160.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>955</y>
+      <w>155</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ cat ./global_vars/scotty/vault
+
+$ANSIBLE_VAULT;1.1;AES256
+34363736353133336561626464646437613...
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>595</x>
+      <y>955</y>
+      <w>175</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;330.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1010</y>
+      <w>330</w>
+      <h>115</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ ansible-vault edit ./global_vars/scotty/vault
+
+---
+vault_MESH_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_SNOOP_TRACE_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_SNOOP_SPY_ENCRYPTION_KEY: 'u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg='
+vault_RABBIT_HEARTBEAT_INTERVAL: 3600
+vault_CONNECTION_ATTEMPTS: 3
+vault_RABBIT_USER: peter
+vault_RABBIT_PASSWORD: rabbit
+vault_RABBIT_PORT: 5672
+vault_RABBIT_GUEST_PASSWORD: rabbit567
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>610</x>
+      <y>985</y>
+      <w>160</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;300.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>570</x>
+      <y>895</y>
+      <w>15</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>575</x>
+      <y>775</y>
+      <w>15</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>925</x>
+      <y>965</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Note..
+If you see something like this you 
+can add your vault to your 
+revision control system
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>865</x>
+      <y>980</y>
+      <w>70</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;20.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>455</x>
+      <y>1125</y>
+      <w>240</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>*Add var file*
+--
+entry/ 
+  add a var (yaml) file to your global_vars/&lt;inventory&gt;/
+  add the required variables:
+    rabbit_user -&gt; vault
+    rabbit_password -&gt; vault
+    rabbit_heart_beat_interval -&gt; vault
+    connection_attempts -&gt; vault
+    rabbit_tags
+    rabbit_guest_password -&gt; vault
+    rabbit_heart_beat_interval
+    mesh_encryption_key -&gt; vault
+    snoop_trace_encryption_key -&gt; vault
+    snoop_spy_encryption_key -&gt; vault
+  
+  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1130</y>
+      <w>155</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>example:
+--
+$ touch ./global_vars/scotty/var
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>625</x>
+      <y>1135</y>
+      <w>145</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;270.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1170</y>
+      <w>260</w>
+      <h>165</h>
+    </coordinates>
+    <panel_attributes>example vars file:
+--
+---
+# public
+python_packages_to_install:
+  - miros-rabbitmq
+rabbit_tags:
+ - administrator
+
+# secrets
+rabbit_user: "{{ vault_RABBIT_USER }}"
+rabbit_password: "{{ vault_RABBIT_PASSWORD }}"
+rabbit_port: "{{ vault_RABBIT_PORT }}"
+rabbit_heartbeat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
+connection_attempts: "{{ vault_CONNECTION_ATTEMPTS }}"
+rabbit_guest_password: "{{ vault_RABBIT_GUEST_PASSWORD }}"
+mesh_encryption_key: "{{ vault_MESH_ENCRYPTION_KEY }}"
+snoop_trace_encryption_key: "{{ vault_SNOOP_TRACE_ENCRYPTION_KEY }}"
+snoop_spy_encryption_key: "{{ vault_SNOOP_SPY_ENCRYPTION_KEY }}"
+rabbit_heart_beat_interval: "{{ vault_RABBIT_HEARTBEAT_INTERVAL }}"
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>580</x>
+      <y>1185</y>
+      <w>190</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;360.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>565</x>
+      <y>1000</y>
+      <w>15</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;250.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1005</x>
+      <y>885</y>
+      <w>90</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Directory structure now
+-
+.
+├── group_vars
+│   └── scotty
+│       ├── vars
+│       ├── vault
+└── templates</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>910</x>
+      <y>925</y>
+      <w>105</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;20.0;190.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>855</x>
+      <y>1200</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Note..
+this creates public variable names 
+with secrect contents
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>830</x>
+      <y>1235</y>
+      <w>35</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;20.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>400</x>
+      <y>910</y>
+      <w>320</w>
+      <h>370</h>
+    </coordinates>
+    <panel_attributes>*Setup global variables used for all computers in your distributed system*
+--
+
+  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>435</x>
+      <y>955</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>435</x>
+      <y>955</y>
+      <w>35</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>1275</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>705</x>
+      <y>1325</y>
+      <w>65</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>400</x>
+      <y>1380</y>
+      <w>340</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*add template files*
+--
+entry /
+  create ./templates/rabbit-env.conf.j2  # will tell rabbit where to find it's config
+  create ./templates/rabbit.config.j2      # the RabbitMQ config template
+  create ./templates/.env.j2                   # will contain all the secrets needed for your miros-rabbitmq to work
+  
+  
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1385</y>
+      <w>180</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>example ./templates/rabbit-env.conf.j2 file:
+--
+RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq
+NODE_IP_ADDRESS=0.0.0.0
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1435</y>
+      <w>180</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>example ./templates/rabbit-config.j2 file:
+--
+[
+  {rabbit,
+    [
+      {loopback_users,[]}
+    ]
+  }
+]
+.
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1520</y>
+      <w>240</w>
+      <h>95</h>
+    </coordinates>
+    <panel_attributes>example ./templates/.env.j2 file:
+--
+MESH_ENCRYPTION_KEY={{mesh_encryption_key}}
+SNOOP_TRACE_ENCRYPTION_KEY={{snoop_trace_encryption_key}}
+SNOOP_SPY_ENCRYPTION_KEY={{snoop_spy_encryption_key}}
+RABBIT_USER={{rabbit_user}}
+RABBIT_PASSWORD={{rabbit_password}}
+RABBIT_PORT={{rabbit_port}}
+RABBIT_HEARTBEAT_INTERVAL={{rabbit_heart_beat_interval}}
+CONNECTION_ATTEMPTS={{connection_attempts}}
+RABBIT_GUEST_USER={{rabbit_guest_user}}
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>640</x>
+      <y>1400</y>
+      <w>130</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>615</x>
+      <y>1410</y>
+      <w>155</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;10.0;290.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>1425</y>
+      <w>110</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;200.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>1355</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>800</x>
+      <y>5</y>
+      <w>70</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>EXAMPLES
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>550</x>
+      <y>0</y>
+      <w>70</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>WORKFLOW
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>960</x>
+      <y>1420</y>
+      <w>125</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>Directory structure now
+-
+.
+├── group_vars
+│   └── scotty
+│       ├── vars
+│       └── vault
+└── templates
+    ├── .env.j2
+    ├── rabbitmq.config.j2
+    └── rabbitmq-env.conf.j2
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>945</x>
+      <y>1505</y>
+      <w>25</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;30.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>395</x>
+      <y>1460</y>
+      <w>340</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>*create playbook*
+--
+entry /
+  create ./miros_rabbitmq_install.yml
+  add your miros_rabbit_project_directory at the top of the file
+  
+  
+  
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>1435</y>
+      <w>15</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>555</x>
+      <y>1525</y>
+      <w>165</w>
+      <h>95</h>
+    </coordinates>
+    <panel_attributes>Directory structure now:
+--
+.
+├── group_vars
+│   └── scotty
+│       ├── vars
+│       └── vault
+├── miros_rabbitmq_install.yml
+└── templates
+    ├── .env.j2
+    ├── rabbitmq.config.j2
+    └── rabbitmq-env.conf.j2
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>510</x>
+      <y>1515</y>
+      <w>55</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>90.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>415</x>
+      <y>1015</y>
+      <w>145</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>Note..
+Remember this secret
+Also, there are ways to use a password file
+search "ansible vault password file"
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>965</y>
+      <w>55</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>760</x>
+      <y>1620</y>
+      <w>240</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>example ./miros_rabbitmq_install.yml
+--
+---
+- hosts: scotty
+  vars:
+    miros_rabbitmq_project_directory: '~/miros-rabbitmq'
+  tasks:
+   - name: Install rabbitmq-server
+     become: true
+     apt: name={{ item }} state=present update_cache=false
+     with_items:
+       - erlang
+       - rabbitmq-server
+  .
+  .
+  .
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>1515</y>
+      <w>50</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;240.0;60.0;340.0;80.0;340.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>435</x>
+      <y>865</y>
+      <w>35</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>435</x>
+      <y>865</y>
+      <w>10</w>
+      <h>10</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>375</x>
+      <y>1645</y>
+      <w>370</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>*Deploy your system to all machines*
+--
+entry /
+ ensure you are in your deployment directory
+
+ issue deployment command:
+ 
+   $ ansible-playbook -K miros_rabbit_install.yml --ask-vault-pass
+   BECOME password:
+   Vault password:
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>530</x>
+      <y>1625</y>
+      <w>15</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>750</x>
+      <y>150</y>
+      <w>195</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>Assumption:
+--
+This procedure assumes sudo password the 
+same on all machines in your distributed system
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>160</y>
+      <w>50</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>575</x>
+      <y>1665</y>
+      <w>165</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>Assumption:
+--
+This procedure assumes sudo password the 
+same on all machines in your distributed system
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>450</x>
+      <y>1675</y>
+      <w>135</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;40.0;250.0;10.0</additional_attributes>
+  </element>
+</diagram>

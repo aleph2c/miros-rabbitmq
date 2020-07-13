@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>301</x>
+      <y>315</y>
+      <w>21</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>lt=()-[v]</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>154</x>
+      <y>343</y>
+      <w>826</w>
+      <h>602</h>
+    </coordinates>
+    <panel_attributes>*search*
+--
+entry /
+  scout.producer = PikaTopicPublisherMaker(
+    ip_address=scout.ip_address,
+    routing_key=scout.routing_key,
+    exchange_name=scout.exchange_name,
+    connection_attempts=RabbitConsumerScout.CONNECTION_ATTEMPTS,
+    callback_tempo=RabbitConsumerScout.SCOUT_TEMPO_SEC)
+  scout.subscribe(Event(signals.REFACTOR_SEARCH))
+
+AMQP_CONSUMER_CHECK as e /
+  if scout.live_trace or scout.spy_trace:
+    pp(e.payload)
+
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>469</x>
+      <y>434</y>
+      <w>483</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>*producer_thread_engaged*
+--
+entry /
+  scout.producer.start_thread()
+  scout.post_fifo(Event(
+    signal=signals.try_to_contact_consumer), 
+    times=1,
+    period=0.2,
+    deferred=True)
+  
+exit / 
+  scout.cancel_events(
+    Event(signal=signals.try_to_contact_consumer))
+  scout.producer.stop_thread()
+	
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>399</x>
+      <y>539</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>399</x>
+      <y>539</y>
+      <w>84</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;100.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>469</x>
+      <y>756</y>
+      <w>224</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>*AMQP_CONSUMER_SERVER_FOUND*
+--
+entry /
+  payload = scout.get_amqp_payload(True)
+  scout.publish(
+	  signal=signals.AMQP_CONSUMER_CHECK,
+	  payload=payload)
+	
+  
+exit / 
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>217</x>
+      <y>840</y>
+      <w>252</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>*NO_AMQP_CONSUMER_SERVER_FOUND*
+--
+entry /
+  payload = scout.get_amqp_payload(True)
+  scout.publish(
+    Event(signal=signals.AMQP_CONSUMER_CHECK),
+    payload=payload)
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>483</x>
+      <y>651</y>
+      <w>21</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>308</x>
+      <y>700</y>
+      <w>182</w>
+      <h>154</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>240.0;10.0;10.0;10.0;10.0;200.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>497</x>
+      <y>700</y>
+      <w>98</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>301</x>
+      <y>686</y>
+      <w>196</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>[scout.producer.connect_error]
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>91</x>
+      <y>70</y>
+      <w>203</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>*RabbitConsumerScout*
+--
+ip_address
+--
+routing_key
+exchange_name
+--
+producer
+--
+get_amqp_payload(result)
+--
+CONNETION_ATTEMPTS
+SCOUT_TEMPO_SEC
+--
+get_amqp_consumer_check_payload(result)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>203</x>
+      <y>273</y>
+      <w>140</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+Event Processor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>266</x>
+      <y>301</y>
+      <w>49</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=[^]-(</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0;40.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>476</x>
+      <y>693</y>
+      <w>28</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>type=decision</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>686</x>
+      <y>784</y>
+      <w>392</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;540.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>868</y>
+      <w>602</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;840.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>707</x>
+      <y>770</y>
+      <w>378</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, TRUE, routing_key, exchange_name)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>91</x>
+      <y>238</y>
+      <w>938</w>
+      <h>721</h>
+    </coordinates>
+    <panel_attributes>*RabbitConsumerScoutChart*
+--
+
+
+
+
+
+fg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>182</x>
+      <y>210</y>
+      <w>21</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>700</x>
+      <y>469</y>
+      <w>224</w>
+      <h>119</h>
+    </coordinates>
+    <panel_attributes>*producer_post_and_wait*
+--
+entry /
+  scout.producer.thread.post_fifo(..)
+  	scout.post_fifo(Event(
+	  signal=signals.consumer_test_complete), 
+	  times=1,
+	  period=0.5,
+	  deferred=True)
+
+  
+	
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>497</x>
+      <y>665</y>
+      <w>266</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>consumer_test_complete
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>574</x>
+      <y>609</y>
+      <w>154</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>try_to_connect_to_consumer
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>581</y>
+      <w>350</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;70.0;480.0;70.0;480.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>105</x>
+      <y>539</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>539</y>
+      <w>63</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>287</x>
+      <y>126</y>
+      <w>56</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>329</x>
+      <y>28</y>
+      <w>154</w>
+      <h>189</h>
+    </coordinates>
+    <panel_attributes>*RabbitTopicPublisherMaker*
+--
+ip_address
+routing_key
+exchange_name
+--
+rabbit_user
+rabbit_password
+rabbit_port
+encryption_key
+--
+amqp_url
+producer
+--
+HEARTBEAT_INTERVAL_SEC
+CALLBACK_TEMPO
+CONNECTION_ATTEMPTS
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>161</x>
+      <y>35</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>Factory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>497</x>
+      <y>28</y>
+      <w>217</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>taken from the .env file in an outer directory..
+rabbit_user :: RABBIT_USER
+rabbit_password :: RABBIT_PASSWORD
+rabbit_port :: RABBIT_PORT
+encryption_key :: MESH_ENCRYPTION_KEY</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>476</x>
+      <y>42</y>
+      <w>35</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;70.0;30.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>497</x>
+      <y>112</y>
+      <w>427</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>Example .env file:
+ MESH_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+ SNOOP_TRACE_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+ SNOOP_SPY_ENCRYPTION_KEY=u3Uc-qAi9iiCv3fkBfRUAKrM1gH8w51-nVU8M8A73Jg=
+ RABBIT_USER=peter
+ RABBIT_PASSWORD=rabbit
+ RABBIT_PORT=5672
+ RABBIT_HEARTBEAT_INTERVAL=3600
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>581</x>
+      <y>91</y>
+      <w>21</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;30.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>161</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>ActiveObject</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>189</x>
+      <y>49</y>
+      <w>21</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>189</x>
+      <y>14</y>
+      <w>21</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>392</x>
+      <y>266</y>
+      <w>259</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>AMQPConsumerCheckPayload = \
+  namedtuple('AMQPConsumerCheckPayload',
+    ['ip_address', 'result', 'routing_key', 'exchange_name'])</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>483</x>
+      <y>854</y>
+      <w>378</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>AMQP_CONSUMER_CHECK(ip_address, FALSE, routing_key, exchange_name)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>224</x>
+      <y>196</y>
+      <w>210</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;50.0;280.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>644</x>
+      <y>287</y>
+      <w>378</w>
+      <h>490</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;520.0;10.0;520.0;680.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>777</x>
+      <y>791</y>
+      <w>70</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;90.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>693</x>
+      <y>777</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>469</x>
+      <y>861</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>140</x>
+      <y>462</y>
+      <w>14</w>
+      <h>14</h>
+    </coordinates>
+    <panel_attributes>
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

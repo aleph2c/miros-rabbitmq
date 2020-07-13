@@ -18,3 +18,5 @@ here/
 #test/crypto_test.py
 *.un
 build/*
+*.exe
+*.DS_Store
