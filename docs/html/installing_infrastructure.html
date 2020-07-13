@@ -184,8 +184,8 @@ full <a class="reference internal" href="deployment.html#deployment-deployment">
 distributed system.</p>
 <p>For now, in this section, we will describe procedures for setting up RabbitMQ so
 that our miros-rabbitmq derived programs can talk to each other through it.</p>
-<div class="section" id="rabbitmq-on-windows-and-the-wls">
-<span id="installing-infrastructure-installing-on-windows"></span><h2>RabbitMQ On Windows and the WLS<a class="headerlink" href="#rabbitmq-on-windows-and-the-wls" title="Permalink to this headline">#</a></h2>
+<div class="section" id="rabbitmq-on-windows-and-the-wsl">
+<span id="installing-infrastructure-installing-on-windows"></span><h2>RabbitMQ On Windows and the WSL<a class="headerlink" href="#rabbitmq-on-windows-and-the-wsl" title="Permalink to this headline">#</a></h2>
 <p>If you are installing RabbitMQ on (&gt;= Windows 7), try following this <a class="reference external" href="https://www.youtube.com/watch?v=gKzKUmtOwR4">video</a> and if that
 doesn’t work clear your afternoon’s schedule, and work through <a class="reference external" href="https://www.rabbitmq.com/install-windows.html">this</a>.  Pay special attention to the section titled <a class="reference external" href="https://www.rabbitmq.com/install-windows-manual.html#erlang-cookie">Synchronise Erlang Cookies</a>.</p>
 </div>
@@ -203,9 +203,9 @@ allows you to automatically ssh into machines and run a series of sysadmin comma
 </div></blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>I tried to install RabbitMQ using my ansible scripts in windows using the WLS
-(Windows Linux Subsystem).  This didn’t work,  but the miros-rabbitmq code
-will run from the WLS once you install RabbitMQ on windows using the windows
+<p>I tried to install RabbitMQ using my ansible scripts in windows using the WSL
+(Windows Subsystem for Linux).  This didn’t work,  but the miros-rabbitmq code
+will run from the WSL once you install RabbitMQ on windows using the windows
 procedure.</p>
 </div>
 <div class="section" id="setting-up-ssh-so-you-don-t-need-a-password">
@@ -427,7 +427,7 @@ machines listed in your inventory.  Enter it and hit enter.</p>
         
         <div class="last-updated">
           <span class="prefix">Last updated:</span>
-          <span class="time">Jul 13, 2020 6:13 AM</span>
+          <span class="time">Jul 13, 2020 6:22 AM</span>
         </div>
         
         

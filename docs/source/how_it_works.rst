@@ -19,8 +19,8 @@ How it Works
   the :ref:`next example <example>`.
 
 There are two main classes that you will use with miros to build statecharts,
-the `ActiveObject <https://aleph2c.github.io/miros/singlechartexample.html>`_ and
-the `Factory <https://aleph2c.github.io/miros/towardsthefactoryexample.html#towardsthefactoryexample-using-the-factory-class>`_
+the `ActiveObject <https://aleph2c.github.io/miros/html/singlechartexample.html>`_ and
+the `Factory <https://aleph2c.github.io/miros/html/towardsthefactoryexample.html#towardsthefactoryexample-using-the-factory-class>`_
 class.  This plugin extends these two classes as the NetworkedActiveObject and
 the NetworkedFactory class.
 
@@ -29,14 +29,14 @@ the NetworkedFactory class.
     :class: noscale-center
 
 To build a state chart you would follow all of the same `rules that you learned
-before <https://aleph2c.github.io/miros/recipes.html>`_ and you would get some
+before <https://aleph2c.github.io/miros/html/recipes.html>`_ and you would get some
 additional networking features.
 
 So, if you wanted to have networked statecharts you would install miros,
 miros-rabbitmq and RabbitMQ.  If you wanted to build your statechart using `flat
 methods
-<https://aleph2c.github.io/miros/recipes.html#boiler-plate-state-method-code>`_ you would use the NetworkedActiveObject class.  If you would rather
-build it up using `callbacks <https://aleph2c.github.io/miros/recipes.html#creating-a-statechart-from-a-factory>`_ you would use the NetworkedFactory class.
+<https://aleph2c.github.io/miros/html/recipes.html#boiler-plate-state-method-code>`_ you would use the NetworkedActiveObject class.  If you would rather
+build it up using `callbacks <https://aleph2c.github.io/miros/html/recipes.html#creating-a-statechart-inside-of-a-class>`_ you would use the NetworkedFactory class.
 
 Both of these networked classes share the same interface and communicate on the
 same server infrastructure:  the miros-rabbitmq plugin builds up three topic
@@ -50,10 +50,10 @@ it is explained in more details further down this page.
 
 The mesh network is used by the statecharts to send encrypted and serialized
 events to one another.  The snoop_trace is used to share `trace instrumentation
-<https://aleph2c.github.io/miros/recipes.html#using-the-trace>`_
+<https://aleph2c.github.io/miros/html/recipes.html#using-the-trace>`_
 output between all of the connected computers.  It provides the means to debug
 your entire distributed system from one location.  The snoop_spy is like the
-snoop_trace, but it shares the `spy information <https://aleph2c.github.io/miros/recipes.html#using-the-spy>`_ (a lot of information) between
+snoop_trace, but it shares the `spy information <https://aleph2c.github.io/miros/html/recipes.html#using-the-spy>`_ (a lot of information) between
 all of your connected computers.  Each network can be configured with it's own
 encryption key.  The snoop_trace and snoop_spy networks can be enabled and
 disabled independently, but the mesh is always on.
@@ -528,7 +528,7 @@ The purpose of the ``post_to_queue`` state is to defer any
 ``CONNECTION_DISCOVERY`` events from occurring while the state chart is dealing
 with an exception from posting to the ``producer_queue``.  This is an example of
 the `deferred event
-<https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_
+<https://aleph2c.github.io/miros/html/patterns.html#patterns-deferred-event>`_
 statechart pattern.  By using this pattern, we are modifying the sequence of
 events.  To make sense of this, place your eyes on the
 ``chart.producer_queue.put`` syntax in the ``refactor_producers`` part of the
@@ -796,7 +796,7 @@ Compare the statechart within the ``LanRecceChart`` class to the sequence diagra
    ``recce_lan`` event and begins a search of the local area network.  Notice
    that while the state machine is within the ``lan_recce`` state, all
    additional ``RECCE_LAN`` events will be deferred until the state is exited.
-   This is an example of the `deferred event pattern <https://aleph2c.github.io/miros/patterns.html#patterns-deferred-event>`_.
+   This is an example of the `deferred event pattern <https://aleph2c.github.io/miros/html/patterns.html#patterns-deferred-event>`_.
 
    After the event processor enters the ``lan_recce`` state, it's initialization
    signal causes a transition into the ``fill_arp_table``.  Upon entering the

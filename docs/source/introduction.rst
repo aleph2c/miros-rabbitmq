@@ -31,13 +31,8 @@ To use the library:
 
 This document was intended to guide someone who already understands how to use
 the miros statechart Python package.  If you don't know anything about this, get a
-decent handle on the  `miros software <https://aleph2c.github.io/miros/index.html>`_ first,
+decent handle on the  `miros software <https://aleph2c.github.io/miros/html/index.html>`_ first,
 then come back and learn how to network it.
-
-.. note::
-
-  If at any time you would like to navigate back to the top level of the
-  documents, click on the rabbit in the top left corner.
 
 .. note::
 

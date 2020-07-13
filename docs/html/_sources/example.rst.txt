@@ -450,9 +450,9 @@ In the following video I feed the trace into the sequence tool:
     <iframe src="https://www.youtube.com/embed/GQRh5Bd91O8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 
-You can see that I spent a of of time writing numbers into the diagram.  This is
-because the sequence tool has no way to understand your trace; you understand
-your system better than it does, so you need write in the numbers to describe
+You can see that I spend a lot of time writing numbers into the diagram.  This
+is because the sequence tool has no way to understand your trace; you understand
+your system better than it does, so you need to write in the numbers to describe
 when things happen, or if they happen together.
 
 The result is something like this:

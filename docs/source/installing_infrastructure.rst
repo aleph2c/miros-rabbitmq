@@ -27,7 +27,7 @@ that our miros-rabbitmq derived programs can talk to each other through it.
 
 .. _installing_infrastructure-installing-on-windows:
 
-RabbitMQ On Windows and the WLS
+RabbitMQ On Windows and the WSL
 -------------------------------
 
 If you are installing RabbitMQ on (>= Windows 7), try following this `video <https://www.youtube.com/watch?v=gKzKUmtOwR4>`_ and if that
@@ -47,9 +47,9 @@ allows you to automatically ssh into machines and run a series of sysadmin comma
 
 .. note::
 
-  I tried to install RabbitMQ using my ansible scripts in windows using the WLS
-  (Windows Linux Subsystem).  This didn't work,  but the miros-rabbitmq code
-  will run from the WLS once you install RabbitMQ on windows using the windows
+  I tried to install RabbitMQ using my ansible scripts in windows using the WSL
+  (Windows Subsystem for Linux).  This didn't work,  but the miros-rabbitmq code
+  will run from the WSL once you install RabbitMQ on windows using the windows
   procedure.
 
 .. _installing_infrastructure-setting-up-ssh-so-you-don't-need-a-password:
