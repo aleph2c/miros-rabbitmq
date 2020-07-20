@@ -2,7 +2,7 @@
 
 .. epigraph::
 
-  *If you think it's expensive to hire a professional to do the job, wait unit
+  *If you think it's expensive to hire a professional to do the job, wait until
   you hire an amateur.*
 
   -- Red Adair
@@ -83,7 +83,7 @@ Here are the five step we will make in this deployment:
 
 .. image:: _static/deployment_statechart_1.svg
     :target: _static/deployment_statechart_1.pdf
-    :class: scale-to-fit
+    :class: noscale-center
 
 Where you are reading each section, you will find:
 
@@ -807,7 +807,7 @@ Deploy Your Infrastructure Credentials and Secrets to all Machines
 
 .. image:: _static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg
     :target: _static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf
-    :class: scale-to-fit
+    :class: noscale-center
 
 To have your playbook run on each of the servers defined in your inventory, you would
 run:
@@ -825,6 +825,6 @@ Upon completing this step:
 
 .. image:: _static/deployment_machines_step_5.svg
     :target: _static/deployment_machines_step_5.pdf
-    :class: scale-to-fit
+    :class: noscale-center
 
 

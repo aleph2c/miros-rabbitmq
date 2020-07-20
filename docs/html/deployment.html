@@ -166,7 +166,7 @@
         
           
   <blockquote class="epigraph" id="deployment-deployment">
-<div><p><em>If you think it’s expensive to hire a professional to do the job, wait unit
+<div><p><em>If you think it’s expensive to hire a professional to do the job, wait until
 you hire an amateur.</em></p>
 <p class="attribution">—Red Adair</p>
 </div></blockquote>
@@ -232,7 +232,7 @@ required for the miros-rabbitmq library to work.</p>
 <li><p><a class="reference internal" href="#deployment-setup-ansible-file-structure-on-the-deployment-computer"><span class="std std-ref">setup ansible file structure on deployment computer</span></a></p></li>
 <li><p><a class="reference internal" href="#deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines"><span class="std std-ref">deploy your infrastructure, credentials and secrets to all machines</span></a></p></li>
 </ul>
-<a class="reference external image-reference" href="_static/deployment_statechart_1.pdf"><img alt="_images/deployment_statechart_1.svg" class="scale-to-fit" src="_images/deployment_statechart_1.svg" /></a>
+<a class="reference external image-reference" href="_static/deployment_statechart_1.pdf"><img alt="_images/deployment_statechart_1.svg" class="noscale-center" src="_images/deployment_statechart_1.svg" /></a>
 <p>Where you are reading each section, you will find:</p>
 <ul class="simple">
 <li><p>a cheatsheet for fast reference</p></li>
@@ -865,7 +865,7 @@ ready to be deployed to the system:</p>
 </div>
 <div class="section" id="deploy-your-infrastructure-credentials-and-secrets-to-all-machines">
 <span id="deployment-deploy-your-infrastructure-credentials-and-secrets-to-all-machines"></span><h2>Deploy Your Infrastructure Credentials and Secrets to all Machines<a class="headerlink" href="#deploy-your-infrastructure-credentials-and-secrets-to-all-machines" title="Permalink to this headline">#</a></h2>
-<a class="reference external image-reference" href="_static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf"><img alt="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" class="scale-to-fit" src="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" /></a>
+<a class="reference external image-reference" href="_static/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.pdf"><img alt="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" class="noscale-center" src="_images/d_deploy_your_infrastructure_credentials_and_secrets_to_all_machines.svg" /></a>
 <p>To have your playbook run on each of the servers defined in your inventory, you would
 run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="o">-</span><span class="n">K</span> <span class="n">miros_rabbit_install</span><span class="o">.</span><span class="n">yml</span> <span class="o">--</span><span class="n">ask</span><span class="o">-</span><span class="n">vault</span><span class="o">-</span><span class="k">pass</span>
@@ -876,7 +876,7 @@ run:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">BECOME</span> <span class="pre">password</span></code> is the password to run <code class="docutils literal notranslate"><span class="pre">sudo</span></code> commands on the remote server,
 and the <code class="docutils literal notranslate"><span class="pre">Vault</span> <span class="pre">password</span></code> is the password you used to encrypt your vault file.</p>
 <p>Upon completing this step:</p>
-<a class="reference external image-reference" href="_static/deployment_machines_step_5.pdf"><img alt="_images/deployment_machines_step_5.svg" class="scale-to-fit" src="_images/deployment_machines_step_5.svg" /></a>
+<a class="reference external image-reference" href="_static/deployment_machines_step_5.pdf"><img alt="_images/deployment_machines_step_5.svg" class="noscale-center" src="_images/deployment_machines_step_5.svg" /></a>
 </div>
 </div>
 
@@ -913,7 +913,7 @@ and the <code class="docutils literal notranslate"><span class="pre">Vault</span
         
         <div class="last-updated">
           <span class="prefix">Last updated:</span>
-          <span class="time">Jul 13, 2020 6:13 AM</span>
+          <span class="time">Jul 20, 2020 6:41 AM</span>
         </div>
         
         

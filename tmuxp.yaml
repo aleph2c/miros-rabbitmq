@@ -26,7 +26,7 @@ windows:
     automatic-rename: 'off'
   panes:
   - shell_command:
-    - miros
+    - miros-rabbitmq
     - clear
     - while inotifywait -e modify ./miros-rabbitmq/*.py ./test/*.py; do pytest -s; done
   - shell_command:

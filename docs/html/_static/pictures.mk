@@ -2,8 +2,12 @@
 # from the environment for the first two.
 $(warning picture make file)
 
-WINDOWS_UMLET_PATH = "Umlet.exe"
-CC=Umlet.exe
+# 1) make sure umlet.sh is in your path
+# 2) replace line 31 of umlet.sh with:
+# if [! -z "${UMLET_HOME}" ] ; then
+#CC="C:\\Users\\lincoln\\Desktop\\Umlet\\Umlet.exe"
+CC  = "$(WINDOWS_UMLET)"
+$(warning $(CC))
 UXF = $(shell find . -name "*.uxf")
 SVG = $(patsubst %.uxf, %.svg,$(UXF))
 PDF = $(patsubst %.uxf, %.pdf,$(UXF))
